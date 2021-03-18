@@ -15,8 +15,10 @@ public class PantallaAcercaDe extends Pantalla {
     }
 
     @Override
-    public void render(float delta) {
-        borrarPantalla(1,0,0);
+    public void render(float delta)
+    {
+        borrarPantalla(0,0,0);
+
     }
 
     @Override
