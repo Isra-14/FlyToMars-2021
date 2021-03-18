@@ -34,6 +34,52 @@ public class PantallaMenu extends Pantalla {
         //Escena
         escenaMenu = new Stage(vista);
 
+        // Actores->Boton
+
+        Button btnInicio = crearBoton("menu/btn_jugar.png", "menu/btn_jugar_press.png");
+        Button btnHighScores = crearBoton("menu/btn_high-scores.png", "menu/btn_high-scores_press.png");
+        Button btnInstrucciones = crearBoton("menu/btn_instrucciones.png", "menu/btn_instrucciones_press.png");
+        Button btnAcercaDe = crearBoton("menu/btn_acerca-de.png", "menu/btn_acerca-de_press.png");
+
+
+        btnInicio.setPosition(ANCHO/2, 4*ALTO/8+ALTO/5, Align.center);
+        btnHighScores.setPosition(ANCHO/2, 3*ALTO/8+ALTO/5, Align.center);
+        btnInstrucciones.setPosition(ANCHO/2, 2*ALTO/8+ALTO/5, Align.center);
+        btnAcercaDe.setPosition(ANCHO/2, 1*ALTO/8+ALTO/5, Align.center);
+
+        // Agrega los botones a escena
+        escenaMenu.addActor(btnInicio);
+        escenaMenu.addActor(btnHighScores);
+        escenaMenu.addActor(btnInstrucciones);
+        escenaMenu.addActor(btnAcercaDe);
+
+        btnInicio.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaJuego(juego));
+            }
+        });
+
+        btnHighScores.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaHighScores(juego));
+            }
+        });
+
+        btnInstrucciones.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaInstrucciones(juego));
+            }
+        });
+
+        btnAcercaDe.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaAcercaDe(juego));
+            }
+        });
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenu);
