@@ -28,7 +28,7 @@ public class PantallaMenu extends Pantalla {
     }
 
     private void crearMenu() {
-        texturaFondo = new Texture("Menu/fondoMenu.png");
+        texturaFondo = new Texture("Menu/FondoMenu.png");
 
         // MENU, necesitamos una escena
         //Escena
@@ -36,10 +36,10 @@ public class PantallaMenu extends Pantalla {
 
         // Actores->Boton
 
-        Button btnInicio = crearBoton("menu/btn_jugar.png", "menu/btn_jugar_press.png");
-        Button btnHighScores = crearBoton("menu/btn_high-scores.png", "menu/btn_high-scores_press.png");
-        Button btnInstrucciones = crearBoton("menu/btn_instrucciones.png", "menu/btn_instrucciones_press.png");
-        Button btnAcercaDe = crearBoton("menu/btn_acerca-de.png", "menu/btn_acerca-de_press.png");
+        Button btnInicio = crearBoton("Menu/btn_jugar.png", "Menu/btn_jugar_press.png");
+        Button btnHighScores = crearBoton("Menu/btn_high-scores.png", "Menu/btn_high-scores_press.png");
+        Button btnInstrucciones = crearBoton("Menu/btn_instrucciones.png", "Menu/btn_instrucciones_press.png");
+        Button btnAcercaDe = crearBoton("Menu/btn_acerca-de.png", "Menu/btn_acerca-de_press.png");
 
 
         btnInicio.setPosition(ANCHO/2, 4*ALTO/8+ALTO/5, Align.center);
