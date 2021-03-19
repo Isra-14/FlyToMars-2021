@@ -2,9 +2,7 @@ package mx.tec.astral.flytomars;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,7 +26,8 @@ public class PantallaNvl1 extends Pantalla {
     private Stage escenaMenuNiveles;
 
     //Personaje (Hero)
-    private  Hero hero;
+    private  Hero heroR;
+    private  Hero heroL;
 
     //Objetos vida
     private Array<Vida> arrVidas;
@@ -36,6 +35,9 @@ public class PantallaNvl1 extends Pantalla {
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
+    private boolean posDerecha = true;
+    private boolean posIzquierda = false;
+
 
     public PantallaNvl1(Juego juego) {
         this.juego = juego;
@@ -44,7 +46,8 @@ public class PantallaNvl1 extends Pantalla {
     @Override
     public void show() {
         crearMenu();
-        crearHero();
+        heroR = crearHero(heroR, false);
+        heroL = crearHero(heroL, true);
         crearVidas();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
@@ -53,18 +56,22 @@ public class PantallaNvl1 extends Pantalla {
     private void crearVidas() {
         Texture texturaVida = new Texture("items/heart.png");
 
-        //CREAR 55 aliens (11 columnas x 5 filas segun el juego)
         arrVidas = new Array<>(3);
             for (int i = 0; i < 3; i++){
-                Vida vida = new Vida(texturaVida,  (i*3),ALTO/2);
+                Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
                 arrVidas.add(vida); //Lo guarda en el arrelo
             }
     }
 
     //Crea la imagen de nuestro protagonista
-    private void crearHero() {
-        Texture texturaHero = new Texture("nivel1/character1.png");
-        hero = new Hero(texturaHero,0,0);
+    private Hero crearHero(Hero myHero, boolean isLeft) {
+        Texture texturaHero;
+        if(!isLeft)
+             texturaHero = new Texture("nivel1/character1.png");
+        else
+            texturaHero = new Texture("nivel1/character1_left.png");
+        myHero = new Hero(texturaHero,0,0);
+        return myHero;
     }
 
     private void crearMenu() {
@@ -82,8 +89,8 @@ public class PantallaNvl1 extends Pantalla {
 
 
         //Se les agrega una posicion en pantalla
-        btnA.setPosition(ANCHO-400, 100, Align.center);
-        btnB.setPosition(ANCHO-200, 100, Align.center);
+        btnA.setPosition(ANCHO-btnA.getWidth()*2, 100, Align.center);
+        btnB.setPosition(ANCHO-btnB.getWidth(), 100, Align.center);
         btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), ALTO - btnBack.getMinHeight(), Align.center);
 
         // Agrega los botones a escena
@@ -129,7 +136,8 @@ public class PantallaNvl1 extends Pantalla {
     }
     @Override
     public void render(float delta) {
-        actualizar();
+        actualizar(heroL);
+        actualizar(heroR);
         borrarPantalla(0,0,0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
@@ -144,14 +152,17 @@ public class PantallaNvl1 extends Pantalla {
         }
 
         //Hero
-        hero.render(batch);
+        if(moviendoDerecha || posDerecha)
+            heroR.render(batch);
+        else if(moviendoIzquierda || posIzquierda)
+            heroL.render(batch);
         batch.end();
 
         escenaMenuNiveles.draw();
     }
 
-    private void actualizar() {
-        if(moviendoDerecha && hero.getX() <= (ANCHO-hero.getWidth())){
+    private void actualizar(Hero hero) {
+        if(moviendoDerecha && hero.getX() <= (ANCHO- hero.getWidth())){
             hero.mover(DELTA_X_HERO);
         }if(moviendoIzquierda && hero.getX() > 0)
         {
@@ -203,9 +214,13 @@ public class PantallaNvl1 extends Pantalla {
                 //Primera mitad de la pantalla
                 //nave.mover(-DELTA_X);
                 moviendoIzquierda = true;
+                posDerecha = false;
+                posIzquierda = true;
             }else{
-                hero.mover(DELTA_X_HERO);
+                heroR.mover(DELTA_X_HERO);
                 moviendoDerecha = true;
+                posDerecha = true;
+                posIzquierda = false;
             }
             return true; //Porque el juego ya proceso el evento
         }
