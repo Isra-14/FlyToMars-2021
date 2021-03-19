@@ -26,7 +26,7 @@ public class PantallaNvl1 extends Pantalla {
     private Stage escenaMenuNiveles;
 
     //Personaje (Hero)
-    //private  Hero hero;
+    private  Hero hero;
 
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
@@ -46,7 +46,7 @@ public class PantallaNvl1 extends Pantalla {
 
     private void crearHero() {
         Texture texturaHero = new Texture("nivel1/character1.png");
-        //hero = new Hero(texturaHero,0,0);
+        hero = new Hero(texturaHero,0,0);
     }
 
     private void crearMenu() {
@@ -119,19 +119,19 @@ public class PantallaNvl1 extends Pantalla {
         batch.draw(texturaFondo, 0, 0);
 
         //Hero
-        //hero.render(batch);
+        hero.render(batch);
         batch.end();
 
         escenaMenuNiveles.draw();
     }
 
     private void actualizar() {
-        /*if(moviendoDerecha && hero.getX() <= (ANCHO-hero.getWidth())){
+        if(moviendoDerecha && hero.getX() <= (ANCHO-hero.getWidth())){
             hero.mover(DELTA_X_HERO);
         }if(moviendoIzquierda && hero.getX() > 0)
         {
             hero.mover(-DELTA_X_HERO);
-        }*/
+        }
     }
 
     @Override
@@ -179,7 +179,7 @@ public class PantallaNvl1 extends Pantalla {
                 //nave.mover(-DELTA_X);
                 moviendoIzquierda = true;
             }else{
-           //     hero.mover(DELTA_X_HERO);
+                hero.mover(DELTA_X_HERO);
                 moviendoDerecha = true;
             }
             return true; //Porque el juego ya proceso el evento
