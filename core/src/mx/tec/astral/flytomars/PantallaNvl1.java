@@ -1,21 +1,36 @@
 package mx.tec.astral.flytomars;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-
+/*
+Pantalla que almacena todos los objetos del nivel 1
+Autores: Israel y Misael
+ */
 public class PantallaNvl1 extends Pantalla {
+
+    //Velocidad del Hero
+    private static  final float DELTA_X_HERO = 10;
+
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
-    private Sprite hero;
+
+    //Personaje (Hero)
+    //private  Hero hero;
+
+    //Indican si el Hero se mueve en cierta dirección
+    private boolean moviendoIzquierda = false;
+    private boolean moviendoDerecha = false;
 
     public PantallaNvl1(Juego juego) {
         this.juego = juego;
@@ -24,18 +39,23 @@ public class PantallaNvl1 extends Pantalla {
     @Override
     public void show() {
         crearMenu();
+        crearHero();
+        //Ahora la misma pantalla RECIBE Y PROCESA los eventos
+        Gdx.input.setInputProcessor(new ProcesadorEntrada());
+    }
+
+    private void crearHero() {
+        Texture texturaHero = new Texture("nivel1/character1.png");
+        //hero = new Hero(texturaHero,0,0);
     }
 
     private void crearMenu() {
         texturaFondo = new Texture("nivel1/lvlEarth.png");
-        hero = new Sprite(new Texture("nivel1/character1.png"));
 
 
         // MENU, necesitamos una escena
         //Escena
         escenaMenuNiveles = new Stage(vista);
-
-        hero.setPosition(100, 100);
 
         // Actores->Boton
 
@@ -90,17 +110,28 @@ public class PantallaNvl1 extends Pantalla {
     }
     @Override
     public void render(float delta) {
-
+        actualizar();
+        borrarPantalla(0,0,0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
-        hero.draw(batch);
 
+        //Hero
+        //hero.render(batch);
         batch.end();
 
         escenaMenuNiveles.draw();
+    }
+
+    private void actualizar() {
+        /*if(moviendoDerecha && hero.getX() <= (ANCHO-hero.getWidth())){
+            hero.mover(DELTA_X_HERO);
+        }if(moviendoIzquierda && hero.getX() > 0)
+        {
+            hero.mover(-DELTA_X_HERO);
+        }*/
     }
 
     @Override
@@ -116,5 +147,68 @@ public class PantallaNvl1 extends Pantalla {
     @Override
     public void dispose() {
 
+    }
+
+    private class ProcesadorEntrada implements InputProcessor {
+
+        @Override
+        public boolean keyDown(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyUp(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyTyped(char character) {
+            return false;
+        }
+
+        //Cuando el usuario toca la pantalla. Pone el dedo sobre la pantalla
+        //Mover nave derecha si toco la parte derecha de la pantalla, izquierda del otro caso
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            //pointer = dice qué dedo y que posicion lo puse
+            //button = dice si presione el boton izq o derecho
+            Vector3 v = new Vector3(screenX,screenY,0);
+            camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
+            if(v.x < ANCHO/2){
+                //Primera mitad de la pantalla
+                //nave.mover(-DELTA_X);
+                moviendoIzquierda = true;
+            }else{
+           //     hero.mover(DELTA_X_HERO);
+                moviendoDerecha = true;
+            }
+            return true; //Porque el juego ya proceso el evento
+        }
+
+        //Cuando el usuario quita el dedo de la pantalla
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            Vector3 v = new Vector3(screenX,screenY,0);
+            camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
+            moviendoDerecha = false;
+            moviendoIzquierda = false;
+            return true; //Porque el juego ya proceso el evento
+        }
+
+        //Cuando arrastro el dedo sonre la pantalla
+        @Override
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            return false;
+        }
+
+        @Override
+        public boolean mouseMoved(int screenX, int screenY) {
+            return false;
+        }
+
+        @Override
+        public boolean scrolled(float amountX, float amountY) {
+            return false;
+        }
     }
 }
