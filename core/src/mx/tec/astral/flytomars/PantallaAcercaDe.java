@@ -9,6 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+/*
+Autor Alejandro Quintana
+ */
 
 public class PantallaAcercaDe extends Pantalla {
     private Juego juego;
@@ -63,14 +66,13 @@ public class PantallaAcercaDe extends Pantalla {
 
     @Override
     public void render(float delta) {
+
+
+        //Hace toda la funcionalidad el batch
         batch.setProjectionMatrix(camara.combined);
-
         batch.begin();
-
         batch.draw(texturaFondo, 0, 0);
-
         batch.end();
-
         escenaMenuNiveles.draw();
     }
 
