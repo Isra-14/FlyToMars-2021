@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 
 /*
 Pantalla que almacena todos los objetos del nivel 1
-Autores: Israel y Misael
+Autores: Israel, Misael y Alejandro
  */
 public class PantallaNvl1 extends Pantalla {
 
@@ -52,6 +52,7 @@ public class PantallaNvl1 extends Pantalla {
 
     private void crearVidas() {
         Texture texturaVida = new Texture("items/heart.png");
+
         //CREAR 55 aliens (11 columnas x 5 filas segun el juego)
         arrVidas = new Array<>(3);
             for (int i = 0; i < 3; i++){
@@ -60,6 +61,7 @@ public class PantallaNvl1 extends Pantalla {
             }
     }
 
+    //Crea la imagen de nuestro protagonista
     private void crearHero() {
         Texture texturaHero = new Texture("nivel1/character1.png");
         hero = new Hero(texturaHero,0,0);
@@ -74,21 +76,22 @@ public class PantallaNvl1 extends Pantalla {
         escenaMenuNiveles = new Stage(vista);
 
         // Actores->Boton
-
         Button btnA = crearBoton("buttons/btn_A.png", "buttons/btn_A_press.png");
         Button btnB = crearBoton("buttons/btn_B.png", "buttons/btn_B_press.png");
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
 
+        //Se les agrega una posicion en pantalla
         btnA.setPosition(ANCHO-400, 100, Align.center);
         btnB.setPosition(ANCHO-200, 100, Align.center);
-        btnBack.setPosition(150, 50, Align.center);
+        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), ALTO - btnBack.getMinHeight(), Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnA);
         escenaMenuNiveles.addActor(btnB);
         escenaMenuNiveles.addActor(btnBack);
 
+        //Aqui se agrega la accion a ejecutar cuando se presiona
         btnA.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
