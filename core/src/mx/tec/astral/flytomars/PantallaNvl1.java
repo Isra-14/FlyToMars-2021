@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+
 /*
 Pantalla que almacena todos los objetos del nivel 1
 Autores: Israel y Misael
@@ -28,6 +30,9 @@ public class PantallaNvl1 extends Pantalla {
     //Personaje (Hero)
     private  Hero hero;
 
+    //Objetos vida
+    private Array<Vida> arrVidas;
+
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
@@ -40,8 +45,19 @@ public class PantallaNvl1 extends Pantalla {
     public void show() {
         crearMenu();
         crearHero();
+        crearVidas();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+    }
+
+    private void crearVidas() {
+        Texture texturaVida = new Texture("items/heart.png");
+        //CREAR 55 aliens (11 columnas x 5 filas segun el juego)
+        arrVidas = new Array<>(3);
+            for (int i = 0; i < 3; i++){
+                Vida vida = new Vida(texturaVida,  (i*3),ALTO/2);
+                arrVidas.add(vida); //Lo guarda en el arrelo
+            }
     }
 
     private void crearHero() {
@@ -117,6 +133,12 @@ public class PantallaNvl1 extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
+
+        //Vidas
+        for (Vida vida: arrVidas) //Visita cada objeto del arreglo
+        {
+            vida.render(batch);
+        }
 
         //Hero
         hero.render(batch);
