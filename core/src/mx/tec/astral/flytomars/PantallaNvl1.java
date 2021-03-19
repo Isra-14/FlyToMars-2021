@@ -41,15 +41,17 @@ public class PantallaNvl1 extends Pantalla {
 
         Button btnA = crearBoton("buttons/btn_A.png", "buttons/btn_A_press.png");
         Button btnB = crearBoton("buttons/btn_B.png", "buttons/btn_B_press.png");
-        //Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_press.png");
+        Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
 
         btnA.setPosition(ANCHO-400, 100, Align.center);
         btnB.setPosition(ANCHO-200, 100, Align.center);
+        btnBack.setPosition(150, 50, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnA);
         escenaMenuNiveles.addActor(btnB);
+        escenaMenuNiveles.addActor(btnBack);
 
         btnA.addListener(new ClickListener(){
             @Override
@@ -62,6 +64,13 @@ public class PantallaNvl1 extends Pantalla {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //juego.setScreen(new PantallaNvl2(juego));
+            }
+        });
+
+        btnBack.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaMenu(juego));
             }
         });
 
@@ -87,7 +96,7 @@ public class PantallaNvl1 extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
-        //hero.draw(batch);
+        hero.draw(batch);
 
         batch.end();
 
