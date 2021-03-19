@@ -22,7 +22,7 @@ public class PantallaSplash extends Pantalla
         super();
         this.p = juego;
         this.batch = new SpriteBatch();
-        this.texturaSplash = new Texture("menu/FondoMenu.png");
+        this.texturaSplash = new Texture("Menu/FondoMenu.png");
     }
 
     @Override
@@ -33,7 +33,7 @@ public class PantallaSplash extends Pantalla
     @Override
     public void render(float delta)
     {
-        //borra todo lo que hay dentro
+        //borra _todo lo que hay dentro
         borrarPantalla(0,0,0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
