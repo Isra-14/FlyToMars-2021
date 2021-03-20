@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Align;
 
 /*
     This class manage the Instructions screen.
-    Author: Israel Sanchez Hinojosa
+    Author: Israel Sanchez Hinojosa y Alejandro Quintana
 */
 
 public class PantallaInstrucciones extends Pantalla {
