@@ -3,6 +3,7 @@ package mx.tec.astral.flytomars;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,6 +18,8 @@ Pantalla que almacena todos los objetos del nivel 1
 Autores: Israel, Misael y Alejandro
  */
 public class PantallaNvl1 extends Pantalla {
+    // Font of score.
+    BitmapFont font = new BitmapFont(); //or use alex answer to use custom font
 
     //Velocidad del Hero
     private static  final float DELTA_X_HERO = 10;
@@ -98,7 +101,7 @@ public class PantallaNvl1 extends Pantalla {
              texturaHero = new Texture("nivel1/character1.png");
         else
             texturaHero = new Texture("nivel1/character1_left.png");
-        myHero = new Hero(texturaHero,0,0);
+        myHero = new Hero(texturaHero,0,150);
         return myHero;
     }
 
@@ -119,7 +122,7 @@ public class PantallaNvl1 extends Pantalla {
         //Se les agrega una posicion en pantalla
         btnA.setPosition(ANCHO-btnA.getWidth()*2, 100, Align.center);
         btnB.setPosition(ANCHO-btnB.getWidth(), 100, Align.center);
-        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), ALTO - btnBack.getMinHeight(), Align.center);
+        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), 100, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnA);
@@ -172,6 +175,11 @@ public class PantallaNvl1 extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
+
+        font.getData().setScale(3,3);
+        font.draw(batch, "Score:", 25, ALTO - 25 );
+
+
 
         //Vidas
         for (Vida vida: arrVidas) //Visita cada objeto del arreglo
