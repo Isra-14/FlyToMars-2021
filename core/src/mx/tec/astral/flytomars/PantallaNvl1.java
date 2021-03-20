@@ -29,6 +29,15 @@ public class PantallaNvl1 extends Pantalla {
     private  Hero heroR;
     private  Hero heroL;
 
+    //Enemigos
+    //Alien Agil
+    private AlienAgil aAgil;
+    //Alien Letal
+    private AlienLetal aLetal;
+    //Alien Tanque
+    private AlienTanque aTanque;
+
+
     //Objetos vida
     private Array<Vida> arrVidas;
 
@@ -48,9 +57,28 @@ public class PantallaNvl1 extends Pantalla {
         crearMenu();
         heroR = crearHero(heroR, false);
         heroL = crearHero(heroL, true);
+        crearAlienAgil();
+        crearAlienLetal();
+        crearAlienTanque();
         crearVidas();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+    }
+
+    private void crearAlienTanque() {
+        Texture texturaTanque=new Texture("enemigos/alienTanque.png");
+        aTanque=new AlienTanque(texturaTanque, 4*ANCHO/10, 2*ALTO/12);
+    }
+
+    private void crearAlienLetal() {
+        Texture texturaLetal=new Texture("enemigos/alienLetal.png");
+        aLetal=new AlienLetal(texturaLetal, 6*ANCHO/10, 2*ALTO/12);
+
+    }
+
+    private void crearAlienAgil() {
+        Texture teturaAgil= new Texture("enemigos/alienAgil.png");
+        aAgil=new AlienAgil(teturaAgil,8*ANCHO/10,2*ALTO/12);
     }
 
     private void crearVidas() {
@@ -156,7 +184,18 @@ public class PantallaNvl1 extends Pantalla {
             heroR.render(batch);
         else if(moviendoIzquierda || posIzquierda)
             heroL.render(batch);
+
+        //Enemigos
+        //Alien Agil
+        aAgil.render(batch);
+        //Alien Letal
+        aLetal.render(batch);
+        //Alien Tanque
+        aTanque.render(batch);
+
         batch.end();
+
+
 
         escenaMenuNiveles.draw();
     }
