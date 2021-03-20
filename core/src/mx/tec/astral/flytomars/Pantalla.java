@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Representa el comportamiento genérico de cualquier pantalla que forma
  * parte del juego
+ Autor Alejandro Quintana
  */
 public abstract class Pantalla implements Screen
 {
