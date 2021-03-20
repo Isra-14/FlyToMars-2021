@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
+import sun.security.util.AnchorCertificates;
+
 public class PantallaJuego extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
@@ -32,17 +34,19 @@ public class PantallaJuego extends Pantalla {
         escenaMenuNiveles = new Stage(vista);
 
         // Actores->Boton
-
+        Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
         Button btnNvl1 = crearBoton("MenuNiveles/earth.png", "MenuNiveles/earth_press.png");
         Button btnNvl2 = crearBoton("MenuNiveles/moon.png", "MenuNiveles/moon_press.png");
         Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_press.png");
 
-
+        //Se les da un espacio en la pantalla
+        btnBack.setPosition(ANCHO/2 - 100 , 85);
         btnNvl1.setPosition(ANCHO/6, ALTO/2, Align.center);
         btnNvl2.setPosition(3*ANCHO/6, ALTO/2, Align.center);
         btnNvl3.setPosition(5*ANCHO/6, ALTO/2, Align.center);
 
         // Agrega los botones a escena
+        escenaMenuNiveles.addActor(btnBack);
         escenaMenuNiveles.addActor(btnNvl1);
         escenaMenuNiveles.addActor(btnNvl2);
         escenaMenuNiveles.addActor(btnNvl3);
@@ -67,10 +71,15 @@ public class PantallaJuego extends Pantalla {
                 juego.setScreen(new PantallaNvl3(juego));
             }
         });
+        btnBack.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new PantallaMenu(juego));
+            }
+        });
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenuNiveles);
-
     }
 
     private Button crearBoton(String archivo, String clickeado) {
