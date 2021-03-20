@@ -15,7 +15,7 @@ public class Juego extends Game
 	//Se pued eimplementar para aqi hacer los cambios e pantalla
 	public static final  int PANTALLA_SPLASH=0;
 	public static final  int PANTALLA_MENU=1;
-	public Sound mp3;
+	public Music mp3;
 
 
 	public Juego () {super(); }
@@ -23,9 +23,10 @@ public class Juego extends Game
 	@Override
 	public void create ()
 	{
-		//Se agrega la musica
-		mp3 = Gdx.audio.newSound(Gdx.files.internal("Efectos/MusicaFondo.mp3"));
-		mp3.play();
+			//Se agrega la musica
+			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/MusicaFondo.mp3"));
+			mp3.play();
+			mp3.setLooping(true);
 
 		//Se llama al metodo para camibiar de pantalla
 		changeScreen(PANTALLA_SPLASH);

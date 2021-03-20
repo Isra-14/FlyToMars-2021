@@ -3,6 +3,7 @@ package mx.tec.astral.flytomars;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -17,6 +18,8 @@ public class PantallaAcercaDe extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
+    BitmapFont font = new BitmapFont();
+
 
     public PantallaAcercaDe(Juego juego) {
         this.juego = juego;
@@ -68,10 +71,14 @@ public class PantallaAcercaDe extends Pantalla {
     public void render(float delta) {
 
 
-        //Hace toda la funcionalidad el batch
+        //Hace toda la funcionalidad el batch, dibuja
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
         batch.draw(texturaFondo, 0, 0);
+
+        font.getData().setScale(3,3);
+        font.draw(batch, "Aqui se mostrara Nuestra info de Acerca de", ANCHO/4, 3*ALTO/4);
+
         batch.end();
         escenaMenuNiveles.draw();
     }
@@ -88,6 +95,7 @@ public class PantallaAcercaDe extends Pantalla {
 
     @Override
     public void dispose() {
+        batch.dispose();;
 
     }
 }

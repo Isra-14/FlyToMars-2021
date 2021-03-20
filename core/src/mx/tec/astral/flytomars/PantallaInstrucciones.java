@@ -77,7 +77,7 @@ public class PantallaInstrucciones extends Pantalla {
         batch.draw(texturaFondo, 0, 0);
 
         font.getData().setScale(3,3);
-        font.draw(batch, "Hello world!", ANCHO/2, 3*ALTO/4);
+        font.draw(batch, "Aqui se mostraran las instrucciones del juego", ANCHO/4, 3*ALTO/4);
 
         batch.end();
 
@@ -96,6 +96,7 @@ public class PantallaInstrucciones extends Pantalla {
 
     @Override
     public void dispose() {
+        batch.dispose();
 
     }
 }
