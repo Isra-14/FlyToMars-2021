@@ -15,6 +15,7 @@ public class Juego extends Game
 	//Se pued eimplementar para aqi hacer los cambios e pantalla
 	public static final  int PANTALLA_SPLASH=0;
 	public static final  int PANTALLA_MENU=1;
+
 	public Music mp3;
 
 
