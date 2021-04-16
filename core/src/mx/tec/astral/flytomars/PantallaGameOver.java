@@ -25,7 +25,7 @@ public class PantallaGameOver extends Pantalla
 
     public void show(){crearMenu(); }
 
-    //aqui se inicializa 
+    //aqui se inicializa
     private void crearMenu()
     {
         texto = new Texto();
