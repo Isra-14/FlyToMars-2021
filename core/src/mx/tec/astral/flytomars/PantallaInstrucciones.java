@@ -20,8 +20,7 @@ public class PantallaInstrucciones extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
-    BitmapFont font = new BitmapFont(); //or use alex answer to use custom font
-
+    Texto texto;
     public PantallaInstrucciones(Juego juego) {
         this.juego = juego;
     }
@@ -32,6 +31,7 @@ public class PantallaInstrucciones extends Pantalla {
     }
 
     private void crearMenu() {
+        texto = new Texto();
         texturaFondo = new Texture("fondos/fondoInstrucciones.jpg");
 
         // MENU, necesitamos una escena
@@ -76,8 +76,7 @@ public class PantallaInstrucciones extends Pantalla {
 
         batch.draw(texturaFondo, 0, 0);
 
-        font.getData().setScale(3,3);
-        font.draw(batch, "Aqui se mostraran las instrucciones del juego", ANCHO/4, 3*ALTO/4);
+        texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .85f*ALTO);
 
         batch.end();
 

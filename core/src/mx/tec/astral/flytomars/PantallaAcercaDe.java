@@ -18,8 +18,7 @@ public class PantallaAcercaDe extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
-    BitmapFont font = new BitmapFont();
-
+    Texto texto;
 
     public PantallaAcercaDe(Juego juego) {
         this.juego = juego;
@@ -31,6 +30,7 @@ public class PantallaAcercaDe extends Pantalla {
     }
 
     private void crearMenu() {
+        texto = new Texto();
         texturaFondo = new Texture("fondos/fondoAcerca.jpg");
 
         // MENU, necesitamos una escena
@@ -76,8 +76,7 @@ public class PantallaAcercaDe extends Pantalla {
         batch.begin();
         batch.draw(texturaFondo, 0, 0);
 
-        font.getData().setScale(3,3);
-        font.draw(batch, "Aqui se mostrara Nuestra info de Acerca de", ANCHO/4, 3*ALTO/4);
+        texto.mostrarMensaje(batch, "Acerca de Nosotros", ANCHO/2, .90f*ALTO);
 
         batch.end();
         escenaMenuNiveles.draw();
@@ -95,7 +94,7 @@ public class PantallaAcercaDe extends Pantalla {
 
     @Override
     public void dispose() {
-        batch.dispose();;
+        batch.dispose();
 
     }
 }
