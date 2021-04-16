@@ -28,11 +28,11 @@ public class PantallaNvl1 extends Pantalla {
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
-    //Personaje (Hero)
-    private  Hero heroR;
-    private  Hero heroL;
+                    //  Personaje (Hero)
+    private  Hero hero;
+    private EstadoHeroe prevState = EstadoHeroe.DERECHA;
 
-    //Enemigos
+                    //  Enemigos
     //Alien Agil
     private AlienAgil aAgil;
     //Alien Letal
@@ -41,14 +41,18 @@ public class PantallaNvl1 extends Pantalla {
     private AlienTanque aTanque;
 
 
-    //Objetos vida
+                    //  Objetos vida
     private Array<Vida> arrVidas;
+
+                    //  Buttons
+    private Texture texturaBack;
+    private Texture texturaA;
+    private Texture texturaB;
+
 
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
-    private boolean posDerecha = true;
-    private boolean posIzquierda = false;
 
 
     public PantallaNvl1(Juego juego) {
@@ -58,14 +62,43 @@ public class PantallaNvl1 extends Pantalla {
     @Override
     public void show() {
         crearMenu();
-        heroR = crearHero(heroR, false);
-        heroL = crearHero(heroL, true);
+
+        crearFondo();
+
+        crearHero();
         crearAlienAgil();
         crearAlienLetal();
         crearAlienTanque();
         crearVidas();
+
+        crearBotonBack();
+        crearBotonA();
+        crearBotonB();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+    }
+
+    private void crearFondo() {
+        texturaFondo = new Texture("nivel1/lvlEarth.png");
+    }
+
+    private void crearBotonA() {
+        texturaA = new Texture("buttons/btn_A.png");
+    }
+
+    private void crearBotonB() {
+        texturaB = new Texture("buttons/btn_B.png");
+    }
+
+    private void crearBotonBack() {
+        texturaBack = new Texture("Menu/btn_back.png");
+    }
+
+    private void crearHero() {
+        Texture texturaIzquierda = new Texture("nivel1/character1_left.png");
+        Texture texturaDerecha = new Texture("nivel1/character1.png");
+
+        hero = new Hero(texturaDerecha, texturaIzquierda, 0, 150);
     }
 
     private void crearAlienTanque() {
@@ -94,81 +127,72 @@ public class PantallaNvl1 extends Pantalla {
             }
     }
 
-    //Crea la imagen de nuestro protagonista
-    private Hero crearHero(Hero myHero, boolean isLeft) {
-        Texture texturaHero;
-        if(!isLeft)
-             texturaHero = new Texture("nivel1/character1.png");
-        else
-            texturaHero = new Texture("nivel1/character1_left.png");
-        myHero = new Hero(texturaHero,0,150);
-        return myHero;
-    }
-
     private void crearMenu() {
-        texturaFondo = new Texture("nivel1/lvlEarth.png");
+//        texturaFondo = new Texture("nivel1/lvlEarth.png");
 
 
         // MENU, necesitamos una escena
         //Escena
-        escenaMenuNiveles = new Stage(vista);
+//        escenaMenuNiveles = new Stage(vista);
 
         // Actores->Boton
-        Button btnA = crearBoton("buttons/btn_A.png", "buttons/btn_A_press.png");
-        Button btnB = crearBoton("buttons/btn_B.png", "buttons/btn_B_press.png");
-        Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
+//        Button btnA = crearBoton("buttons/btn_A.png", "buttons/btn_A_press.png");
+//        Button btnB = crearBoton("buttons/btn_B.png", "buttons/btn_B_press.png");
+//        Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
 
         //Se les agrega una posicion en pantalla
-        btnA.setPosition(ANCHO-btnA.getWidth()*2, 100, Align.center);
-        btnB.setPosition(ANCHO-btnB.getWidth(), 100, Align.center);
-        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), 100, Align.center);
+//        btnA.setPosition(ANCHO-btnA.getWidth()*2, 100, Align.center);
+//        btnB.setPosition(ANCHO-btnB.getWidth(), 100, Align.center);
+//        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), 100, Align.center);
 
         // Agrega los botones a escena
-        escenaMenuNiveles.addActor(btnA);
-        escenaMenuNiveles.addActor(btnB);
-        escenaMenuNiveles.addActor(btnBack);
+//        escenaMenuNiveles.addActor(btnA);
+//        escenaMenuNiveles.addActor(btnB);
+//        escenaMenuNiveles.addActor(btnBack);
 
         //Aqui se agrega la accion a ejecutar cuando se presiona
-        btnA.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                //juego.setScreen(new PantallaNvl1(juego));
-            }
-        });
+//        btnA.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                //juego.setScreen(new PantallaNvl1(juego));
+//            }
+//        });
+//
+//        btnB.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                //juego.setScreen(new PantallaNvl2(juego));
+//            }
+//        });
 
-        btnB.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                //juego.setScreen(new PantallaNvl2(juego));
-            }
-        });
-
-        btnBack.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                juego.setScreen(new PantallaMenu(juego));
-            }
-        });
+//        btnBack.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                juego.setScreen(new PantallaMenu(juego));
+//            }
+//        });
 
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
-        Gdx.input.setInputProcessor(escenaMenuNiveles);
+//        Gdx.input.setInputProcessor(escenaMenuNiveles);
 
     }
 
-    private Button crearBoton(String archivo, String clickeado) {
+/*    private Button crearBoton(String archivo, String clickeado) {
         Texture texturaBoton = new Texture(archivo);
         TextureRegionDrawable trdBtn = new TextureRegionDrawable(texturaBoton);
         // Clickeado
         Texture texturaClickeada = new Texture(clickeado);
         TextureRegionDrawable trdBtnClick = new TextureRegionDrawable(texturaClickeada);
         return new Button(trdBtn, trdBtnClick);
-    }
+    }*/
+
     @Override
     public void render(float delta) {
-        actualizar(heroL);
-        actualizar(heroR);
+//        actualizar(heroL);
+//        actualizar(heroR);
+        actualizar(hero);
         borrarPantalla(0,0,0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
@@ -188,10 +212,7 @@ public class PantallaNvl1 extends Pantalla {
         }
 
         //Hero
-        if(moviendoDerecha || posDerecha)
-            heroR.render(batch);
-        else if(moviendoIzquierda || posIzquierda)
-            heroL.render(batch);
+        hero.render(batch);
 
         //Enemigos
         //Alien Agil
@@ -201,20 +222,34 @@ public class PantallaNvl1 extends Pantalla {
         //Alien Tanque
         aTanque.render(batch);
 
+        // Draw A
+        batch.draw(texturaA, ANCHO-texturaA.getWidth()*2, 100);
+
+        // Draw B
+        batch.draw(texturaB, ANCHO-texturaB.getWidth(), 100);
+
+        // Draw Back
+        batch.draw(texturaBack, ANCHO/4 - texturaBack.getWidth(), 100);
+
         batch.end();
 
-
-
-        escenaMenuNiveles.draw();
     }
 
     private void actualizar(Hero hero) {
-        if(moviendoDerecha && hero.getX() <= (ANCHO- hero.getWidth())){
+        if(prevState == EstadoHeroe.DERECHA && hero.getEstado() == EstadoHeroe.IZQUIERDA)
+            hero.cambiarEstado();
+        else if(prevState == EstadoHeroe.IZQUIERDA && hero.getEstado() == EstadoHeroe.DERECHA)
+            hero.cambiarEstado();
+
+        if(moviendoDerecha && hero.getX() <= (ANCHO- hero.getWidth())) {
             hero.mover(DELTA_X_HERO);
-        }if(moviendoIzquierda && hero.getX() > 0)
-        {
+            prevState = EstadoHeroe.DERECHA;
+        }if(moviendoIzquierda && hero.getX() > 0) {
             hero.mover(-DELTA_X_HERO);
+            prevState = EstadoHeroe.IZQUIERDA;
         }
+
+
     }
 
     @Override
@@ -257,17 +292,12 @@ public class PantallaNvl1 extends Pantalla {
             //button = dice si presione el boton izq o derecho
             Vector3 v = new Vector3(screenX,screenY,0);
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
+
             if(v.x < ANCHO/2){
                 //Primera mitad de la pantalla
-                //nave.mover(-DELTA_X);
                 moviendoIzquierda = true;
-                posDerecha = false;
-                posIzquierda = true;
             }else{
-                heroR.mover(DELTA_X_HERO);
                 moviendoDerecha = true;
-                posDerecha = true;
-                posIzquierda = false;
             }
             return true; //Porque el juego ya proceso el evento
         }
