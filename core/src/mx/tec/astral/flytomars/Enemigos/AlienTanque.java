@@ -1,8 +1,10 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class AlienTanque extends Objeto{
+import mx.tec.astral.flytomars.Objeto;
+
+public class AlienTanque extends Objeto {
     public AlienTanque(Texture textura, float x, float y){
         super(textura, x, y);
     }

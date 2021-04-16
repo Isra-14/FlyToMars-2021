@@ -1,4 +1,4 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -12,6 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+
+import mx.tec.astral.flytomars.Enemigos.AlienAgil;
+import mx.tec.astral.flytomars.Enemigos.AlienLetal;
+import mx.tec.astral.flytomars.Enemigos.AlienTanque;
+import mx.tec.astral.flytomars.Hero;
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Vida;
 
 /*
 Pantalla que almacena todos los objetos del nivel 1
@@ -29,7 +36,7 @@ public class PantallaNvl1 extends Pantalla {
     private Stage escenaMenuNiveles;
 
     //Personaje (Hero)
-    private  Hero heroR;
+    private Hero heroR;
     private  Hero heroL;
 
     //Enemigos

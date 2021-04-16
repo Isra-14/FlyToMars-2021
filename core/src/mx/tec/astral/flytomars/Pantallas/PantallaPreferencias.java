@@ -1,9 +1,13 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Pantallas.Pantalla;
+
 /*
 Autor Alejandro Quintana
  */

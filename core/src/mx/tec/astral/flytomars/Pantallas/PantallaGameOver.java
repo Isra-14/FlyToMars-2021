@@ -1,10 +1,14 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+
+import mx.tec.astral.flytomars.Guardar;
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Texto;
+
 /*
 Autor Alejandro Quintana
  */

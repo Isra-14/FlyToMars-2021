@@ -1,13 +1,15 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
-public class PantallaNvl3 extends Pantalla {
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Pantallas.Pantalla;
+
+public class PantallaNvl2 extends Pantalla {
     private Juego juego;
     BitmapFont font = new BitmapFont(); //or use alex answer to use custom font
 
-    public PantallaNvl3(Juego juego) {
+    public PantallaNvl2(Juego juego) {
         this.juego = juego;
     }
 
@@ -21,7 +23,7 @@ public class PantallaNvl3 extends Pantalla {
         borrarPantalla(0,0,0);
         batch.begin();
         font.getData().setScale(3,3);
-        font.draw(batch, "Pantalla Nivel 3:", 25, ALTO - 25 );
+        font.draw(batch, "Pantalla Nivel 2:", 25, ALTO - 25 );
         batch.end();
     }
 

@@ -1,26 +1,28 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-/*
-Autor Alejandro Quintana
- */
 
-public class PantallaAcercaDe extends Pantalla {
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Texto;
+
+/*
+    This class manage the Instructions screen.
+    Author: Israel Sanchez Hinojosa y Alejandro Quintana
+*/
+
+public class PantallaInstrucciones extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
     Texto texto;
-
-    public PantallaAcercaDe(Juego juego) {
+    public PantallaInstrucciones(Juego juego) {
         this.juego = juego;
     }
 
@@ -31,7 +33,7 @@ public class PantallaAcercaDe extends Pantalla {
 
     private void crearMenu() {
         texto = new Texto();
-        texturaFondo = new Texture("fondos/fondoAcerca.jpg");
+        texturaFondo = new Texture("fondos/fondoInstrucciones.jpg");
 
         // MENU, necesitamos una escena
         //Escena
@@ -69,16 +71,16 @@ public class PantallaAcercaDe extends Pantalla {
 
     @Override
     public void render(float delta) {
-
-
-        //Hace toda la funcionalidad el batch, dibuja
         batch.setProjectionMatrix(camara.combined);
+
         batch.begin();
+
         batch.draw(texturaFondo, 0, 0);
 
-        texto.mostrarMensaje(batch, "Acerca de Nosotros", ANCHO/2, .90f*ALTO);
+        texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .85f*ALTO);
 
         batch.end();
+
         escenaMenuNiveles.draw();
     }
 

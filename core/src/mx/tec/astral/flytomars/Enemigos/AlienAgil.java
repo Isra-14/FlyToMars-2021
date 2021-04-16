@@ -1,8 +1,10 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class AlienAgil extends Objeto{
+import mx.tec.astral.flytomars.Objeto;
+
+public class AlienAgil extends Objeto {
     public AlienAgil(Texture textura, float x, float y){
         super(textura, x, y);
     }

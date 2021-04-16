@@ -1,10 +1,12 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Pantallas.Pantalla;
 /*
 Author Alejandro Quintana
 Hace una carga previa antes de entrar al menu
