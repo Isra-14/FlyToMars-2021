@@ -17,9 +17,14 @@ public class PantallaHighScores extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
-    BitmapFont font = new BitmapFont();
 
+    //Se trae el texto
+    private Texto texto;
 
+    //Se guardan los nombres y scores en un arrreglo
+    private String titulo  = "HighScores";
+    private long[] highScores;
+    private String[] names;
 
     public PantallaHighScores(Juego juego) {
         this.juego = juego;
@@ -32,6 +37,7 @@ public class PantallaHighScores extends Pantalla {
 
     private void crearMenu() {
         texturaFondo = new Texture("fondos/fondoHigh.jpg");
+        texto = new Texto();
 
         // MENU, necesitamos una escena
         //Escena
@@ -40,7 +46,7 @@ public class PantallaHighScores extends Pantalla {
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnBack.setPosition(ANCHO/2, 200, Align.center);
+        btnBack.setPosition(ANCHO/2, 70, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnBack);
@@ -51,10 +57,13 @@ public class PantallaHighScores extends Pantalla {
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
-
-
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenuNiveles);
+
+        //Se carga el archivo guardado
+        Guardar.load();
+        highScores = Guardar.dj.getHighScores();
+        names = Guardar.dj.getNames();
 
     }
 
@@ -75,9 +84,14 @@ public class PantallaHighScores extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
+        texto.mostrarMensaje(batch, "HighScore", ANCHO/2, .90F*ALTO);
+        //se recorrre lo que tenemos guardado
+        for (int i = 0; i < highScores.length; i++)
+        {
+            titulo = String.format("%2d. %7s %s", i + 1, highScores[i], names[i]);
+            texto.mostrarMensaje(batch, titulo, ANCHO/2,.80f*ALTO - 48 * i);
+        }
 
-        font.getData().setScale(3,3);
-        font.draw(batch, "Aqui se mostraran la puntuacion mas alta", ANCHO/4, 3*ALTO/4);
 
         batch.end();
 

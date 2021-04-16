@@ -50,6 +50,9 @@ public class PantallaNvl1 extends Pantalla {
     private boolean posDerecha = true;
     private boolean posIzquierda = false;
 
+    //Checa si el juego se pauso
+    boolean paused;
+
 
     public PantallaNvl1(Juego juego) {
         this.juego = juego;
@@ -171,6 +174,7 @@ public class PantallaNvl1 extends Pantalla {
         actualizar(heroR);
         borrarPantalla(0,0,0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
+        camara.update();
 
         batch.begin();
 
@@ -218,7 +222,8 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     @Override
-    public void pause() {
+    public void pause()
+    {
 
     }
 
