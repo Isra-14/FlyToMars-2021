@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -61,7 +62,6 @@ public class PantallaNvl1 extends Pantalla {
 
     @Override
     public void show() {
-        crearMenu();
 
         crearFondo();
 
@@ -74,6 +74,7 @@ public class PantallaNvl1 extends Pantalla {
         crearBotonBack();
         crearBotonA();
         crearBotonB();
+
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
     }
@@ -127,67 +128,6 @@ public class PantallaNvl1 extends Pantalla {
             }
     }
 
-    private void crearMenu() {
-//        texturaFondo = new Texture("nivel1/lvlEarth.png");
-
-
-        // MENU, necesitamos una escena
-        //Escena
-//        escenaMenuNiveles = new Stage(vista);
-
-        // Actores->Boton
-//        Button btnA = crearBoton("buttons/btn_A.png", "buttons/btn_A_press.png");
-//        Button btnB = crearBoton("buttons/btn_B.png", "buttons/btn_B_press.png");
-//        Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
-
-
-        //Se les agrega una posicion en pantalla
-//        btnA.setPosition(ANCHO-btnA.getWidth()*2, 100, Align.center);
-//        btnB.setPosition(ANCHO-btnB.getWidth(), 100, Align.center);
-//        btnBack.setPosition(ANCHO/4 - btnBack.getMinWidth(), 100, Align.center);
-
-        // Agrega los botones a escena
-//        escenaMenuNiveles.addActor(btnA);
-//        escenaMenuNiveles.addActor(btnB);
-//        escenaMenuNiveles.addActor(btnBack);
-
-        //Aqui se agrega la accion a ejecutar cuando se presiona
-//        btnA.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                //juego.setScreen(new PantallaNvl1(juego));
-//            }
-//        });
-//
-//        btnB.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                //juego.setScreen(new PantallaNvl2(juego));
-//            }
-//        });
-
-//        btnBack.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                juego.setScreen(new PantallaMenu(juego));
-//            }
-//        });
-
-
-        // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
-//        Gdx.input.setInputProcessor(escenaMenuNiveles);
-
-    }
-
-/*    private Button crearBoton(String archivo, String clickeado) {
-        Texture texturaBoton = new Texture(archivo);
-        TextureRegionDrawable trdBtn = new TextureRegionDrawable(texturaBoton);
-        // Clickeado
-        Texture texturaClickeada = new Texture(clickeado);
-        TextureRegionDrawable trdBtnClick = new TextureRegionDrawable(texturaClickeada);
-        return new Button(trdBtn, trdBtnClick);
-    }*/
-
     @Override
     public void render(float delta) {
 //        actualizar(heroL);
@@ -223,13 +163,13 @@ public class PantallaNvl1 extends Pantalla {
         aTanque.render(batch);
 
         // Draw A
-        batch.draw(texturaA, ANCHO-texturaA.getWidth()*2, 100);
+        batch.draw(texturaA, ANCHO-texturaA.getWidth()*2, texturaA.getHeight()/2f);
 
         // Draw B
-        batch.draw(texturaB, ANCHO-texturaB.getWidth(), 100);
+        batch.draw(texturaB, ANCHO-texturaB.getWidth(), texturaB.getHeight()/2f);
 
         // Draw Back
-        batch.draw(texturaBack, ANCHO/4 - texturaBack.getWidth(), 100);
+        batch.draw(texturaBack, texturaBack.getWidth()/2f, texturaBack.getHeight());
 
         batch.end();
 
@@ -293,11 +233,28 @@ public class PantallaNvl1 extends Pantalla {
             Vector3 v = new Vector3(screenX,screenY,0);
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
 
-            if(v.x < ANCHO/2){
-                //Primera mitad de la pantalla
-                moviendoIzquierda = true;
-            }else{
-                moviendoDerecha = true;
+            // Back button
+            if(v.x >= texturaBack.getWidth()/2f && v.x <= texturaBack.getWidth()*1.5f &&
+               v.y >= texturaBack.getHeight() && v.y <= texturaBack.getHeight()*2)
+                juego.setScreen(new PantallaJuego(juego));
+
+            //  A button (Jump)
+            else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
+                    v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f)
+                Gdx.app.log("A_button", "A pressed!");
+
+            //  B button (Shoot)
+            else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
+                    v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f)
+                Gdx.app.log("B_button", "B pressed!");
+
+            else{
+                if(v.x < ANCHO/2){
+                    //Primera mitad de la pantalla
+                    moviendoIzquierda = true;
+                }else{
+                    moviendoDerecha = true;
+                }
             }
             return true; //Porque el juego ya proceso el evento
         }
