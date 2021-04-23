@@ -10,11 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import mx.tec.astral.flytomars.Juego;
-import mx.tec.astral.flytomars.Pantallas.Pantalla;
-import mx.tec.astral.flytomars.Pantallas.PantallaAcercaDe;
-import mx.tec.astral.flytomars.Pantallas.PantallaHighScores;
-import mx.tec.astral.flytomars.Pantallas.PantallaInstrucciones;
-import mx.tec.astral.flytomars.Pantallas.PantallaJuego;
 
 /*
 Autor Alejandro Quintana
