@@ -19,6 +19,7 @@ public class Hero extends Objeto{
     }
 
     public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
+    //TODO: Falta integrar las nuevas texturas del personaje principal. (salto y muerte)
         super( texturaDerecha, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
