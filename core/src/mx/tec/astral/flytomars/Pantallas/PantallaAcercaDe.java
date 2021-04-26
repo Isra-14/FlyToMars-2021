@@ -32,7 +32,7 @@ public class PantallaAcercaDe extends Pantalla {
 
     private void crearMenu() {
         texto = new Texto();
-        texturaFondo = new Texture("fondos/fondoAcerca.jpg");
+        texturaFondo = new Texture("fondos/fondoAcerca2.jpg");
 
         // MENU, necesitamos una escena
         //Escena
@@ -41,7 +41,7 @@ public class PantallaAcercaDe extends Pantalla {
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnBack.setPosition(ANCHO/2, 200, Align.center);
+        btnBack.setPosition(2*ANCHO/3, 300, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnBack);
@@ -77,7 +77,6 @@ public class PantallaAcercaDe extends Pantalla {
         batch.begin();
         batch.draw(texturaFondo, 0, 0);
 
-        texto.mostrarMensaje(batch, "Acerca de Nosotros", ANCHO/2, .90f*ALTO);
 
         batch.end();
         escenaMenuNiveles.draw();
