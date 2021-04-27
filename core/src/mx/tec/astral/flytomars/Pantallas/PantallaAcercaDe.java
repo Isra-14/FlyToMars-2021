@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Texto;
 /*
-Autor Alejandro Quintana
+Autor Alejandro Quintana, Juan Pablo
  */
 
 public class PantallaAcercaDe extends Pantalla {
