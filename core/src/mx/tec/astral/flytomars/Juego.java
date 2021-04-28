@@ -1,7 +1,5 @@
 package mx.tec.astral.flytomars;
 
-
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -9,6 +7,11 @@ import com.badlogic.gdx.audio.Music;
 import mx.tec.astral.flytomars.Pantallas.PantallaMenu;
 import mx.tec.astral.flytomars.Pantallas.PantallaSplash;
 
+/*
+	Main class/controller
+	Author(s): Israel Sanchez
+
+*/
 
 public class Juego extends Game
 {
@@ -16,12 +19,7 @@ public class Juego extends Game
 	public static final  int PANTALLA_SPLASH=0;
 	public static final  int PANTALLA_MENU=1;
 
-	
-
-
 	public Music mp3;
-
-
 
 	public Juego () {super(); }
 
@@ -30,9 +28,9 @@ public class Juego extends Game
 	{
 
 			//Se agrega la musica
-			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/MusicaFondo.mp3"));
-			mp3.play();
-			mp3.setLooping(true);
+//			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/MusicaFondo.mp3"));
+//			mp3.play();
+//			mp3.setLooping(true);
 
 
 		//Se llama al metodo para camibiar de pantalla

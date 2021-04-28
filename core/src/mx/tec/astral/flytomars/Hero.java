@@ -1,30 +1,70 @@
 package mx.tec.astral.flytomars;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /*
 Personaje controlado por el usuario
-Autor : Misael Delgado
+Autor(es) : Misael Delgado, Israel Sanchez
  */
 public class Hero extends Objeto{
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
-    private Texture texturaSalto;
-    private Texture texturaMuere;
+//    private Texture texturaSalto;
+//    private Texture texturaMuere;
+
+    // Jump
+    private final float yBase = 150;     // Floor
+    private float tAire;                // Time in the air
+    private float tVuelo;               // Fly time
+    private final float v0y = 200;      // Y component of velocity
+    private final float g = 150f;      // Pixels/s^2 -> Gravity
+
 
     private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, SALTA, MUERE)
+    private EstadoHeroe estadoPrev;
+
 
     public Hero(Texture textura, float x, float y){
         super(textura, x, y);
     }
 
     public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
-    //TODO: Falta integrar las nuevas texturas del personaje principal. (salto y muerte)
         super( texturaDerecha, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
         estado = EstadoHeroe.DERECHA;
     }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        switch (estado){
+            case DERECHA:
+                sprite.setTexture(texturaDerecha);
+                batch.draw(sprite, sprite.getX(), sprite.getY());
+                break;
+            case IZQUIERDA:
+                sprite.setTexture(texturaIzquierda);
+                batch.draw(sprite, sprite.getX(), sprite.getY());
+                break;
+            case SALTO:
+                actualizarVuelo();
+                switch (estadoPrev){
+                    case DERECHA:
+                        sprite.setTexture(texturaDerecha);
+                        batch.draw(sprite, sprite.getX(), sprite.getY());
+                        break;
+                    case IZQUIERDA:
+                        sprite.setTexture(texturaIzquierda);
+                        batch.draw(sprite, sprite.getX(), sprite.getY());
+                        break;
+                }
+                break;
+        }
+    }
+
 
     public void cambiarEstado() {
         switch (estado){
@@ -41,8 +81,8 @@ public class Hero extends Objeto{
 
     public void setEstado(EstadoHeroe nuevoEstado){
         estado = nuevoEstado;
-        if(nuevoEstado == EstadoHeroe.MUERE)
-            sprite.setTexture(texturaMuere);
+//        if(nuevoEstado == EstadoHeroe.MUERE)
+//            sprite.setTexture(texturaMuere);
     }
 
     public EstadoHeroe getEstado() { return estado; }
@@ -50,10 +90,27 @@ public class Hero extends Objeto{
     public void mover (float dx){
         sprite.setX(sprite.getX() + dx);
     }
-    public float getX(){
-        return sprite.getX();
+    public Sprite getSprite(){ return sprite; }
+
+    public void saltar(){
+        if(estado != EstadoHeroe.SALTO){
+            tAire = 0;
+            tVuelo = 2 * v0y / g;
+            estadoPrev = estado;
+            estado = EstadoHeroe.SALTO;
+        }
     }
-    public float getWidth(){
-        return sprite.getWidth();
+
+    public void actualizarVuelo(){
+        float delta = Gdx.graphics.getDeltaTime();
+        tAire += 2*delta;
+        float y = yBase + v0y * tAire - 0.5f * g * tAire *tAire;
+        sprite.setY(y);
+
+        if(tAire >= tVuelo || y <= yBase){
+            estado = estadoPrev;
+            sprite.setY(yBase);
+        }
     }
+
 }
