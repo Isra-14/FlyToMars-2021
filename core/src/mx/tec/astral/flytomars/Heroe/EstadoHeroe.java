@@ -1,4 +1,4 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Heroe;
 
 /*
     Author: Israel Sanchez Hinojosa

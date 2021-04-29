@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import mx.tec.astral.flytomars.Juego;
-import mx.tec.astral.flytomars.Texto;
+import mx.tec.astral.flytomars.Tools.Texto;
 
 /*
     This class manage the Instructions screen.

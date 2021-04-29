@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 
 import mx.tec.astral.flytomars.Guardar;
 import mx.tec.astral.flytomars.Juego;
-import mx.tec.astral.flytomars.Texto;
+import mx.tec.astral.flytomars.Tools.Texto;
 
 /*
 Autor Alejandro Quintana

@@ -3,26 +3,20 @@ package mx.tec.astral.flytomars.Pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
-import mx.tec.astral.flytomars.Bala;
+import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
 import mx.tec.astral.flytomars.Enemigos.AlienTanque;
-import mx.tec.astral.flytomars.EstadoBala;
-import mx.tec.astral.flytomars.EstadoHeroe;
-import mx.tec.astral.flytomars.Hero;
+import mx.tec.astral.flytomars.Tools.EstadoBala;
+import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
+import mx.tec.astral.flytomars.Heroe.Hero;
 import mx.tec.astral.flytomars.Juego;
-import mx.tec.astral.flytomars.Texto;
-import mx.tec.astral.flytomars.Vida;
+import mx.tec.astral.flytomars.Tools.Texto;
+import mx.tec.astral.flytomars.Tools.Vida;
 
 /*
 Pantalla que almacena todos los objetos del nivel 1

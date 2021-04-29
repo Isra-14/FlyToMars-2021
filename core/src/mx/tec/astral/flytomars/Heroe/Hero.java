@@ -1,15 +1,17 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Heroe;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import mx.tec.astral.flytomars.Tools.Objeto;
+
 /*
 Personaje controlado por el usuario
 Autor(es) : Misael Delgado, Israel Sanchez
  */
-public class Hero extends Objeto{
+public class Hero extends Objeto {
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
 //    private Texture texturaSalto;
@@ -23,8 +25,8 @@ public class Hero extends Objeto{
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
 
-    private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, SALTA, MUERE)
-    private EstadoHeroe estadoPrev;
+    private mx.tec.astral.flytomars.Heroe.EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, SALTA, MUERE)
+    private mx.tec.astral.flytomars.Heroe.EstadoHeroe estadoPrev;
 
 
     public Hero(Texture textura, float x, float y){
@@ -35,7 +37,7 @@ public class Hero extends Objeto{
         super( texturaDerecha, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
-        estado = EstadoHeroe.DERECHA;
+        estado = mx.tec.astral.flytomars.Heroe.EstadoHeroe.DERECHA;
     }
 
     @Override
@@ -69,23 +71,23 @@ public class Hero extends Objeto{
     public void cambiarEstado() {
         switch (estado){
             case IZQUIERDA:
-                estado = EstadoHeroe.DERECHA;
+                estado = mx.tec.astral.flytomars.Heroe.EstadoHeroe.DERECHA;
                 sprite.setTexture(texturaDerecha);
                 break;
             case DERECHA:
-                estado = EstadoHeroe.IZQUIERDA;
+                estado = mx.tec.astral.flytomars.Heroe.EstadoHeroe.IZQUIERDA;
                 sprite.setTexture(texturaIzquierda);
                 break;
         }
     }
 
-    public void setEstado(EstadoHeroe nuevoEstado){
+    public void setEstado(mx.tec.astral.flytomars.Heroe.EstadoHeroe nuevoEstado){
         estado = nuevoEstado;
 //        if(nuevoEstado == EstadoHeroe.MUERE)
 //            sprite.setTexture(texturaMuere);
     }
 
-    public EstadoHeroe getEstado() { return estado; }
+    public mx.tec.astral.flytomars.Heroe.EstadoHeroe getEstado() { return estado; }
 
     public void mover (float dx){
         sprite.setX(sprite.getX() + dx);
@@ -93,7 +95,7 @@ public class Hero extends Objeto{
     public Sprite getSprite(){ return sprite; }
 
     public void saltar(){
-        if(estado != EstadoHeroe.SALTO){
+        if(estado != mx.tec.astral.flytomars.Heroe.EstadoHeroe.SALTO){
             tAire = 0;
             tVuelo = 2 * v0y / g;
             estadoPrev = estado;

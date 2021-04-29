@@ -2,7 +2,7 @@ package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
 
-import mx.tec.astral.flytomars.Objeto;
+import mx.tec.astral.flytomars.Tools.Objeto;
 
 public class AlienLetal extends Objeto {
     public AlienLetal(Texture textura, float x, float y){
