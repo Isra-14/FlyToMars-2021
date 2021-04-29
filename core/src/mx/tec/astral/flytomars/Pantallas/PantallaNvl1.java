@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -27,6 +28,7 @@ Autores: Israel, Misael y Alejandro
  */
 public class PantallaNvl1 extends Pantalla {
 
+
     // Font of score.
     Texto texto;
 
@@ -44,10 +46,31 @@ public class PantallaNvl1 extends Pantalla {
     //  Enemigos
     //Alien Agil
     private AlienAgil aAgil;
+    private Array<AlienAgil> arrAliensAgiles;
+    private Texture texturaAgil;
+    private float timerCrearAlienAgil; //Tiempo para que se creen los aliens
+    private float DX_PASO_ALIEN_AGIL = 10;
+    private float timerCambioAgil;
+    private final float TIEMPO_CREAR_AGIL=10;
+    private final float TIEMPO_CAMBIO_AGIL=3;
+
     //Alien Letal
     private AlienLetal aLetal;
+    private  Array<AlienLetal> arrLetales;
+    private Texture texturaLetal;
+    private float timerCrearAlienLetal;
+    private float timerCambioLetal;
+    private final float TIEMPO_CREAR_LETAL=20;
+    private final float TIEMPO_CAMBIO_LETAL=6;
     //Alien Tanque
-    private AlienTanque aTanque;
+    //Alien Tanque
+    private Array<AlienTanque> arrTanques;
+    private Texture texturaTanque;
+    private float timerCrearAlienTanque;
+    private float timerCambioTanque;
+    private final float TIEMPO_CREAR_TANQUE=15;
+    private final float TIEMPO_CAMBIO_TANQUE=6;
+
 
 
     //  Objetos vida
@@ -91,6 +114,7 @@ public class PantallaNvl1 extends Pantalla {
 
         crearHero();
         crearAlienAgil();
+        //crearAliensAgiles();
         crearAlienLetal();
         crearAlienTanque();
 
@@ -113,6 +137,16 @@ public class PantallaNvl1 extends Pantalla {
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
     }
 
+    /*
+    private void crearAliensAgiles() {
+        Texture texturaAgil= new Texture("enemigos/alienAgil.png");
+        arrAliensAgiles = new Array<>(5);
+        for(int i= 0; i<5; i++){
+            AlienAgil alienAgil = new AlienAgil(texturaAgil, MathUtils.random(0,ANCHO-texturaAgil.getWidth()),MathUtils.random(0,ANCHO-texturaAgil.getHeight()));
+            arrAliensAgiles.add(alienAgil);
+        }
+    }
+*/
     private void crearPowerUp()
     {
         texturaEscudo = new Texture("items/shield.png");
@@ -123,8 +157,8 @@ public class PantallaNvl1 extends Pantalla {
     private void probabilidad(SpriteBatch batch, int numeroPower)
     {
         //int chance = (int)(Math.random()*100);
-       // if (chance< 80)
-            powerUp.creaNuevoPowerUp(batch, numeroPower);
+        // if (chance< 80)
+        powerUp.creaNuevoPowerUp(batch, numeroPower);
     }
 
     private void crearBalas() {
@@ -172,23 +206,24 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearAlienTanque() {
-        Texture texturaTanque=new Texture("enemigos/alienTanque.png");
-        aTanque=new AlienTanque(texturaTanque, 4*ANCHO/10, 2*ALTO/12);
+        texturaTanque=new Texture("enemigos/alienTanque2.png");
+        arrTanques = new Array<>();
+
     }
 
     private void crearAlienLetal() {
-        Texture texturaLetal=new Texture("enemigos/alienLetal.png");
-        aLetal=new AlienLetal(texturaLetal, 6*ANCHO/10, 2*ALTO/12);
+        texturaLetal=new Texture("enemigos/alienLetal2.png");
+        arrLetales= new Array<>();
 
     }
 
     private void crearAlienAgil() {
-        Texture teturaAgil= new Texture("enemigos/alienAgil.png");
-        aAgil=new AlienAgil(teturaAgil,8*ANCHO/10,2*ALTO/12);
+        texturaAgil= new Texture("enemigos/alienAgil2.png");
+        arrAliensAgiles= new Array<>();
     }
 
     private void crearVidas() {
-         texturaVida = new Texture("items/heart.png");
+        texturaVida = new Texture("items/heart.png");
 
         arrVidas = new Array<>(3);
         for (int i = 0; i < 3; i++){
@@ -220,11 +255,21 @@ public class PantallaNvl1 extends Pantalla {
 
         //Enemigos
         //Alien Agil
-        aAgil.render(batch);
+        //aAgil.render(batch);
+
+        //Alien Agil
+        for (AlienAgil aAgil:arrAliensAgiles) {
+            aAgil.render(batch);
+        }
         //Alien Letal
-        aLetal.render(batch);
+        for (AlienLetal aLetal:arrLetales){
+            aLetal.render(batch);
+        }
+
         //Alien Tanque
-        aTanque.render(batch);
+        for(AlienTanque atanque: arrTanques){
+            atanque.render(batch);
+        }
 
         // Draw A
         batch.draw(texturaA, ANCHO-texturaA.getWidth()*2, texturaA.getHeight()/2f);
@@ -248,6 +293,12 @@ public class PantallaNvl1 extends Pantalla {
         for (Bala bala : arrBalas) {
             bala.render(batch);
         }
+        //Dibuja aliens agiles
+        for (AlienAgil alienAgil : arrAliensAgiles) {
+            alienAgil.render(batch);
+            System.out.println("Pintando aliens");
+        }
+
         numeroPower = (int)(Math.random()*3);
         probabilidad(batch, numeroPower);
         batch.end();
@@ -257,6 +308,157 @@ public class PantallaNvl1 extends Pantalla {
     private void actualizar(float delta){
         actualizarHero(hero);
         actualizarBalas(delta);
+        actualizarAgil(delta);
+        actualizarTanque(delta);
+        actualizarLetal(delta);
+
+
+
+
+       // moverAliensAgiles(delta);
+
+        //probarColisionesAlienAgil();
+    }
+
+    private void actualizarAgil(float delta) {
+        timerCrearAlienAgil+=delta;
+        if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
+            timerCrearAlienAgil=0;
+            //Crear
+            float xAgil= MathUtils.random(10,ANCHO-texturaAgil.getWidth());
+            AlienAgil aAgil= new AlienAgil(texturaAgil,xAgil,200);
+            arrAliensAgiles.add(aAgil);
+        }
+        moverAliensAgiles(delta);
+    }
+
+    private void actualizarLetal(float delta) {
+        timerCrearAlienLetal+=delta;
+        if(timerCrearAlienLetal>=TIEMPO_CREAR_LETAL){
+            timerCrearAlienLetal=0;
+            //Crear
+            float xLetal= MathUtils.random(10,ANCHO-texturaLetal.getWidth());
+            AlienLetal aLetal= new AlienLetal(texturaLetal,xLetal,200);
+            arrLetales.add(aLetal);
+        }
+        moverAliensLetales(delta);
+    }
+
+    private void moverAliensLetales(float delta) {
+
+        int velocidad =10;
+        for (AlienLetal alienLetal : arrLetales) {
+            timerCambioLetal += delta;
+            if (timerCambioLetal >= TIEMPO_CAMBIO_LETAL) {
+
+                int valor = MathUtils.random(0, 1);
+                if (valor >0) {
+                    velocidad*=-1;
+                    alienLetal.moverHorizontal(30);
+                    timerCambioLetal=3;
+                } else {
+                    velocidad*=-1;
+                    alienLetal.moverHorizontal(-30);
+                    timerCambioLetal=3;
+
+                }
+
+
+            }
+
+
+        }
+    }
+
+    private void actualizarTanque(float delta) {
+
+        timerCrearAlienTanque+=delta;
+        if(timerCrearAlienTanque>=TIEMPO_CREAR_TANQUE){
+            timerCrearAlienTanque=0;
+            //Crear
+            float xTanque = MathUtils.random(10,ANCHO-texturaTanque.getWidth());
+            AlienTanque aTanque = new AlienTanque(texturaTanque,xTanque,100);
+            arrTanques.add(aTanque);
+
+
+
+        }
+        moverAliensTanque(delta);
+
+
+
+    }
+
+    private void moverAliensTanque(float delta) {
+
+
+        int velocidad =10;
+        for (AlienTanque alienTanque : arrTanques) {
+            timerCambioTanque += delta;
+
+            if (timerCambioTanque >= TIEMPO_CAMBIO_TANQUE) {
+
+                int valor = MathUtils.random(0, 1);
+                if (valor >0) {
+                    velocidad*=-1;
+                   alienTanque.moverHorizontal(10);
+                   timerCambioTanque=4;
+                } else {
+                    velocidad*=-1;
+                    alienTanque.moverHorizontal(-10);
+                    timerCambioTanque=4;
+
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    /*private void probarColisionesAlienAgil() {
+        for(int i= arrAliensAgiles.size-1; i>=0; i--){
+            AlienAgil alienAgil = arrAliensAgiles.get(i);
+            if(bala.sprite.getBoundingRectangle().overlaps(alien.sprite.getBoundingRectangle())){
+                //Le pegó
+                alien.setEstado(EstadoAlien.EXPLOTA);
+                //Contar puntos
+                puntos +=150;
+                //Desaparecer la bala
+                bala = null; //No regresar al for
+                break;
+            }
+        }
+    }*/
+
+    private void moverAliensAgiles(float delta) {
+
+
+        int velocidad =10;
+        for (AlienAgil alienAgil : arrAliensAgiles) {
+            timerCambioAgil += delta;
+
+            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
+
+                int valor = MathUtils.random(0, 1);
+                if (valor >0) {
+                    velocidad*=-1;
+                    alienAgil.moverHorizontal(10);
+                    timerCambioAgil=4;
+                } else {
+                    velocidad*=-1;
+                    alienAgil.moverHorizontal(-10);
+                    timerCambioAgil=4;
+
+                }
+
+
+            }
+
+
+        }
     }
 
     private void actualizarBalas(float delta) {
@@ -332,9 +534,9 @@ public class PantallaNvl1 extends Pantalla {
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
 
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
-                v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
+                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
                 juego.setScreen(new PantallaJuego(juego));
-            // Back button
+                // Back button
 //            if(v.x >= texturaBack.getWidth()/2f && v.x <= texturaBack.getWidth()*1.5f &&
 //                    v.y >= texturaBack.getHeight() && v.y <= texturaBack.getHeight()*2)
 //                juego.setScreen(new PantallaJuego(juego));
@@ -345,23 +547,23 @@ public class PantallaNvl1 extends Pantalla {
                 Gdx.app.log("A_button", "A pressed!");
                 hero.saltar();
             }
-                //  B button (Shoot)
+            //  B button (Shoot)
             else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
                     v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
                 Gdx.app.log("B_button", "B pressed!");
 
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
-                                                                     (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
+                        (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
 
                 if(hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
                     bala.setEstado(EstadoBala.DERECHA);
                     bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth()/2f,
-                                  (hero.getSprite().getY() + hero.getSprite().getHeight()/2f) - bala.getSprite().getHeight()/2f);
+                            (hero.getSprite().getY() + hero.getSprite().getHeight()/2f) - bala.getSprite().getHeight()/2f);
                     arrBalas.add(bala);
                 }else if(hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA){
                     bala.setEstado(EstadoBala.IZQUIERDA);
                     bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth()/2f,
-                                  (hero.getSprite().getY() + hero.getSprite().getHeight()/2f)- bala.getSprite().getHeight()/2);
+                            (hero.getSprite().getY() + hero.getSprite().getHeight()/2f)- bala.getSprite().getHeight()/2);
                     arrBalas.add(bala);
                 }
 
@@ -371,7 +573,7 @@ public class PantallaNvl1 extends Pantalla {
                 if (v.x >= texturaIzq.getWidth() / 2f && v.x <= texturaIzq.getWidth() * 1.5f &&
                         v.y >= texturaIzq.getHeight() / 3f && v.y <= texturaIzq.getHeight() * 1.3f)
                     moviendoIzquierda = true;
-                // Right Button
+                    // Right Button
                 else if (v.x >= texturaDer.getWidth() * 2f && v.x <= texturaDer.getWidth() * 3f &&
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;

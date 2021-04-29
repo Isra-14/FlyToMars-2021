@@ -9,4 +9,16 @@ public class AlienLetal extends Objeto {
         super(textura,x,y);
 
     }
+
+    public void moverHorizontal(float dx_paso_alien_letal) {
+        sprite.setX(sprite.getX() + dx_paso_alien_letal);
+    }
+    public float getX(){
+        return sprite.getX();
+    }
+    public void setX(float dx){
+        sprite.setX(dx);
+    }
 }
+
+
