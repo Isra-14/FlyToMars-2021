@@ -94,6 +94,8 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaMoneda;
     private Texture texturaVida;
     private int numeroPower;
+    private int timerPower=3;
+
 
     //Clase powerUp
     private PowerUp powerUp;
@@ -151,14 +153,16 @@ public class PantallaNvl1 extends Pantalla {
     {
         texturaEscudo = new Texture("items/shield.png");
         texturaMoneda = new Texture("items/coin.png");
-        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 50, 250);
+        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
     }
 
-    private void probabilidad(SpriteBatch batch, int numeroPower)
+    private void probabilidad(SpriteBatch batch)
     {
-        //int chance = (int)(Math.random()*100);
-        // if (chance< 80)
-        powerUp.creaNuevoPowerUp(batch, numeroPower);
+
+        int chance = (int)(Math.random()*100);
+        if (chance< 80)
+            powerUp.render(batch);
+
     }
 
     private void crearBalas() {
@@ -293,14 +297,11 @@ public class PantallaNvl1 extends Pantalla {
         for (Bala bala : arrBalas) {
             bala.render(batch);
         }
-        //Dibuja aliens agiles
-        for (AlienAgil alienAgil : arrAliensAgiles) {
-            alienAgil.render(batch);
-            System.out.println("Pintando aliens");
-        }
 
-        numeroPower = (int)(Math.random()*3);
-        probabilidad(batch, numeroPower);
+
+
+        probabilidad(batch);
+
         batch.end();
 
     }
