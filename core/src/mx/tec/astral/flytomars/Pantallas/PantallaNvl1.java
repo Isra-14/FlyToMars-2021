@@ -3,6 +3,8 @@ package mx.tec.astral.flytomars.Pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -15,6 +17,7 @@ import mx.tec.astral.flytomars.Tools.EstadoBala;
 import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 import mx.tec.astral.flytomars.Heroe.Hero;
 import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Tools.PowerUp;
 import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
@@ -63,8 +66,14 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaDer;
     private Texture texturaPause;
 
+    //Objetos de PowerUps
+    private Texture texturaEscudo;
+    private Texture texturaMoneda;
+    private Texture texturaVida;
+    private int numeroPower;
 
-
+    //Clase powerUp
+    private PowerUp powerUp;
 
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
@@ -84,7 +93,10 @@ public class PantallaNvl1 extends Pantalla {
         crearAlienAgil();
         crearAlienLetal();
         crearAlienTanque();
+
+        //crea los objetos
         crearVidas();
+        crearPowerUp();
 
         crearBotonBack();
         crearBotonA();
@@ -101,12 +113,25 @@ public class PantallaNvl1 extends Pantalla {
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
     }
 
+    private void crearPowerUp()
+    {
+        texturaEscudo = new Texture("items/shield.png");
+        texturaMoneda = new Texture("items/coin.png");
+        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 50, 250);
+    }
+
+    private void probabilidad(SpriteBatch batch, int numeroPower)
+    {
+        //int chance = (int)(Math.random()*100);
+       // if (chance< 80)
+            powerUp.creaNuevoPowerUp(batch, numeroPower);
+    }
+
     private void crearBalas() {
         arrBalas = new Array<>();
         texturaBalaDer = new Texture("Shots/shotDer.png");
         texturaBalaIzq = new Texture("Shots/shotIzq.png");
     }
-
     private void crearTexto() {
         texto = new Texto();
     }
@@ -163,7 +188,7 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearVidas() {
-        Texture texturaVida = new Texture("items/heart.png");
+         texturaVida = new Texture("items/heart.png");
 
         arrVidas = new Array<>(3);
         for (int i = 0; i < 3; i++){
@@ -223,7 +248,8 @@ public class PantallaNvl1 extends Pantalla {
         for (Bala bala : arrBalas) {
             bala.render(batch);
         }
-
+        numeroPower = (int)(Math.random()*3);
+        probabilidad(batch, numeroPower);
         batch.end();
 
     }
@@ -273,6 +299,9 @@ public class PantallaNvl1 extends Pantalla {
 
     @Override
     public void dispose() {
+        arrVidas.clear();
+        batch.dispose();
+        arrBalas.clear();
 
     }
 
