@@ -1,6 +1,8 @@
 package mx.tec.astral.flytomars;
 
-
+/*
+Autor Alejandro Quintana
+*/
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
