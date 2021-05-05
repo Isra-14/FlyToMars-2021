@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
+import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -22,10 +23,6 @@ import mx.tec.astral.flytomars.Tools.PowerUp;
 import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
-/*
-Pantalla que almacena todos los objetos del nivel 1
-Autores: Israel, Misael y Alejandro
- */
 public class PantallaNvl1 extends Pantalla {
 
 
@@ -44,25 +41,27 @@ public class PantallaNvl1 extends Pantalla {
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
 
     //  Enemigos
+
     //Alien Agil
-    private AlienAgil aAgil;
+//    private AlienAgil aAgil;
     private Array<AlienAgil> arrAliensAgiles;
-    private Texture texturaAgil;
-    private float timerCrearAlienAgil; //Tiempo para que se creen los aliens
-    private float DX_PASO_ALIEN_AGIL = 10;
+    private Texture texturaAgil_left;
+    private Texture texturaAgil_right;
+    private float timerCrearAlienAgil;
+    private final float DX_PASO_ALIEN_AGIL = 10;
     private float timerCambioAgil;
     private final float TIEMPO_CREAR_AGIL=10;
-    private final float TIEMPO_CAMBIO_AGIL=3;
+    private final float TIEMPO_CAMBIO_AGIL=1.5f;
 
     //Alien Letal
-    private AlienLetal aLetal;
+//    private AlienLetal aLetal;
     private  Array<AlienLetal> arrLetales;
     private Texture texturaLetal;
     private float timerCrearAlienLetal;
     private float timerCambioLetal;
     private final float TIEMPO_CREAR_LETAL=20;
     private final float TIEMPO_CAMBIO_LETAL=6;
-    //Alien Tanque
+
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
     private Texture texturaTanque;
@@ -222,7 +221,8 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearAlienAgil() {
-        texturaAgil= new Texture("enemigos/alienAgil2.png");
+        texturaAgil_left = new Texture("enemigos/alienAgil_Left.png");
+        texturaAgil_right = new Texture("enemigos/alienAgil_Right.png");
         arrAliensAgiles= new Array<>();
     }
 
@@ -316,7 +316,7 @@ public class PantallaNvl1 extends Pantalla {
 
 
 
-       // moverAliensAgiles(delta);
+        // moverAliensAgiles(delta);
 
         //probarColisionesAlienAgil();
     }
@@ -326,11 +326,33 @@ public class PantallaNvl1 extends Pantalla {
         if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
             timerCrearAlienAgil=0;
             //Crear
-            float xAgil= MathUtils.random(10,ANCHO-texturaAgil.getWidth());
-            AlienAgil aAgil= new AlienAgil(texturaAgil,xAgil,200);
+            float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
+            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200, DX_PASO_ALIEN_AGIL);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
+    }
+
+    private void moverAliensAgiles(float delta) {
+        for (AlienAgil alienAgil : arrAliensAgiles) {
+            timerCambioAgil+=delta;
+            if(timerCambioAgil >= TIEMPO_CAMBIO_AGIL){
+                int tipo = MathUtils.random(1,2);
+                timerCambioAgil = 0;
+                if( tipo == 1 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+                    alienAgil.cambiarEstado();
+                else if(tipo == 2 && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienAgil.cambiarEstado();
+            }
+            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
+                alienAgil.moverHorizontal();
+            else {
+                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+                    alienAgil.setX(1);
+                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+            }
+        }
     }
 
     private void actualizarLetal(float delta) {
@@ -402,8 +424,8 @@ public class PantallaNvl1 extends Pantalla {
                 int valor = MathUtils.random(0, 1);
                 if (valor >0) {
                     velocidad*=-1;
-                   alienTanque.moverHorizontal(10);
-                   timerCambioTanque=4;
+                    alienTanque.moverHorizontal(10);
+                    timerCambioTanque=4;
                 } else {
                     velocidad*=-1;
                     alienTanque.moverHorizontal(-10);
@@ -434,33 +456,27 @@ public class PantallaNvl1 extends Pantalla {
         }
     }*/
 
-    private void moverAliensAgiles(float delta) {
+//    private void moverAliensAgiles(float delta) {
+////        int velocidad =10;
+//        for (AlienAgil alienAgil : arrAliensAgiles) {
+//            timerCambioAgil += delta;
+//            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
+//                int valor = MathUtils.random(0, 2);
+//                if (valor <=1) {
+////                    velocidad*=-1;
+//                    alienAgil.moverHorizontal(DX_PASO_ALIEN_AGIL);
+//                } else {
+////                    velocidad*=-1;
+//                    alienAgil.moverHorizontal(-DX_PASO_ALIEN_AGIL);
+//
+//                }
+//                timerCambioAgil=0;
+//            }
+//
+//
+//        }
+//    }
 
-
-        int velocidad =10;
-        for (AlienAgil alienAgil : arrAliensAgiles) {
-            timerCambioAgil += delta;
-
-            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
-
-                int valor = MathUtils.random(0, 1);
-                if (valor >0) {
-                    velocidad*=-1;
-                    alienAgil.moverHorizontal(10);
-                    timerCambioAgil=4;
-                } else {
-                    velocidad*=-1;
-                    alienAgil.moverHorizontal(-10);
-                    timerCambioAgil=4;
-
-                }
-
-
-            }
-
-
-        }
-    }
 
     private void actualizarBalas(float delta) {
         for (int i = arrBalas.size-1; i >= 0;i--){
@@ -616,3 +632,7 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 }
+/*
+Pantalla que almacena todos los objetos del nivel 1
+Autores: Israel, Misael y Alejandro
+ */

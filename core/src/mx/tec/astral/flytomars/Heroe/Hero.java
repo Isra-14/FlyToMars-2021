@@ -37,7 +37,7 @@ public class Hero extends Objeto {
         super( texturaDerecha, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
-        estado = mx.tec.astral.flytomars.Heroe.EstadoHeroe.DERECHA;
+        estado = EstadoHeroe.DERECHA;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Hero extends Objeto {
 //            sprite.setTexture(texturaMuere);
     }
 
-    public mx.tec.astral.flytomars.Heroe.EstadoHeroe getEstado() { return estado; }
+    public EstadoHeroe getEstado() { return estado; }
 
     public void mover (float dx){
         sprite.setX(sprite.getX() + dx);
