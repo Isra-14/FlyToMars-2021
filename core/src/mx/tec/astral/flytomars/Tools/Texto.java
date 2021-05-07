@@ -1,4 +1,4 @@
-package mx.tec.astral.flytomars;
+package mx.tec.astral.flytomars.Tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
