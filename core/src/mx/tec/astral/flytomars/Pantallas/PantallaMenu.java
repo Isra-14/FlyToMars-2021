@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +19,8 @@ public class PantallaMenu extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenu;
+
+
 
     public PantallaMenu(Juego juego) {
         this.juego = juego;
@@ -61,6 +64,7 @@ public class PantallaMenu extends Pantalla {
         btnInicio.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.sound.play();
                 juego.setScreen(new PantallaJuego(juego));
             }
         });
@@ -68,6 +72,7 @@ public class PantallaMenu extends Pantalla {
         btnHighScores.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.sound.play();
                 juego.setScreen(new PantallaHighScores(juego));
             }
         });
@@ -75,6 +80,7 @@ public class PantallaMenu extends Pantalla {
         btnInstrucciones.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.sound.play();
                 juego.setScreen(new PantallaInstrucciones(juego));
             }
         });
@@ -82,6 +88,7 @@ public class PantallaMenu extends Pantalla {
         btnAcercaDe.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.sound.play();
                 juego.setScreen(new PantallaAcercaDe(juego));
             }
         });
@@ -111,6 +118,7 @@ public class PantallaMenu extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
+        juego.texto.mostrarMensaje(batch, "Fly to Mars" , ANCHO/2, ALTO*.9f);
 
         batch.end();
 
