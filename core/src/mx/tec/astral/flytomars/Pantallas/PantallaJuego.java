@@ -29,6 +29,7 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void show() {
+        //checamos si la musica fue parada al regresar a esta pantalla
         if (!juego.getMusica()){
             juego.mp3.play();
         }
