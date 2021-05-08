@@ -16,7 +16,7 @@ public class AlienAgil extends Objeto {
     }
 
     public AlienAgil(Texture texturaDerecha, Texture texturaIzquierda, float x, float y, float DX){
-        super( texturaDerecha, x, y);
+        super( texturaIzquierda, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
         this.DX = DX;

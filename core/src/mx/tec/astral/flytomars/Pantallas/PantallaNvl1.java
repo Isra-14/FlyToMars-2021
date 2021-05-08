@@ -2,9 +2,14 @@ package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,7 +29,9 @@ import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
 public class PantallaNvl1 extends Pantalla {
-
+    // Background
+    private TiledMap mapa;
+    private OrthogonalTiledMapRenderer rendererMapa;
 
     // Font of score.
     Texto texto;
@@ -47,11 +54,11 @@ public class PantallaNvl1 extends Pantalla {
     private Array<AlienAgil> arrAliensAgiles;
     private Texture texturaAgil_left;
     private Texture texturaAgil_right;
-    private float timerCrearAlienAgil;
+    private float timerCrearAlienAgil = 10;
     private final float DX_PASO_ALIEN_AGIL = 10;
     private float timerCambioAgil;
-    private final float TIEMPO_CREAR_AGIL=10;
-    private final float TIEMPO_CAMBIO_AGIL=1.5f;
+    private final float TIEMPO_CREAR_AGIL = 10;
+    private final float TIEMPO_CAMBIO_AGIL = 1f;
 
     //Alien Letal
 //    private AlienLetal aLetal;
@@ -112,6 +119,7 @@ public class PantallaNvl1 extends Pantalla {
     public void show() {
 
         crearFondo();
+
 
         crearHero();
         crearAlienAgil();
@@ -186,7 +194,14 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearFondo() {
-        texturaFondo = new Texture("nivel1/lvlEarth.png");
+        //texturaFondo = new Texture("nivel1/lvlEarth.png");
+        AssetManager manager = new AssetManager();
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load("mapas/Mapa1.tmx", TiledMap.class);
+        manager.finishLoading();
+        mapa = manager.get("mapas/Mapa1.tmx");
+        rendererMapa = new OrthogonalTiledMapRenderer(mapa);
+
     }
 
     private void crearBotonA() {
@@ -205,7 +220,11 @@ public class PantallaNvl1 extends Pantalla {
         Texture texturaIzquierda = new Texture("nivel1/character1_left.png");
         Texture texturaDerecha = new Texture("nivel1/character1_right.png");
 
-        hero = new Hero(texturaDerecha, texturaIzquierda, 0, 150);
+        Texture spriteSheet = new Texture("nivel1/heroSprites.png");
+
+//        hero = new Hero(texturaDerecha, texturaIzquierda, 0, 64, DELTA_X_HERO);
+        hero = new Hero(spriteSheet, 0, 64, DELTA_X_HERO);
+
     }
 
     private void crearAlienTanque() {
@@ -242,9 +261,12 @@ public class PantallaNvl1 extends Pantalla {
         borrarPantalla(0,0,0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
+        rendererMapa.setView(camara);
+        rendererMapa.render();
+
         batch.begin();
 
-        batch.draw(texturaFondo, 0, 0);
+        //batch.draw(texturaFondo, 0, 0);
 
         texto.mostrarMensaje(batch, "Score:", 100, ALTO-25);
 
@@ -322,9 +344,11 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void actualizarAgil(float delta) {
-        timerCrearAlienAgil+=delta;
-        if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
-            timerCrearAlienAgil=0;
+        timerCrearAlienAgil += delta;
+
+        if(timerCrearAlienAgil >= TIEMPO_CREAR_AGIL){
+            timerCrearAlienAgil = 0;
+
             //Crear
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
             AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200, DX_PASO_ALIEN_AGIL);
@@ -344,14 +368,24 @@ public class PantallaNvl1 extends Pantalla {
                 else if(tipo == 2 && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
                     alienAgil.cambiarEstado();
             }
-            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-                alienAgil.moverHorizontal();
-            else {
-                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-                    alienAgil.setX(1);
-                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
-            }
+
+            alienAgil.moverHorizontal();
+
+
+            if(alienAgil.getSprite().getX() <= 0 - alienAgil.getSprite().getWidth())
+                alienAgil.setX(ANCHO);
+            else if (alienAgil.getSprite().getX() >= ANCHO)
+                alienAgil.setX(0);
+
+//                          Movimiento Solo dentro de pantalla
+//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
+//                alienAgil.moverHorizontal();
+//            else {
+//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+//                    alienAgil.setX(1);
+//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+//            }
         }
     }
 
@@ -495,13 +529,33 @@ public class PantallaNvl1 extends Pantalla {
         else if(prevState == EstadoHeroe.IZQUIERDA && hero.getEstado() == EstadoHeroe.DERECHA)
             hero.cambiarEstado();
 
-        if(moviendoDerecha && hero.getSprite().getX() <= (ANCHO- hero.getSprite().getWidth())) {
-            hero.mover(DELTA_X_HERO);
-            prevState = EstadoHeroe.DERECHA;
-        }if(moviendoIzquierda && hero.getSprite().getX() > 0) {
-            hero.mover(-DELTA_X_HERO);
-            prevState = EstadoHeroe.IZQUIERDA;
+        if( moviendoDerecha || moviendoIzquierda )
+            hero.mover();
+        else {
+            if (prevState == EstadoHeroe.DERECHA)
+                hero.setEstado(EstadoHeroe.IDLE_D);
+            else if (prevState == EstadoHeroe.IZQUIERDA)
+                hero.setEstado(EstadoHeroe.IDLE_I);
         }
+
+        if( moviendoDerecha )
+            prevState = EstadoHeroe.DERECHA;
+        else if( moviendoIzquierda )
+            prevState = EstadoHeroe.IZQUIERDA;
+
+        if ( moviendoDerecha && hero.getSprite().getX() >= ANCHO )
+            hero.setX( 0 - hero.getSprite().getWidth() );
+
+        else if ( moviendoIzquierda && hero.getSprite().getX() < 0 - hero.getSprite().getWidth() )
+            hero.setX( ANCHO );
+
+//        if(moviendoDerecha && hero.getSprite().getX() <= (ANCHO- hero.getSprite().getWidth())) {
+//            hero.mover();
+//            prevState = EstadoHeroe.DERECHA;
+//        }if(moviendoIzquierda && hero.getSprite().getX() > 0) {
+//            hero.mover();
+//            prevState = EstadoHeroe.IZQUIERDA;
+//        }
 
 
     }
@@ -590,7 +644,8 @@ public class PantallaNvl1 extends Pantalla {
                 if (v.x >= texturaIzq.getWidth() / 2f && v.x <= texturaIzq.getWidth() * 1.5f &&
                         v.y >= texturaIzq.getHeight() / 3f && v.y <= texturaIzq.getHeight() * 1.3f)
                     moviendoIzquierda = true;
-                    // Right Button
+
+                // Right Button
                 else if (v.x >= texturaDer.getWidth() * 2f && v.x <= texturaDer.getWidth() * 3f &&
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;

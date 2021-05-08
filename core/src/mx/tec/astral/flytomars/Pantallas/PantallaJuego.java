@@ -35,9 +35,9 @@ public class PantallaJuego extends Pantalla {
 
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
-        Button btnNvl1 = crearBoton("MenuNiveles/earth.png", "MenuNiveles/earth_press.png");
-        Button btnNvl2 = crearBoton("MenuNiveles/moon.png", "MenuNiveles/moon_press.png");
-        Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_press.png");
+        Button btnNvl1 = crearBoton("MenuNiveles/earth.png", "MenuNiveles/earth_pressed.png");
+        Button btnNvl2 = crearBoton("MenuNiveles/moon.png", "MenuNiveles/moon_pressed.png");
+        Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_pressed.png");
 
         //Se les da un espacio en la pantalla
         btnBack.setPosition(ANCHO/2 - 100 , 85);
