@@ -9,7 +9,7 @@ import mx.tec.astral.flytomars.Pantallas.PantallaSplash;
 
 /*
 	Main class/controller
-	Author(s): Israel Sanchez
+	Author(s): Alejandro Quintana
 
 */
 
