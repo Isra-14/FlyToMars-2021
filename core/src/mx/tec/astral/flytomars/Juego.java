@@ -49,6 +49,7 @@ public class Juego extends Game
 
 	}
 
+	//checa si se paro la musica
 	public boolean getMusica(){
 		return mp3.isPlaying();
 	}
