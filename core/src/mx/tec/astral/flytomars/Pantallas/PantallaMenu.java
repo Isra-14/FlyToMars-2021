@@ -66,7 +66,7 @@ public class PantallaMenu extends Pantalla {
         btnInicio.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaJuego(juego));
             }
         });
@@ -74,7 +74,7 @@ public class PantallaMenu extends Pantalla {
         btnHighScores.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaHighScores(juego));
             }
         });
@@ -82,7 +82,7 @@ public class PantallaMenu extends Pantalla {
         btnInstrucciones.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaInstrucciones(juego));
             }
         });
@@ -90,7 +90,7 @@ public class PantallaMenu extends Pantalla {
         btnAcercaDe.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaAcercaDe(juego));
             }
         });

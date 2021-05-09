@@ -64,7 +64,7 @@ public class PantallaJuego extends Pantalla {
         btnNvl1.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.mp3.stop();
                 juego.setScreen(new PantallaNvl1(juego));
             }
@@ -73,7 +73,7 @@ public class PantallaJuego extends Pantalla {
         btnNvl2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.mp3.stop();
                 juego.setScreen(new PantallaNvl2(juego));
             }
@@ -82,7 +82,7 @@ public class PantallaJuego extends Pantalla {
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.mp3.stop();
                 juego.setScreen(new PantallaNvl3(juego));
             }
@@ -90,7 +90,7 @@ public class PantallaJuego extends Pantalla {
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
