@@ -49,7 +49,7 @@ public class PantallaAcercaDe extends Pantalla {
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaMenu(juego));
             }
         });

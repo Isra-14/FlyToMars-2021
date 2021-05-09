@@ -48,7 +48,7 @@ public class PantallaNvl2 extends Pantalla {
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.sound.play();
+                juego.soundBotones.play();
                 juego.mp3.stop();
                 juego.setScreen(new PantallaJuego(juego));
             }

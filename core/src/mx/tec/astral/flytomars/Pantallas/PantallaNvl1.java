@@ -2,6 +2,7 @@ package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,6 +27,8 @@ import mx.tec.astral.flytomars.Tools.Vida;
 public class PantallaNvl1 extends Pantalla {
 
 
+    //Cancion nivel 1
+    Music music;
     // Font of score.
     Texto texto;
 
@@ -133,9 +136,21 @@ public class PantallaNvl1 extends Pantalla {
         crearTexto();
 
         crearBalas();
+        //Carga la cancion
+        playMusic();
 
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+
+
+    }
+
+    //Carga la musica
+    private void playMusic() {
+        music = Gdx.audio.newMusic(Gdx.files.internal("Efectos/level1.wav"));
+        music.play();
+        music.setVolume(.05f);
+        music.setLooping(true);
     }
 
     /*
@@ -521,6 +536,8 @@ public class PantallaNvl1 extends Pantalla {
         arrVidas.clear();
         batch.dispose();
         arrBalas.clear();
+        music.dispose();
+        juego.mp3.dispose();
 
     }
 
@@ -551,8 +568,10 @@ public class PantallaNvl1 extends Pantalla {
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
 
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
-                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
+                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f) {
                 juego.setScreen(new PantallaJuego(juego));
+                music.stop();
+            }
                 // Back button
 //            if(v.x >= texturaBack.getWidth()/2f && v.x <= texturaBack.getWidth()*1.5f &&
 //                    v.y >= texturaBack.getHeight() && v.y <= texturaBack.getHeight()*2)
@@ -561,14 +580,18 @@ public class PantallaNvl1 extends Pantalla {
                 //  A button (Jump)
             else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
-                Gdx.app.log("A_button", "A pressed!");
+                //Gdx.app.log("A_button", "A pressed!");
+                //Sonido para saltar
+                juego.soundSalto.play();
                 hero.saltar();
             }
             //  B button (Shoot)
             else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
                     v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
-                Gdx.app.log("B_button", "B pressed!");
+                //Gdx.app.log("B_button", "B pressed!");
 
+                //Sonido disparo
+                juego.soundDisparo.play();
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                         (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
 
