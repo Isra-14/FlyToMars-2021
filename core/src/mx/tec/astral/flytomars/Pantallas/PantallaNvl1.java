@@ -263,7 +263,7 @@ public class PantallaNvl1 extends Pantalla {
 
         batch.draw(texturaFondo, 0, 0);
 
-        texto.mostrarMensaje(batch, "Score:", 100, ALTO-25);
+        texto.mostrarMensaje(batch, "Score:" + Integer.toString(score), 100, ALTO-25);
 
         //Vidas
         for (Vida vida: arrVidas) //Visita cada objeto del arreglo
@@ -329,13 +329,53 @@ public class PantallaNvl1 extends Pantalla {
         actualizarAgil(delta);
         actualizarTanque(delta);
         actualizarLetal(delta);
-
-
-
         // moverAliensAgiles(delta);
-
-        //probarColisionesAlienAgil();
+        Bala nuevaBala = recorreBala();
+        if (nuevaBala != null) {
+            probarColisionesAlienAgil(nuevaBala);
+            probarColisionesAlienTanque(nuevaBala);
+            probarColisionesAlienLetal(nuevaBala);
+        }
     }
+
+    private void probarColisionesAlienLetal(Bala nuevaBala)
+    {
+        for (int i = arrLetales.size - 1; i >= 0; i--) {
+            AlienLetal alienLetal = arrLetales.get(i);
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
+                //Le pegó
+                //alienLetal.setEstado(EstadoAlien.MUERE);
+                //Contar puntos
+                score += 150;
+                //Desaparecer la bala
+                nuevaBala = null;
+                //No regresar al for
+                break;
+            }
+        }
+
+    }
+
+    private void probarColisionesAlienTanque(Bala nuevaBala)
+    {
+        for (int i = arrTanques.size - 1; i >= 0; i--) {
+            AlienTanque alienTanque = arrTanques.get(i);
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
+                //Le pegó
+                //alienLetal.setEstado(EstadoAlien.MUERE);
+                //Contar puntos
+                score += 200;
+                //Desaparecer la bala
+                nuevaBala = null;
+                //No regresar al for
+                break;
+            }
+        }
+    }
+
+
     private void actualizarAgil(float delta) {
         timerCrearAlienAgil+=delta;
         if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
@@ -456,22 +496,37 @@ public class PantallaNvl1 extends Pantalla {
 
     }
 
-    /*private void probarColisionesAlienAgil() {
-        for(int i= arrAliensAgiles.size-1; i>=0; i--){
+    private void probarColisionesAlienAgil(Bala nuevaBala) {
+        for (int i = arrAliensAgiles.size - 1; i >= 0; i--) {
             AlienAgil alienAgil = arrAliensAgiles.get(i);
-            if(bala.sprite.getBoundingRectangle().overlaps(alien.sprite.getBoundingRectangle())){
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
                 //Le pegó
-                alien.setEstado(EstadoAlien.EXPLOTA);
+                alienAgil.setEstado(EstadoAlien.MUERE);
                 //Contar puntos
-                puntos +=150;
+                score += 50;
                 //Desaparecer la bala
-                bala = null; //No regresar al for
+                nuevaBala = null;
+                //No regresar al for
                 break;
             }
         }
-    }*/
+    }
 
 
+    //regresa una bala en el arreglo de bala
+    private Bala recorreBala()
+    {
+        Bala bala = null;
+        if (bala == null)
+        {
+            for (int i = arrBalas.size -1; i >= 0; i--) {
+                Bala nuevaBala = arrBalas.get(i);
+                bala = nuevaBala;
+            }
+        }
+        return bala;
+    }
 
     private void actualizarBalas(float delta) {
         for (int i = arrBalas.size-1; i >= 0;i--){
