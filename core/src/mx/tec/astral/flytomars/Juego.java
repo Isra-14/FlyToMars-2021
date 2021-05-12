@@ -15,8 +15,6 @@ import mx.tec.astral.flytomars.Tools.Texto;
 	pagina free lance para sonidos
 	https://freesound.org/
 
-*/
-
 public class Juego extends Game
 {
 	//Se pued eimplementar para aqi hacer los cambios e pantalla
