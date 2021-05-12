@@ -34,6 +34,7 @@ public class Juego extends Game
 
 
 		//Se llama al metodo para camibiar de pantalla
+		setScreen(new PantallaSplash(this));
 		changeScreen(PANTALLA_SPLASH);
 
 	}
