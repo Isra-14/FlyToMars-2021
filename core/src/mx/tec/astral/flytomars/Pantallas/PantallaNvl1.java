@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -105,6 +104,9 @@ public class PantallaNvl1 extends Pantalla {
     //Indican si el Hero se mueve en cierta dirección
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
+
+    //Score
+    private  int score = 0;
 
 
     public PantallaNvl1(Juego juego) {
@@ -330,12 +332,10 @@ public class PantallaNvl1 extends Pantalla {
 
 
 
-
         // moverAliensAgiles(delta);
 
         //probarColisionesAlienAgil();
     }
-
     private void actualizarAgil(float delta) {
         timerCrearAlienAgil+=delta;
         if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
@@ -471,26 +471,6 @@ public class PantallaNvl1 extends Pantalla {
         }
     }*/
 
-//    private void moverAliensAgiles(float delta) {
-////        int velocidad =10;
-//        for (AlienAgil alienAgil : arrAliensAgiles) {
-//            timerCambioAgil += delta;
-//            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
-//                int valor = MathUtils.random(0, 2);
-//                if (valor <=1) {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(DX_PASO_ALIEN_AGIL);
-//                } else {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(-DX_PASO_ALIEN_AGIL);
-//
-//                }
-//                timerCambioAgil=0;
-//            }
-//
-//
-//        }
-//    }
 
 
     private void actualizarBalas(float delta) {
@@ -582,7 +562,7 @@ public class PantallaNvl1 extends Pantalla {
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
                 //Gdx.app.log("A_button", "A pressed!");
                 //Sonido para saltar
-                juego.soundSalto.play();
+                juego.soundSalto.play(.5f);
                 hero.saltar();
             }
             //  B button (Shoot)
@@ -591,7 +571,7 @@ public class PantallaNvl1 extends Pantalla {
                 //Gdx.app.log("B_button", "B pressed!");
 
                 //Sonido disparo
-                juego.soundDisparo.play();
+                juego.soundDisparo.play(.2f);
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                         (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
 

@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,6 +17,9 @@ import mx.tec.astral.flytomars.Pantallas.Pantalla;
 Autor(es) Alejandro Quintana
  */
 public class PantallaNvl2 extends Pantalla {
+
+    //Cancion nivel 2
+    Music music;
     private Juego juego;
     BitmapFont font = new BitmapFont(); //or use alex answer to use custom font
     private Stage escenaMenuNiveles;
@@ -27,7 +31,16 @@ public class PantallaNvl2 extends Pantalla {
     @Override
     public void show() {
         crearMenu();
+        playMusic();
 
+    }
+
+    private void playMusic()
+    {
+        music = Gdx.audio.newMusic(Gdx.files.internal("Efectos/level2.wav"));
+        music.play();
+        music.setVolume(.05f);
+        music.setLooping(true);
     }
 
     private void crearMenu() {
@@ -49,7 +62,7 @@ public class PantallaNvl2 extends Pantalla {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 juego.soundBotones.play();
-                juego.mp3.stop();
+                music.stop();
                 juego.setScreen(new PantallaJuego(juego));
             }
         });

@@ -60,6 +60,7 @@ public class Juego extends Game
 		soundBotones = Gdx.audio.newSound(Gdx.files.internal("Efectos/Selection_sound.wav"));
 		soundDisparo = Gdx.audio.newSound(Gdx.files.internal("Efectos/bubble_shot.wav"));
 		soundSalto = Gdx.audio.newSound(Gdx.files.internal("Efectos/Jump.wav"));
+
 	}
 
 	//checa si se paro la musica
