@@ -50,9 +50,7 @@ public class AlienAgil extends Objeto {
         }
     }
 
-    public void setEstado(EstadoAlien nuevoEstado)
-    {
-        estado = nuevoEstado;
+    public void setEstado(){
 
     }
 
