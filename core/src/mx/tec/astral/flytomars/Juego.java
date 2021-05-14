@@ -13,7 +13,7 @@ import mx.tec.astral.flytomars.Tools.Texto;
 	Main class/controller
 	Author(s): Israel Sanchez
 
-*/
+ */
 
 public class Juego extends Game
 {

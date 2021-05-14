@@ -1,10 +1,6 @@
 android {
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\ISHis\\debug.keystore')
-            storePassword 'israSH1400'
-            keyAlias 'androiddebugkey'
-            keyPassword 'israSH1400'
         }
     }
     buildToolsVersion "30.0.3"

@@ -32,6 +32,7 @@ public class PantallaJuego extends Pantalla {
         //checamos si la musica fue parada al regresar a esta pantalla
         if (!juego.getMusica()){
             juego.mp3.play();
+            juego.mp3.setVolume(.15f);
         }
         crearMenu();
     }

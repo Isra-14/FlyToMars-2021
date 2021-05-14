@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -352,6 +353,7 @@ public class PantallaNvl1 extends Pantalla {
         //probabilidad(batch);
 
         batch.end();
+
     }
 
     private void actualizar(float delta){
@@ -380,6 +382,7 @@ public class PantallaNvl1 extends Pantalla {
         if(arrVidas.size <= 0)
             estadoJuego = EstadoJuego.PERDIO;
     }
+
 
 
 /**======================================================
@@ -696,6 +699,7 @@ public class PantallaNvl1 extends Pantalla {
             //  A button (Jump)
             else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
+                juego.soundSalto.play(.5f);
                 hero.saltar();
             }
 
@@ -703,6 +707,8 @@ public class PantallaNvl1 extends Pantalla {
             else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
                     v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
 
+                //Sonido disparo
+                juego.soundDisparo.play(.2f);
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                         (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
 
