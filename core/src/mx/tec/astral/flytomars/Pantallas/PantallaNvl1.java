@@ -2,8 +2,8 @@ package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
+import mx.tec.astral.flytomars.EstadosJuego;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -22,10 +23,18 @@ import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Tools.PowerUp;
 import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
-
+/*
+Autor(es)
+Alejandro Quintana
+Juan Pablo
+ */
 public class PantallaNvl1 extends Pantalla {
 
+    //Estado del juego
+    private EstadosJuego estadoJuego = EstadosJuego.JUGANDO;
 
+    //Cancion nivel 1
+    Music music;
     // Font of score.
     Texto texto;
 
@@ -103,6 +112,9 @@ public class PantallaNvl1 extends Pantalla {
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
 
+    //Score
+    private  int score = 0;
+
 
     public PantallaNvl1(Juego juego) {
         this.juego = juego;
@@ -133,9 +145,21 @@ public class PantallaNvl1 extends Pantalla {
         crearTexto();
 
         crearBalas();
+        //Carga la cancion
+        playMusic();
 
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+
+
+    }
+
+    //Carga la musica
+    private void playMusic() {
+        music = Gdx.audio.newMusic(Gdx.files.internal("Efectos/level1.wav"));
+        music.play();
+        music.setVolume(.05f);
+        music.setLooping(true);
     }
 
     /*
@@ -246,7 +270,7 @@ public class PantallaNvl1 extends Pantalla {
 
         batch.draw(texturaFondo, 0, 0);
 
-        texto.mostrarMensaje(batch, "Score:", 100, ALTO-25);
+        texto.mostrarMensaje(batch, "Score:" + Integer.toString(score), 100, ALTO-25);
 
         //Vidas
         for (Vida vida: arrVidas) //Visita cada objeto del arreglo
@@ -312,14 +336,52 @@ public class PantallaNvl1 extends Pantalla {
         actualizarAgil(delta);
         actualizarTanque(delta);
         actualizarLetal(delta);
-
-
-
-
         // moverAliensAgiles(delta);
-
-        //probarColisionesAlienAgil();
+        Bala nuevaBala = recorreBala();
+        if (nuevaBala != null) {
+            probarColisionesAlienAgil(nuevaBala);
+            probarColisionesAlienTanque(nuevaBala);
+            probarColisionesAlienLetal(nuevaBala);
+        }
     }
+
+    private void probarColisionesAlienLetal(Bala nuevaBala)
+    {
+        for (int i = arrLetales.size - 1; i >= 0; i--) {
+            AlienLetal alienLetal = arrLetales.get(i);
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
+                //Le pegó
+                //alienLetal.setEstado(EstadoAlien.MUERE);
+                //Contar puntos
+                score += 150;
+                //Desaparecer la bala
+                nuevaBala = null;
+                //No regresar al for
+                break;
+            }
+        }
+
+    }
+
+    private void probarColisionesAlienTanque(Bala nuevaBala)
+    {
+        for (int i = arrTanques.size - 1; i >= 0; i--) {
+            AlienTanque alienTanque = arrTanques.get(i);
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
+                //Le pegó
+                //alienLetal.setEstado(EstadoAlien.MUERE);
+                //Contar puntos
+                score += 200;
+                //Desaparecer la bala
+                nuevaBala = null;
+                //No regresar al for
+                break;
+            }
+        }
+    }
+
 
     private void actualizarAgil(float delta) {
         timerCrearAlienAgil+=delta;
@@ -441,42 +503,37 @@ public class PantallaNvl1 extends Pantalla {
 
     }
 
-    /*private void probarColisionesAlienAgil() {
-        for(int i= arrAliensAgiles.size-1; i>=0; i--){
+    private void probarColisionesAlienAgil(Bala nuevaBala) {
+        for (int i = arrAliensAgiles.size - 1; i >= 0; i--) {
             AlienAgil alienAgil = arrAliensAgiles.get(i);
-            if(bala.sprite.getBoundingRectangle().overlaps(alien.sprite.getBoundingRectangle())){
+            if (nuevaBala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
+                System.out.println("Le pego");
                 //Le pegó
-                alien.setEstado(EstadoAlien.EXPLOTA);
+                alienAgil.setEstado(EstadoAlien.MUERE);
                 //Contar puntos
-                puntos +=150;
+                score += 50;
                 //Desaparecer la bala
-                bala = null; //No regresar al for
+                nuevaBala = null;
+                //No regresar al for
                 break;
             }
         }
-    }*/
+    }
 
-//    private void moverAliensAgiles(float delta) {
-////        int velocidad =10;
-//        for (AlienAgil alienAgil : arrAliensAgiles) {
-//            timerCambioAgil += delta;
-//            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
-//                int valor = MathUtils.random(0, 2);
-//                if (valor <=1) {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(DX_PASO_ALIEN_AGIL);
-//                } else {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(-DX_PASO_ALIEN_AGIL);
-//
-//                }
-//                timerCambioAgil=0;
-//            }
-//
-//
-//        }
-//    }
 
+    //regresa una bala en el arreglo de bala
+    private Bala recorreBala()
+    {
+        Bala bala = null;
+        if (bala == null)
+        {
+            for (int i = arrBalas.size -1; i >= 0; i--) {
+                Bala nuevaBala = arrBalas.get(i);
+                bala = nuevaBala;
+            }
+        }
+        return bala;
+    }
 
     private void actualizarBalas(float delta) {
         for (int i = arrBalas.size-1; i >= 0;i--){
@@ -521,6 +578,7 @@ public class PantallaNvl1 extends Pantalla {
         arrVidas.clear();
         batch.dispose();
         arrBalas.clear();
+        music.dispose();
 
     }
 
@@ -551,8 +609,10 @@ public class PantallaNvl1 extends Pantalla {
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
 
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
-                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
+                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f) {
                 juego.setScreen(new PantallaJuego(juego));
+                music.stop();
+            }
                 // Back button
 //            if(v.x >= texturaBack.getWidth()/2f && v.x <= texturaBack.getWidth()*1.5f &&
 //                    v.y >= texturaBack.getHeight() && v.y <= texturaBack.getHeight()*2)
@@ -561,14 +621,18 @@ public class PantallaNvl1 extends Pantalla {
                 //  A button (Jump)
             else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
-                Gdx.app.log("A_button", "A pressed!");
+                //Gdx.app.log("A_button", "A pressed!");
+                //Sonido para saltar
+                juego.soundSalto.play(.5f);
                 hero.saltar();
             }
             //  B button (Shoot)
             else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
                     v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
-                Gdx.app.log("B_button", "B pressed!");
+                //Gdx.app.log("B_button", "B pressed!");
 
+                //Sonido disparo
+                juego.soundDisparo.play(.2f);
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                         (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
 

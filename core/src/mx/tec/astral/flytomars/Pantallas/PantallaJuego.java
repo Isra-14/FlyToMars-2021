@@ -12,6 +12,12 @@ import mx.tec.astral.flytomars.Juego;
 
 //import sun.security.util.AnchorCertificates;
 
+/*
+Autor(es)
+Israel
+Alejandro Quintana
+ */
+
 public class PantallaJuego extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
@@ -23,6 +29,11 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void show() {
+        //checamos si la musica fue parada al regresar a esta pantalla
+        if (!juego.getMusica()){
+            juego.mp3.play();
+            juego.mp3.setVolume(.05f);
+        }
         crearMenu();
     }
 
@@ -54,6 +65,8 @@ public class PantallaJuego extends Pantalla {
         btnNvl1.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl1(juego));
             }
         });
@@ -61,6 +74,8 @@ public class PantallaJuego extends Pantalla {
         btnNvl2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl2(juego));
             }
         });
@@ -68,12 +83,15 @@ public class PantallaJuego extends Pantalla {
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl3(juego));
             }
         });
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
