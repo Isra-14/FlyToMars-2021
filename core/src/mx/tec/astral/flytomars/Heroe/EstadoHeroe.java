@@ -11,5 +11,7 @@ public enum EstadoHeroe {
     IZQUIERDA,
     DERECHA,
     SALTO,
-    MUERE
+    MUERE,
+    IDLE_D,
+    IDLE_I
 }

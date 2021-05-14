@@ -2,15 +2,23 @@ package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
+import mx.tec.astral.flytomars.EstadoJuego;
+import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -23,22 +31,36 @@ import mx.tec.astral.flytomars.Tools.PowerUp;
 import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
-public class PantallaNvl1 extends Pantalla {
+/**=======================================================
+//              Pantalla nivel 1                        ||
+// EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
+//======================================================||
+// IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
+// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
+ //====================================================*/
 
+
+public class PantallaNvl1 extends Pantalla {
+    // Estados del juego
+    EstadoJuego estadoJuego;
+
+    // Background
+    private TiledMap mapa;
+    private OrthogonalTiledMapRenderer rendererMapa;
+    private Music bgMusic;
 
     // Font of score.
     Texto texto;
-
-    //Velocidad del Hero
-    private static  final float DELTA_X_HERO = 10;
+    private int puntos = 0;
 
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
     //  Personaje (Hero)
-    private  Hero hero;
+    private Hero hero;
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
+    public static final int TAM_CELDA = 32;
 
     //  Enemigos
 
@@ -47,38 +69,37 @@ public class PantallaNvl1 extends Pantalla {
     private Array<AlienAgil> arrAliensAgiles;
     private Texture texturaAgil_left;
     private Texture texturaAgil_right;
-    private float timerCrearAlienAgil;
-    private final float DX_PASO_ALIEN_AGIL = 10;
+    private float timerCrearAlienAgil = 10;
     private float timerCambioAgil;
-    private final float TIEMPO_CREAR_AGIL=10;
-    private final float TIEMPO_CAMBIO_AGIL=1.5f;
+    private final float TIEMPO_CREAR_AGIL = 10;
+    private final float TIEMPO_CAMBIO_AGIL = 1f;
 
     //Alien Letal
 //    private AlienLetal aLetal;
-    private  Array<AlienLetal> arrLetales;
+    private Array<AlienLetal> arrLetales;
     private Texture texturaLetal;
     private float timerCrearAlienLetal;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL=20;
-    private final float TIEMPO_CAMBIO_LETAL=6;
+    private final float TIEMPO_CREAR_LETAL = 20;
+    private final float TIEMPO_CAMBIO_LETAL = 6;
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
     private Texture texturaTanque;
     private float timerCrearAlienTanque;
     private float timerCambioTanque;
-    private final float TIEMPO_CREAR_TANQUE=15;
-    private final float TIEMPO_CAMBIO_TANQUE=6;
-
+    private final float TIEMPO_CREAR_TANQUE = 15;
+    private final float TIEMPO_CAMBIO_TANQUE = 6;
 
 
     //  Objetos vida
     private Array<Vida> arrVidas;
 
-    // Disparos del personaje
+    // BALAS
     private Array<Bala> arrBalas;
     private Texture texturaBalaDer;
     private Texture texturaBalaIzq;
+    private Bala bala;
 
     //  Buttons
     private Texture texturaBack;
@@ -93,7 +114,7 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaMoneda;
     private Texture texturaVida;
     private int numeroPower;
-    private int timerPower=3;
+    private int timerPower = 3;
 
 
     //Clase powerUp
@@ -112,10 +133,9 @@ public class PantallaNvl1 extends Pantalla {
     public void show() {
 
         crearFondo();
+        cargarMusica();
 
-        crearHero();
         crearAlienAgil();
-        //crearAliensAgiles();
         crearAlienLetal();
         crearAlienTanque();
 
@@ -134,44 +154,42 @@ public class PantallaNvl1 extends Pantalla {
 
         crearBalas();
 
+        crearHero();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         Gdx.input.setInputProcessor(new ProcesadorEntrada());
+
+        estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-    /*
-    private void crearAliensAgiles() {
-        Texture texturaAgil= new Texture("enemigos/alienAgil.png");
-        arrAliensAgiles = new Array<>(5);
-        for(int i= 0; i<5; i++){
-            AlienAgil alienAgil = new AlienAgil(texturaAgil, MathUtils.random(0,ANCHO-texturaAgil.getWidth()),MathUtils.random(0,ANCHO-texturaAgil.getHeight()));
-            arrAliensAgiles.add(alienAgil);
-        }
-    }
-*/
-    private void crearPowerUp()
-    {
-        texturaEscudo = new Texture("items/shield.png");
-        texturaMoneda = new Texture("items/coin.png");
-        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
-    }
+/**======================================================
+//              CRERACION DE OBJETOS                   ||
+//====================================================*/
 
-    private void probabilidad(SpriteBatch batch)
-    {
-
-        int chance = (int)(Math.random()*100);
-        if (chance< 80)
-            powerUp.render(batch);
+    private void crearFondo() {
+        AssetManager manager = new AssetManager();
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load("mapas/Mapa1.tmx", TiledMap.class);
+        manager.finishLoading();
+        mapa = manager.get("mapas/Mapa1.tmx");
+        rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
     }
 
-    private void crearBalas() {
-        arrBalas = new Array<>();
-        texturaBalaDer = new Texture("Shots/shotDer.png");
-        texturaBalaIzq = new Texture("Shots/shotIzq.png");
-    }
     private void crearTexto() {
         texto = new Texto();
     }
+
+    private void cargarMusica() {
+        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
+        bgMusic.play();
+        bgMusic.setVolume(0.12f);
+        bgMusic.setLooping(true);
+    }
+
+
+/**======================================================
+//                      BOTONES                        ||
+//====================================================*/
 
     private void crearBotonPause() {
         texturaPause = new Texture("buttons/pause.png");
@@ -185,11 +203,7 @@ public class PantallaNvl1 extends Pantalla {
         texturaIzq = new Texture("buttons/btnIzquierda.png");
     }
 
-    private void crearFondo() {
-        texturaFondo = new Texture("nivel1/lvlEarth.png");
-    }
-
-    private void crearBotonA() {
+     private void crearBotonA() {
         texturaA = new Texture("buttons/btn_A.png");
     }
 
@@ -201,12 +215,43 @@ public class PantallaNvl1 extends Pantalla {
         texturaBack = new Texture("Menu/btn_back.png");
     }
 
-    private void crearHero() {
-        Texture texturaIzquierda = new Texture("nivel1/character1_left.png");
-        Texture texturaDerecha = new Texture("nivel1/character1_right.png");
+/**======================================================
+//                    PERSONAJE                        ||
+//====================================================*/
 
-        hero = new Hero(texturaDerecha, texturaIzquierda, 0, 150);
+    private void crearHero() {
+        Texture spriteSheet = new Texture("nivel1/heroSprites.png");
+
+        hero = new Hero(spriteSheet);
+        hero.setPosition(0, 64);
+
     }
+
+    private void crearPowerUp() {
+        texturaEscudo = new Texture("items/shield.png");
+        texturaMoneda = new Texture("items/coin.png");
+        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
+    }
+
+    private void crearBalas() {
+        arrBalas = new Array<>();
+        texturaBalaDer = new Texture("Shots/shotDer.png");
+        texturaBalaIzq = new Texture("Shots/shotIzq.png");
+    }
+
+    private void crearVidas() {
+        texturaVida = new Texture("items/heart.png");
+
+        arrVidas = new Array<>(3);
+        for (int i = 0; i < 3; i++){
+            Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
+            arrVidas.add(vida); //Lo guarda en el arrelo
+        }
+    }
+
+/**======================================================
+//                     ENEMIGOS                        ||
+//====================================================*/
 
     private void crearAlienTanque() {
         texturaTanque=new Texture("enemigos/alienTanque2.png");
@@ -226,108 +271,130 @@ public class PantallaNvl1 extends Pantalla {
         arrAliensAgiles= new Array<>();
     }
 
-    private void crearVidas() {
-        texturaVida = new Texture("items/heart.png");
 
-        arrVidas = new Array<>(3);
-        for (int i = 0; i < 3; i++){
-            Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
-            arrVidas.add(vida); //Lo guarda en el arrelo
-        }
-    }
-
+/**======================================================
+//                UPDATE DEL JUEGO                    ||
+//===================================================*/
     @Override
     public void render(float delta) {
-        actualizar(delta);
-        borrarPantalla(0,0,0); //Borrar con color negro}
+        if(estadoJuego != EstadoJuego.PERDIO)
+            actualizar(delta);
+
+        borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
+
+        rendererMapa.setView(camara);
+        rendererMapa.render();
 
         batch.begin();
 
-        batch.draw(texturaFondo, 0, 0);
-
-        texto.mostrarMensaje(batch, "Score:", 100, ALTO-25);
+        //batch.draw(texturaFondo, 0, 0);
 
         //Vidas
-        for (Vida vida: arrVidas) //Visita cada objeto del arreglo
+        for (Vida vida : arrVidas) //Visita cada objeto del arreglo
         {
             vida.render(batch);
         }
 
-        //Hero
-        hero.render(batch);
-
-        //Enemigos
-        //Alien Agil
-        //aAgil.render(batch);
+/**======================================================
+//                       ENEMIGOS                      ||
+//======================================================
+*/
 
         //Alien Agil
-        for (AlienAgil aAgil:arrAliensAgiles) {
+        for (AlienAgil aAgil : arrAliensAgiles) {
             aAgil.render(batch);
         }
+
         //Alien Letal
-        for (AlienLetal aLetal:arrLetales){
+        for (AlienLetal aLetal : arrLetales) {
             aLetal.render(batch);
         }
 
         //Alien Tanque
-        for(AlienTanque atanque: arrTanques){
+        for (AlienTanque atanque : arrTanques) {
             atanque.render(batch);
         }
-
-        // Draw A
-        batch.draw(texturaA, ANCHO-texturaA.getWidth()*2, texturaA.getHeight()/2f);
-
-        // Draw B
-        batch.draw(texturaB, ANCHO-texturaB.getWidth(), texturaB.getHeight()/2f);
-
-//         Draw Back
-//        batch.draw(texturaBack, texturaBack.getWidth()/2f, texturaBack.getHeight());
-
-        // Draw izq.
-        batch.draw(texturaIzq, texturaIzq.getWidth()/2f, texturaIzq.getHeight()/3f);
-
-        // Draw der.
-        batch.draw(texturaDer, 2*texturaDer.getWidth(), texturaDer.getHeight()/3f);
-
-        // Draw pause.
-        batch.draw(texturaPause, ANCHO/2 - texturaPause.getWidth()/2f, ALTO - texturaPause.getHeight()*1.5f);
 
         // Draw shots
         for (Bala bala : arrBalas) {
             bala.render(batch);
         }
 
+/**======================================================
+//                PERSONAJE PRINCIPAL                  ||
+//======================================================
+*/
+        hero.render(batch);
 
 
-        probabilidad(batch);
+/**======================================================
+//                       BOTONES                       ||
+//======================================================
+*/
+        // Draw A
+        batch.draw(texturaA, ANCHO - texturaA.getWidth() * 2, texturaA.getHeight() / 2f);
+
+        // Draw B
+        batch.draw(texturaB, ANCHO - texturaB.getWidth(), texturaB.getHeight() / 2f);
+
+        // Draw izq.
+        batch.draw(texturaIzq, texturaIzq.getWidth() / 2f, texturaIzq.getHeight() / 3f);
+
+        // Draw der.
+        batch.draw(texturaDer, 2 * texturaDer.getWidth(), texturaDer.getHeight() / 3f);
+
+        // Draw pause.
+        batch.draw(texturaPause, ANCHO / 2 - texturaPause.getWidth() / 2f, ALTO - texturaPause.getHeight() * 1.5f);
+
+        texto.mostrarMensaje(batch, "Score:" + puntos, 150, ALTO - 25);
+
+        //probabilidad(batch);
 
         batch.end();
-
     }
 
     private void actualizar(float delta){
         actualizarHero(hero);
         actualizarBalas(delta);
-        actualizarAgil(delta);
+        crearAgil(delta);
         actualizarTanque(delta);
         actualizarLetal(delta);
 
 
-
-
         // moverAliensAgiles(delta);
 
-        //probarColisionesAlienAgil();
+        if(arrBalas.size != 0)
+            colisionesAlienAgil();
     }
 
-    private void actualizarAgil(float delta) {
-        timerCrearAlienAgil+=delta;
-        if(timerCrearAlienAgil>=TIEMPO_CREAR_AGIL){
-            timerCrearAlienAgil=0;
+    private void probabilidad(SpriteBatch batch) {
+
+        int chance = (int)(Math.random()*100);
+        if (chance < 80)
+            powerUp.render(batch);
+
+    }
+
+    private void comprobarVidas() {
+        if(arrVidas.size <= 0)
+            estadoJuego = EstadoJuego.PERDIO;
+    }
+
+
+/**======================================================
+//                    E. AGILES                        ||
+//====================================================*/
+
+    private void crearAgil(float delta) {
+        timerCrearAlienAgil += delta;
+
+        if(timerCrearAlienAgil >= TIEMPO_CREAR_AGIL){
+            timerCrearAlienAgil = 0;
+
             //Crear
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
-            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200, DX_PASO_ALIEN_AGIL);
+            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
@@ -344,16 +411,62 @@ public class PantallaNvl1 extends Pantalla {
                 else if(tipo == 2 && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
                     alienAgil.cambiarEstado();
             }
-            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-                alienAgil.moverHorizontal();
-            else {
-                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-                    alienAgil.setX(1);
-                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+
+            alienAgil.moverHorizontal();
+
+
+            if(alienAgil.getSprite().getX() <= 0 - alienAgil.getSprite().getWidth())
+                alienAgil.setX(ANCHO);
+            else if (alienAgil.getSprite().getX() >= ANCHO)
+                alienAgil.setX(0);
+
+//                          Movimiento Solo dentro de pantalla
+//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
+//                alienAgil.moverHorizontal();
+//            else {
+//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+//                    alienAgil.setX(1);
+//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+//            }
+            depurarAlienAgil();
+        }
+    }
+
+    private void colisionesAlienAgil() {
+        for(int i= arrAliensAgiles.size-1; i>=0; i--){
+            AlienAgil alienAgil = arrAliensAgiles.get(i);
+            if (alienAgil.getEstado() == EstadoAlien.MUERE )
+                arrAliensAgiles.removeIndex(i);
+
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
+
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
+                    //Le pegó
+                    alienAgil.setEstado(EstadoAlien.MUERE);
+                    //Contar puntos
+                    puntos +=50;
+                    //Desaparecer la bala
+
+                    arrBalas.removeIndex(j);
+                }
             }
         }
     }
+
+    private void depurarAlienAgil() {
+        for (int i = arrAliensAgiles.size-1; i>=0; i--){
+            AlienAgil agil = arrAliensAgiles.get(i);
+            if(agil.getEstado() == EstadoAlien.MUERE)
+                arrAliensAgiles.removeIndex(i);
+        }
+    }
+
+
+/**======================================================
+//                  E. LETALES                         ||
+//====================================================*/
 
     private void actualizarLetal(float delta) {
         timerCrearAlienLetal+=delta;
@@ -369,7 +482,7 @@ public class PantallaNvl1 extends Pantalla {
 
     private void moverAliensLetales(float delta) {
 
-        int velocidad =10;
+        int velocidad = 10;
         for (AlienLetal alienLetal : arrLetales) {
             timerCambioLetal += delta;
             if (timerCambioLetal >= TIEMPO_CAMBIO_LETAL) {
@@ -385,13 +498,14 @@ public class PantallaNvl1 extends Pantalla {
                     timerCambioLetal=3;
 
                 }
-
-
             }
-
-
         }
     }
+
+
+/**======================================================
+//                  E. TANQUE                          ||
+//====================================================*/
 
     private void actualizarTanque(float delta) {
 
@@ -402,19 +516,11 @@ public class PantallaNvl1 extends Pantalla {
             float xTanque = MathUtils.random(10,ANCHO-texturaTanque.getWidth());
             AlienTanque aTanque = new AlienTanque(texturaTanque,xTanque,100);
             arrTanques.add(aTanque);
-
-
-
         }
         moverAliensTanque(delta);
-
-
-
     }
 
     private void moverAliensTanque(float delta) {
-
-
         int velocidad =10;
         for (AlienTanque alienTanque : arrTanques) {
             timerCambioTanque += delta;
@@ -432,51 +538,14 @@ public class PantallaNvl1 extends Pantalla {
                     timerCambioTanque=4;
 
                 }
-
-
             }
-
-
         }
-
     }
 
-    /*private void probarColisionesAlienAgil() {
-        for(int i= arrAliensAgiles.size-1; i>=0; i--){
-            AlienAgil alienAgil = arrAliensAgiles.get(i);
-            if(bala.sprite.getBoundingRectangle().overlaps(alien.sprite.getBoundingRectangle())){
-                //Le pegó
-                alien.setEstado(EstadoAlien.EXPLOTA);
-                //Contar puntos
-                puntos +=150;
-                //Desaparecer la bala
-                bala = null; //No regresar al for
-                break;
-            }
-        }
-    }*/
 
-//    private void moverAliensAgiles(float delta) {
-////        int velocidad =10;
-//        for (AlienAgil alienAgil : arrAliensAgiles) {
-//            timerCambioAgil += delta;
-//            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
-//                int valor = MathUtils.random(0, 2);
-//                if (valor <=1) {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(DX_PASO_ALIEN_AGIL);
-//                } else {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(-DX_PASO_ALIEN_AGIL);
-//
-//                }
-//                timerCambioAgil=0;
-//            }
-//
-//
-//        }
-//    }
-
+/**======================================================
+//                Objetos Disparo                      ||
+//====================================================*/
 
     private void actualizarBalas(float delta) {
         for (int i = arrBalas.size-1; i >= 0;i--){
@@ -489,22 +558,80 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 
-    private void actualizarHero(Hero hero) {
-        if(prevState == EstadoHeroe.DERECHA && hero.getEstado() == EstadoHeroe.IZQUIERDA)
-            hero.cambiarEstado();
-        else if(prevState == EstadoHeroe.IZQUIERDA && hero.getEstado() == EstadoHeroe.DERECHA)
-            hero.cambiarEstado();
+/**======================================================
+//                PERSONAJE PRINC.                     ||
+//====================================================*/
 
-        if(moviendoDerecha && hero.getSprite().getX() <= (ANCHO- hero.getSprite().getWidth())) {
-            hero.mover(DELTA_X_HERO);
-            prevState = EstadoHeroe.DERECHA;
-        }if(moviendoIzquierda && hero.getSprite().getX() > 0) {
-            hero.mover(-DELTA_X_HERO);
-            prevState = EstadoHeroe.IZQUIERDA;
+    private void actualizarHero(Hero hero) {
+        if (moviendoDerecha && hero.getEstado() != EstadoHeroe.SALTO)
+            hero.setEstado(EstadoHeroe.DERECHA);
+
+        else if (moviendoIzquierda && hero.getEstado() != EstadoHeroe.SALTO)
+            hero.setEstado(EstadoHeroe.IZQUIERDA);
+
+        if ( moviendoIzquierda || moviendoDerecha)
+            hero.mover();
+
+        else if ( hero.getEstado() != EstadoHeroe.SALTO ){
+
+            if (prevState == EstadoHeroe.DERECHA)
+                hero.setEstado(EstadoHeroe.IDLE_D);
+
+            else if (prevState == EstadoHeroe.IZQUIERDA)
+                hero.setEstado(EstadoHeroe.IDLE_I);
+
         }
 
+        if( moviendoDerecha )
+            prevState = EstadoHeroe.DERECHA;
+        else if( moviendoIzquierda )
+            prevState = EstadoHeroe.IZQUIERDA;
 
+        if ( moviendoDerecha && hero.getSprite().getX() >= ANCHO )
+            hero.setX( 0 - hero.getSprite().getWidth() );
+
+        else if ( moviendoIzquierda && hero.getSprite().getX() < 0 - hero.getSprite().getWidth() )
+            hero.setX( ANCHO );
+
+        switch (hero.getEstadoSalto()){
+            case SUBIENDO:
+            case BAJANDO:
+                hero.actualizarVuelo();
+        }
+
+        if ( hero.getEstadoSalto() != EstadoSalto.SUBIENDO ) {
+            int celdaX = (int) (hero.getSprite().getX() / TAM_CELDA);
+            int celdaY = (int) ( (hero.getSprite().getY() + hero.getVelocity()) / TAM_CELDA);
+
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
+            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+
+            if( celdaAbajo==null && celdaDerecha==null ){
+                hero.caer();
+                hero.setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
+            }else {
+                hero.setPosition(hero.getSprite().getX(), (celdaY + 1) * TAM_CELDA);
+                hero.setEstadoSalto(EstadoSalto.EN_PISO);
+                hero.setyBase((celdaY+1)*TAM_CELDA);
+            }
+        }
+
+        colsionesHero();
     }
+
+    private void colsionesHero() {
+        for(int i = arrAliensAgiles.size-1; i>=0; i--){
+            AlienAgil alienAgil = arrAliensAgiles.get(i);
+            if( hero.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
+                alienAgil.setEstado(EstadoAlien.MUERE);
+                arrVidas.removeIndex(arrVidas.size-1);
+
+                comprobarVidas();
+            }
+        }
+    }
+
 
     @Override
     public void pause() {
@@ -521,8 +648,18 @@ public class PantallaNvl1 extends Pantalla {
         arrVidas.clear();
         batch.dispose();
         arrBalas.clear();
+        arrAliensAgiles.clear();
+        arrTanques.clear();
+        arrLetales.clear();
+        bgMusic.dispose();
+        juego.mp3.dispose();
 
     }
+
+
+/**======================================================
+//              PROCESADOR ENTRADA                     ||
+//====================================================*/
 
     private class ProcesadorEntrada implements InputProcessor {
 
@@ -550,24 +687,21 @@ public class PantallaNvl1 extends Pantalla {
             Vector3 v = new Vector3(screenX,screenY,0);
             camara.unproject(v); //Convierte de coordenadas FISICAS a LÓGICAS
 
+            // Pause button
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
-                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
+                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f) {
                 juego.setScreen(new PantallaJuego(juego));
-                // Back button
-//            if(v.x >= texturaBack.getWidth()/2f && v.x <= texturaBack.getWidth()*1.5f &&
-//                    v.y >= texturaBack.getHeight() && v.y <= texturaBack.getHeight()*2)
-//                juego.setScreen(new PantallaJuego(juego));
-
-                //  A button (Jump)
+                bgMusic.stop();
+            }
+            //  A button (Jump)
             else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
-                Gdx.app.log("A_button", "A pressed!");
                 hero.saltar();
             }
+
             //  B button (Shoot)
             else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
                     v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
-                Gdx.app.log("B_button", "B pressed!");
 
                 Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                         (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
@@ -577,7 +711,7 @@ public class PantallaNvl1 extends Pantalla {
                     bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth()/2f,
                             (hero.getSprite().getY() + hero.getSprite().getHeight()/2f) - bala.getSprite().getHeight()/2f);
                     arrBalas.add(bala);
-                }else if(hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA){
+                } else if(hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA){
                     bala.setEstado(EstadoBala.IZQUIERDA);
                     bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth()/2f,
                             (hero.getSprite().getY() + hero.getSprite().getHeight()/2f)- bala.getSprite().getHeight()/2);
@@ -590,19 +724,13 @@ public class PantallaNvl1 extends Pantalla {
                 if (v.x >= texturaIzq.getWidth() / 2f && v.x <= texturaIzq.getWidth() * 1.5f &&
                         v.y >= texturaIzq.getHeight() / 3f && v.y <= texturaIzq.getHeight() * 1.3f)
                     moviendoIzquierda = true;
-                    // Right Button
+
+                // Right Button
                 else if (v.x >= texturaDer.getWidth() * 2f && v.x <= texturaDer.getWidth() * 3f &&
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;
             }
-//            else{
-//                if(v.x < ANCHO/2){
-//                    //Primera mitad de la pantalla
-//                    moviendoIzquierda = true;
-//                }else{
-//                    moviendoDerecha = true;
-//                }
-//            }
+
             return true; //Porque el juego ya proceso el evento
         }
 
@@ -632,7 +760,3 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 }
-/*
-Pantalla que almacena todos los objetos del nivel 1
-Autores: Israel, Misael y Alejandro
- */

@@ -21,9 +21,6 @@ public class PantallaHighScores extends Pantalla {
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
-    //Se trae el texto
-    private Texto texto;
-
     //Se guardan los nombres y scores en un arrreglo
     private String titulo  = "HighScores";
     private long[] highScores;
@@ -40,7 +37,7 @@ public class PantallaHighScores extends Pantalla {
 
     private void crearMenu() {
         texturaFondo = new Texture("fondos/fondoHigh.jpg");
-        texto = new Texto();
+        //texto = new Texto();
 
         // MENU, necesitamos una escena
         //Escena
@@ -57,6 +54,7 @@ public class PantallaHighScores extends Pantalla {
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
@@ -87,12 +85,12 @@ public class PantallaHighScores extends Pantalla {
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
-        texto.mostrarMensaje(batch, "HighScore", ANCHO/2, .90F*ALTO);
+        juego.texto.mostrarMensaje(batch, "HighScore", ANCHO/2, .90F*ALTO);
         //se recorrre lo que tenemos guardado
         for (int i = 0; i < highScores.length; i++)
         {
             titulo = String.format("%2d. %7s %s", i + 1, highScores[i], names[i]);
-            texto.mostrarMensaje(batch, titulo, ANCHO/2,.80f*ALTO - 48 * i);
+            juego.texto.mostrarMensaje(batch, titulo, ANCHO/2,.80f*ALTO - 48 * i);
         }
 
 

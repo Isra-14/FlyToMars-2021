@@ -1,15 +1,23 @@
 package mx.tec.astral.flytomars.Pantallas;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
+import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
+import mx.tec.astral.flytomars.Heroe.Hero;
 import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Tools.Asteroid;
 
 /*
 Autor Alejandro Quintana
@@ -18,6 +26,11 @@ public class PantallaMenu extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenu;
+
+    private Asteroid asteroid;
+
+
+
 
     public PantallaMenu(Juego juego) {
         this.juego = juego;
@@ -30,6 +43,12 @@ public class PantallaMenu extends Pantalla {
     @Override
     public void show() {
         crearMenu();
+        crearAsteroide();
+    }
+
+    private void crearAsteroide() {
+        Texture texture = new Texture("asteroid1.png");
+        asteroid = new Asteroid(texture, -80, ALTO - 200);
     }
 
     private void crearMenu() {
@@ -61,6 +80,7 @@ public class PantallaMenu extends Pantalla {
         btnInicio.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaJuego(juego));
             }
         });
@@ -68,6 +88,7 @@ public class PantallaMenu extends Pantalla {
         btnHighScores.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaHighScores(juego));
             }
         });
@@ -75,6 +96,7 @@ public class PantallaMenu extends Pantalla {
         btnInstrucciones.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaInstrucciones(juego));
             }
         });
@@ -82,6 +104,7 @@ public class PantallaMenu extends Pantalla {
         btnAcercaDe.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaAcercaDe(juego));
             }
         });
@@ -105,16 +128,24 @@ public class PantallaMenu extends Pantalla {
     @Override
     public void render(float delta) {
         borrarPantalla(0,1,1);
+        actualizar();
 
         batch.setProjectionMatrix(camara.combined);
 
         batch.begin();
 
         batch.draw(texturaFondo, 0, 0);
+        juego.texto.mostrarMensaje(batch, "Fly to Mars" , ANCHO/2, ALTO*.9f);
+
+        asteroid.render(batch);
 
         batch.end();
 
         escenaMenu.draw();
+    }
+
+    private void actualizar() {
+        asteroid.mover();
     }
 
     @Override

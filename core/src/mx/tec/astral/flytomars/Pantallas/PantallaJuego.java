@@ -12,6 +12,12 @@ import mx.tec.astral.flytomars.Juego;
 
 //import sun.security.util.AnchorCertificates;
 
+/*
+Autor(es)
+Israel
+Alejandro Quintana
+ */
+
 public class PantallaJuego extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
@@ -23,6 +29,10 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void show() {
+        //checamos si la musica fue parada al regresar a esta pantalla
+        if (!juego.getMusica()){
+            juego.mp3.play();
+        }
         crearMenu();
     }
 
@@ -35,9 +45,9 @@ public class PantallaJuego extends Pantalla {
 
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
-        Button btnNvl1 = crearBoton("MenuNiveles/earth.png", "MenuNiveles/earth_press.png");
-        Button btnNvl2 = crearBoton("MenuNiveles/moon.png", "MenuNiveles/moon_press.png");
-        Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_press.png");
+        Button btnNvl1 = crearBoton("MenuNiveles/earth.png", "MenuNiveles/earth_pressed.png");
+        Button btnNvl2 = crearBoton("MenuNiveles/moon.png", "MenuNiveles/moon_pressed.png");
+        Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_pressed.png");
 
         //Se les da un espacio en la pantalla
         btnBack.setPosition(ANCHO/2 - 100 , 85);
@@ -54,6 +64,8 @@ public class PantallaJuego extends Pantalla {
         btnNvl1.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl1(juego));
             }
         });
@@ -61,6 +73,8 @@ public class PantallaJuego extends Pantalla {
         btnNvl2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl2(juego));
             }
         });
@@ -68,12 +82,15 @@ public class PantallaJuego extends Pantalla {
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.mp3.stop();
                 juego.setScreen(new PantallaNvl3(juego));
             }
         });
         btnBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
