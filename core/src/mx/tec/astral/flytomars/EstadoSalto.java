@@ -7,5 +7,6 @@ package mx.tec.astral.flytomars;/*
 public enum EstadoSalto {
     EN_PISO,
     SUBIENDO,
-    BAJANDO
+    BAJANDO,
+    CAIDA_LIBRE
 }

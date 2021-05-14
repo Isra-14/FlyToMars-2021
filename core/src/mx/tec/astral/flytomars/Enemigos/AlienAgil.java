@@ -7,7 +7,7 @@ import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 import mx.tec.astral.flytomars.Tools.Objeto;
 
 public class AlienAgil extends Objeto {
-    private float DX;
+    private float DX = 10;
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
     EstadoAlien estado;
@@ -15,11 +15,10 @@ public class AlienAgil extends Objeto {
         super(textura, x, y);
     }
 
-    public AlienAgil(Texture texturaDerecha, Texture texturaIzquierda, float x, float y, float DX){
+    public AlienAgil(Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
         super( texturaIzquierda, x, y);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
-        this.DX = DX;
         estado = EstadoAlien.IZQUIERDA;
     }
     public void moverHorizontal (){

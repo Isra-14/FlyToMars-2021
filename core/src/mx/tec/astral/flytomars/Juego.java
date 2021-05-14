@@ -43,8 +43,8 @@ public class Juego extends Game
 		cargarSonidos();
 
 			//Se agrega la musica
-			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/MusicaFondo.mp3"));
-			mp3.setVolume(.02f);
+			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/menuProposal.mp3"));
+			mp3.setVolume(.12f);
 			mp3.play();
 			mp3.setLooping(true);
 

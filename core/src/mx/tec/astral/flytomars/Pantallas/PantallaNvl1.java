@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoJuego;
+import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -28,6 +31,15 @@ import mx.tec.astral.flytomars.Tools.PowerUp;
 import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
+/**=======================================================
+//              Pantalla nivel 1                        ||
+// EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
+//======================================================||
+// IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
+// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
+ //====================================================*/
+
+
 public class PantallaNvl1 extends Pantalla {
     // Estados del juego
     EstadoJuego estadoJuego;
@@ -35,19 +47,20 @@ public class PantallaNvl1 extends Pantalla {
     // Background
     private TiledMap mapa;
     private OrthogonalTiledMapRenderer rendererMapa;
+    private Music bgMusic;
 
     // Font of score.
     Texto texto;
     private int puntos = 0;
-
 
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
     //  Personaje (Hero)
-    private  Hero hero;
+    private Hero hero;
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
+    public static final int TAM_CELDA = 32;
 
     //  Enemigos
 
@@ -57,27 +70,26 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaAgil_left;
     private Texture texturaAgil_right;
     private float timerCrearAlienAgil = 10;
-    private final float DX_PASO_ALIEN_AGIL = 10;
     private float timerCambioAgil;
     private final float TIEMPO_CREAR_AGIL = 10;
     private final float TIEMPO_CAMBIO_AGIL = 1f;
 
     //Alien Letal
 //    private AlienLetal aLetal;
-    private  Array<AlienLetal> arrLetales;
+    private Array<AlienLetal> arrLetales;
     private Texture texturaLetal;
     private float timerCrearAlienLetal;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL=20;
-    private final float TIEMPO_CAMBIO_LETAL=6;
+    private final float TIEMPO_CREAR_LETAL = 20;
+    private final float TIEMPO_CAMBIO_LETAL = 6;
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
     private Texture texturaTanque;
     private float timerCrearAlienTanque;
     private float timerCambioTanque;
-    private final float TIEMPO_CREAR_TANQUE=15;
-    private final float TIEMPO_CAMBIO_TANQUE=6;
+    private final float TIEMPO_CREAR_TANQUE = 15;
+    private final float TIEMPO_CAMBIO_TANQUE = 6;
 
 
     //  Objetos vida
@@ -102,7 +114,7 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaMoneda;
     private Texture texturaVida;
     private int numeroPower;
-    private int timerPower=3;
+    private int timerPower = 3;
 
 
     //Clase powerUp
@@ -121,6 +133,7 @@ public class PantallaNvl1 extends Pantalla {
     public void show() {
 
         crearFondo();
+        cargarMusica();
 
         crearAlienAgil();
         crearAlienLetal();
@@ -148,21 +161,35 @@ public class PantallaNvl1 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-    private void crearPowerUp() {
-        texturaEscudo = new Texture("items/shield.png");
-        texturaMoneda = new Texture("items/coin.png");
-        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
-    }
+/**======================================================
+//              CRERACION DE OBJETOS                   ||
+//====================================================*/
 
-    private void crearBalas() {
-        arrBalas = new Array<>();
-        texturaBalaDer = new Texture("Shots/shotDer.png");
-        texturaBalaIzq = new Texture("Shots/shotIzq.png");
+    private void crearFondo() {
+        AssetManager manager = new AssetManager();
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load("mapas/Mapa1.tmx", TiledMap.class);
+        manager.finishLoading();
+        mapa = manager.get("mapas/Mapa1.tmx");
+        rendererMapa = new OrthogonalTiledMapRenderer(mapa);
+
     }
 
     private void crearTexto() {
         texto = new Texto();
     }
+
+    private void cargarMusica() {
+        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
+        bgMusic.play();
+        bgMusic.setVolume(0.12f);
+        bgMusic.setLooping(true);
+    }
+
+
+/**======================================================
+//                      BOTONES                        ||
+//====================================================*/
 
     private void crearBotonPause() {
         texturaPause = new Texture("buttons/pause.png");
@@ -176,17 +203,7 @@ public class PantallaNvl1 extends Pantalla {
         texturaIzq = new Texture("buttons/btnIzquierda.png");
     }
 
-    private void crearFondo() {
-        AssetManager manager = new AssetManager();
-        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        manager.load("mapas/Mapa1.tmx", TiledMap.class);
-        manager.finishLoading();
-        mapa = manager.get("mapas/Mapa1.tmx");
-        rendererMapa = new OrthogonalTiledMapRenderer(mapa);
-
-    }
-
-    private void crearBotonA() {
+     private void crearBotonA() {
         texturaA = new Texture("buttons/btn_A.png");
     }
 
@@ -198,6 +215,10 @@ public class PantallaNvl1 extends Pantalla {
         texturaBack = new Texture("Menu/btn_back.png");
     }
 
+/**======================================================
+//                    PERSONAJE                        ||
+//====================================================*/
+
     private void crearHero() {
         Texture spriteSheet = new Texture("nivel1/heroSprites.png");
 
@@ -205,6 +226,32 @@ public class PantallaNvl1 extends Pantalla {
         hero.setPosition(0, 64);
 
     }
+
+    private void crearPowerUp() {
+        texturaEscudo = new Texture("items/shield.png");
+        texturaMoneda = new Texture("items/coin.png");
+        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
+    }
+
+    private void crearBalas() {
+        arrBalas = new Array<>();
+        texturaBalaDer = new Texture("Shots/shotDer.png");
+        texturaBalaIzq = new Texture("Shots/shotIzq.png");
+    }
+
+    private void crearVidas() {
+        texturaVida = new Texture("items/heart.png");
+
+        arrVidas = new Array<>(3);
+        for (int i = 0; i < 3; i++){
+            Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
+            arrVidas.add(vida); //Lo guarda en el arrelo
+        }
+    }
+
+/**======================================================
+//                     ENEMIGOS                        ||
+//====================================================*/
 
     private void crearAlienTanque() {
         texturaTanque=new Texture("enemigos/alienTanque2.png");
@@ -224,20 +271,10 @@ public class PantallaNvl1 extends Pantalla {
         arrAliensAgiles= new Array<>();
     }
 
-    private void crearVidas() {
-        texturaVida = new Texture("items/heart.png");
 
-        arrVidas = new Array<>(3);
-        for (int i = 0; i < 3; i++){
-            Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
-            arrVidas.add(vida); //Lo guarda en el arrelo
-        }
-    }
-
-//======================================================
+/**======================================================
 //                UPDATE DEL JUEGO                    ||
-//======================================================
-
+//===================================================*/
     @Override
     public void render(float delta) {
         if(estadoJuego != EstadoJuego.PERDIO)
@@ -259,9 +296,10 @@ public class PantallaNvl1 extends Pantalla {
             vida.render(batch);
         }
 
+/**======================================================
+//                       ENEMIGOS                      ||
 //======================================================
-//                      ENEMIGOS                      ||
-//======================================================
+*/
 
         //Alien Agil
         for (AlienAgil aAgil : arrAliensAgiles) {
@@ -283,17 +321,17 @@ public class PantallaNvl1 extends Pantalla {
             bala.render(batch);
         }
 
-//======================================================
+/**======================================================
 //                PERSONAJE PRINCIPAL                  ||
 //======================================================
-
+*/
         hero.render(batch);
 
 
+/**======================================================
+//                       BOTONES                       ||
 //======================================================
-//                      BOTONES                       ||
-//======================================================
-
+*/
         // Draw A
         batch.draw(texturaA, ANCHO - texturaA.getWidth() * 2, texturaA.getHeight() / 2f);
 
@@ -343,6 +381,11 @@ public class PantallaNvl1 extends Pantalla {
             estadoJuego = EstadoJuego.PERDIO;
     }
 
+
+/**======================================================
+//                    E. AGILES                        ||
+//====================================================*/
+
     private void crearAgil(float delta) {
         timerCrearAlienAgil += delta;
 
@@ -351,7 +394,7 @@ public class PantallaNvl1 extends Pantalla {
 
             //Crear
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
-            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200, DX_PASO_ALIEN_AGIL);
+            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
@@ -390,6 +433,28 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 
+    private void colisionesAlienAgil() {
+        for(int i= arrAliensAgiles.size-1; i>=0; i--){
+            AlienAgil alienAgil = arrAliensAgiles.get(i);
+            if (alienAgil.getEstado() == EstadoAlien.MUERE )
+                arrAliensAgiles.removeIndex(i);
+
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
+
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
+                    //Le pegó
+                    alienAgil.setEstado(EstadoAlien.MUERE);
+                    //Contar puntos
+                    puntos +=50;
+                    //Desaparecer la bala
+
+                    arrBalas.removeIndex(j);
+                }
+            }
+        }
+    }
+
     private void depurarAlienAgil() {
         for (int i = arrAliensAgiles.size-1; i>=0; i--){
             AlienAgil agil = arrAliensAgiles.get(i);
@@ -397,6 +462,11 @@ public class PantallaNvl1 extends Pantalla {
                 arrAliensAgiles.removeIndex(i);
         }
     }
+
+
+/**======================================================
+//                  E. LETALES                         ||
+//====================================================*/
 
     private void actualizarLetal(float delta) {
         timerCrearAlienLetal+=delta;
@@ -431,6 +501,11 @@ public class PantallaNvl1 extends Pantalla {
             }
         }
     }
+
+
+/**======================================================
+//                  E. TANQUE                          ||
+//====================================================*/
 
     private void actualizarTanque(float delta) {
 
@@ -467,50 +542,10 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 
-    private void colisionesAlienAgil() {
-        for(int i= arrAliensAgiles.size-1; i>=0; i--){
-            AlienAgil alienAgil = arrAliensAgiles.get(i);
-            if (alienAgil.getEstado() == EstadoAlien.MUERE )
-                arrAliensAgiles.removeIndex(i);
 
-            for( int j = arrBalas.size-1; j >=0; j--){
-                bala = arrBalas.get(j);
-
-                if(bala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
-                    //Le pegó
-                    alienAgil.setEstado(EstadoAlien.MUERE);
-                    //Contar puntos
-                    puntos +=150;
-                    //Desaparecer la bala
-
-                    arrBalas.removeIndex(j);
-                }
-            }
-        }
-    }
-
-
-//    private void moverAliensAgiles(float delta) {
-////        int velocidad =10;
-//        for (AlienAgil alienAgil : arrAliensAgiles) {
-//            timerCambioAgil += delta;
-//            if (timerCambioAgil >= TIEMPO_CAMBIO_AGIL) {
-//                int valor = MathUtils.random(0, 2);
-//                if (valor <=1) {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(DX_PASO_ALIEN_AGIL);
-//                } else {
-////                    velocidad*=-1;
-//                    alienAgil.moverHorizontal(-DX_PASO_ALIEN_AGIL);
-//
-//                }
-//                timerCambioAgil=0;
-//            }
-//
-//
-//        }
-//    }
-
+/**======================================================
+//                Objetos Disparo                      ||
+//====================================================*/
 
     private void actualizarBalas(float delta) {
         for (int i = arrBalas.size-1; i >= 0;i--){
@@ -523,17 +558,16 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 
+/**======================================================
+//                PERSONAJE PRINC.                     ||
+//====================================================*/
+
     private void actualizarHero(Hero hero) {
         if (moviendoDerecha && hero.getEstado() != EstadoHeroe.SALTO)
             hero.setEstado(EstadoHeroe.DERECHA);
 
         else if (moviendoIzquierda && hero.getEstado() != EstadoHeroe.SALTO)
             hero.setEstado(EstadoHeroe.IZQUIERDA);
-
-//        if(prevState == EstadoHeroe.DERECHA && hero.getEstado() == EstadoHeroe.IZQUIERDA)
-//            hero.cambiarEstado();
-//        else if(prevState == EstadoHeroe.IZQUIERDA && hero.getEstado() == EstadoHeroe.DERECHA)
-//            hero.cambiarEstado();
 
         if ( moviendoIzquierda || moviendoDerecha)
             hero.mover();
@@ -565,6 +599,24 @@ public class PantallaNvl1 extends Pantalla {
                 hero.actualizarVuelo();
         }
 
+        if ( hero.getEstadoSalto() != EstadoSalto.SUBIENDO ) {
+            int celdaX = (int) (hero.getSprite().getX() / TAM_CELDA);
+            int celdaY = (int) ( (hero.getSprite().getY() + hero.getVelocity()) / TAM_CELDA);
+
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
+            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+
+            if( celdaAbajo==null && celdaDerecha==null ){
+                hero.caer();
+                hero.setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
+            }else {
+                hero.setPosition(hero.getSprite().getX(), (celdaY + 1) * TAM_CELDA);
+                hero.setEstadoSalto(EstadoSalto.EN_PISO);
+                hero.setyBase((celdaY+1)*TAM_CELDA);
+            }
+        }
+
         colsionesHero();
     }
 
@@ -579,6 +631,7 @@ public class PantallaNvl1 extends Pantalla {
             }
         }
     }
+
 
     @Override
     public void pause() {
@@ -598,8 +651,15 @@ public class PantallaNvl1 extends Pantalla {
         arrAliensAgiles.clear();
         arrTanques.clear();
         arrLetales.clear();
+        bgMusic.dispose();
+        juego.mp3.dispose();
 
     }
+
+
+/**======================================================
+//              PROCESADOR ENTRADA                     ||
+//====================================================*/
 
     private class ProcesadorEntrada implements InputProcessor {
 
@@ -629,9 +689,10 @@ public class PantallaNvl1 extends Pantalla {
 
             // Pause button
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
-                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f)
+                    v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f) {
                 juego.setScreen(new PantallaJuego(juego));
-
+                bgMusic.stop();
+            }
             //  A button (Jump)
             else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
                     v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
@@ -699,7 +760,3 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 }
-/*
-Pantalla que almacena todos los objetos del nivel 1
-Autores: Israel, Misael y Alejandro
- */

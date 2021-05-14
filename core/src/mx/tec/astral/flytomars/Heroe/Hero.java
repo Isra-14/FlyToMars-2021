@@ -30,14 +30,22 @@ public class Hero extends Objeto {
 
     // Velocity
     private static final float DX = 8;
+    private static final float DY = -4f;
 
     // Jump
-    private final float yBase = 64;     // Floor
+    private float yBase;     // Floor
     private float tAire;                // Time in the air
     private float tVuelo;               // Fly time
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
+    public void setyBase(float newYbase) {
+        yBase = newYbase;
+    }
+
+    public Float getVelocity(){
+        return DY;
+    }
 
     private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, MUERE)
 //    private EstadoHeroe estadoPrev;
@@ -151,6 +159,10 @@ public class Hero extends Objeto {
     }
 
     public EstadoHeroe getEstado() { return estado; }
+
+    public void caer(){
+        sprite.setY(sprite.getY() + DY);
+    }
 
     public void mover (){
         switch (estado){
