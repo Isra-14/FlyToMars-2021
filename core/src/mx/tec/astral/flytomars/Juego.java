@@ -29,7 +29,6 @@ public class Juego extends Game
 	public Sound soundBotones;
 	public Sound soundDisparo;
 	public Sound soundSalto;
-	public Sound soundHerido;
 	public  Sound perder;
 
 	//Se carga el texto
@@ -63,7 +62,6 @@ public class Juego extends Game
 		soundBotones = Gdx.audio.newSound(Gdx.files.internal("Efectos/Selection_sound.wav"));
 		soundDisparo = Gdx.audio.newSound(Gdx.files.internal("Efectos/bubble_shot.wav"));
 		soundSalto = Gdx.audio.newSound(Gdx.files.internal("Efectos/Jump.wav"));
-		soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));
 		perder = Gdx.audio.newSound(Gdx.files.internal("Efectos/Lost_sound.wav"));
 	}
 
