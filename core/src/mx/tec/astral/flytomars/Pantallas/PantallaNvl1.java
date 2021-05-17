@@ -6,7 +6,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -42,6 +41,7 @@ import mx.tec.astral.flytomars.Tools.Vida;
 
 
 public class PantallaNvl1 extends Pantalla {
+
     // Estados del juego
     EstadoJuego estadoJuego;
 
@@ -54,7 +54,7 @@ public class PantallaNvl1 extends Pantalla {
     Texto texto;
     private int puntos = 0;
 
-    private Juego juego;
+    private final Juego juego;
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
@@ -162,7 +162,7 @@ public class PantallaNvl1 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-/**======================================================
+    /**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
 
@@ -379,8 +379,10 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void comprobarVidas() {
-        if(arrVidas.size <= 0)
+        if(arrVidas.size <= 0) {
             estadoJuego = EstadoJuego.PERDIO;
+            juego.perder.play();
+        }
     }
 
 
@@ -627,6 +629,7 @@ public class PantallaNvl1 extends Pantalla {
         for(int i = arrAliensAgiles.size-1; i>=0; i--){
             AlienAgil alienAgil = arrAliensAgiles.get(i);
             if( hero.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
+                juego.soundHerido.play();
                 alienAgil.setEstado(EstadoAlien.MUERE);
                 arrVidas.removeIndex(arrVidas.size-1);
 
@@ -655,8 +658,6 @@ public class PantallaNvl1 extends Pantalla {
         arrTanques.clear();
         arrLetales.clear();
         bgMusic.dispose();
-        juego.mp3.dispose();
-
     }
 
 
