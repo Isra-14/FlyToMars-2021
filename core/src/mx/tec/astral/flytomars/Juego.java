@@ -12,6 +12,9 @@ import mx.tec.astral.flytomars.Tools.Texto;
 /*
 	Main class/controller
 	Author(s): Israel Sanchez
+	Alejandro Quintana
+	sonidos recopilados de
+	https://freesound.org/
 
  */
 
@@ -19,7 +22,6 @@ public class Juego extends Game
 {
 	//Se pued eimplementar para aqi hacer los cambios e pantalla
 	public static final  int PANTALLA_SPLASH=0;
-	public static final  int PANTALLA_MENU=1;
 
 	public Music mp3;
 
@@ -27,6 +29,8 @@ public class Juego extends Game
 	public Sound soundBotones;
 	public Sound soundDisparo;
 	public Sound soundSalto;
+	public Sound soundHerido;
+	public  Sound perder;
 
 	//Se carga el texto
 	public Texto texto;
@@ -59,6 +63,8 @@ public class Juego extends Game
 		soundBotones = Gdx.audio.newSound(Gdx.files.internal("Efectos/Selection_sound.wav"));
 		soundDisparo = Gdx.audio.newSound(Gdx.files.internal("Efectos/bubble_shot.wav"));
 		soundSalto = Gdx.audio.newSound(Gdx.files.internal("Efectos/Jump.wav"));
+		soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));
+		perder = Gdx.audio.newSound(Gdx.files.internal("Efectos/Lost_sound.wav"));
 	}
 
 	//checa si se paro la musica
