@@ -6,7 +6,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.Array;
 
+import mx.tec.astral.flytomars.Enemigos.AlienAgil;
+import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Objeto;
 
@@ -18,6 +23,12 @@ Autor(es) : Misael Delgado, Israel Sanchez
 public class Hero extends Objeto {
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
+
+    private int vidas;
+
+    // Mapa
+    private int TAM_CELDA;
+    private TiledMap mapa;
 
     private Sprite idleD, idleI;
 
@@ -93,6 +104,8 @@ public class Hero extends Objeto {
         // Initial states
         estado = EstadoHeroe.DERECHA;
         estadoSalto = EstadoSalto.EN_PISO;
+
+        vidas = 3;
 
     }
 
@@ -217,6 +230,47 @@ public class Hero extends Objeto {
             estadoSalto = EstadoSalto.EN_PISO;
             sprite.setY(yBase);
         }
+    }
+
+    public void cargarMapa(TiledMap mapa, int TAM_CELDA){
+        this.mapa = mapa;
+        this.TAM_CELDA = TAM_CELDA;
+    }
+
+    public void verificarPlataforma(){
+        if ( getEstadoSalto() != EstadoSalto.SUBIENDO ) {
+            int celdaX = (int) (sprite.getX() / TAM_CELDA);
+            int celdaY = (int) ( (sprite.getY() + DY) / TAM_CELDA);
+
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
+            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+
+            if( celdaAbajo==null && celdaDerecha==null ){
+                caer();
+                setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
+            }else {
+                setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
+                setEstadoSalto(EstadoSalto.EN_PISO);
+                setyBase((celdaY+1)*TAM_CELDA);
+            }
+        }
+    }
+
+    public < T > void colision(Array < T > objetosColision){
+        for(int i = objetosColision.size-1; i>=0; i--){
+            if ( objetosColision.get(i) instanceof AlienAgil) {
+                AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
+                if ( sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
+                    alienAgil.setEstado(EstadoAlien.MUERE);
+                    vidas--;
+                }
+            }
+        }
+    }
+
+    public int getVidas(){
+        return vidas;
     }
 
 }
