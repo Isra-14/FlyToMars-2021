@@ -703,9 +703,10 @@ public class PantallaNvl1 extends Pantalla {
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;
             }
-            if (estadoJuego != EstadoJuego.PERDIO) {
+
+            if(estadoJuego != EstadoJuego.PERDIO) {
                 //  A button (Jump)
-            if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
+                if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
                         v.y >= texturaA.getHeight() / 2f && v.y <= texturaA.getHeight() * 1.5f) {
                     juego.soundSalto.play(.5f);
                     hero.saltar();
@@ -720,21 +721,19 @@ public class PantallaNvl1 extends Pantalla {
                     Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                             (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f));
 
-                    if(hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
-                        if (hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
-                            bala.setEstado(EstadoBala.DERECHA);
-                            bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth() / 2f,
-                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2f);
-                            arrBalas.add(bala);
-                        } else if (hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA) {
-                            bala.setEstado(EstadoBala.IZQUIERDA);
-                            bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth() / 2f,
-                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2);
-                            arrBalas.add(bala);
-                        }
+                    if (hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
+                        bala.setEstado(EstadoBala.DERECHA);
+                        bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth() / 2f,
+                                (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2f);
+                        arrBalas.add(bala);
+                    } else if (hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA) {
+                        bala.setEstado(EstadoBala.IZQUIERDA);
+                        bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth() / 2f,
+                                (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2);
+                        arrBalas.add(bala);
                     }
+                }
             }
-        }
 
 
             return true; //Porque el juego ya proceso el evento
