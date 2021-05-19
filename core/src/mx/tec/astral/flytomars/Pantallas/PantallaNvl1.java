@@ -121,8 +121,9 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaEscudo;
     private Texture texturaMoneda;
     private Texture texturaVida;
-    private int numeroPower;
-    private int timerPower = 3;
+    private Array<PowerUp> powerUpArray;
+    private int timerCrearPowerCup = 8;
+    private final float TIEMPO_CREAR_POWERUP = 8;
 
 
     //Clase powerUp
@@ -245,7 +246,7 @@ public class PantallaNvl1 extends Pantalla {
     private void crearPowerUp() {
         texturaEscudo = new Texture("items/shield.png");
         texturaMoneda = new Texture("items/coin.png");
-        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
+        powerUpArray = new Array<>();
     }
 
     private void crearBalas() {
@@ -341,6 +342,13 @@ public class PantallaNvl1 extends Pantalla {
 //======================================================
 */
         hero.render(batch);
+        if(powerUpArray.size != 0 ) {
+            System.out.println("Se dibuja power");
+            int random = (int)MathUtils.random()*3;
+            for (PowerUp power : powerUpArray) {
+                power.creaNuevoPowerUp(batch, random);
+            }
+        }
 
 
 /**======================================================
@@ -380,19 +388,18 @@ public class PantallaNvl1 extends Pantalla {
         actualizarTanque(delta);
         actualizarLetal(delta);
 
-
-        // moverAliensAgiles(delta);
+        //if (probabilidad() >= 80) {
+            System.out.println("Se crea power");
+            crearPower(delta);
 
         if(arrBalas.size != 0)
             colisionesAlienAgil();
     }
 
-    private void probabilidad(SpriteBatch batch) {
-
+    private int probabilidad()
+    {
         int chance = (int)(Math.random()*100);
-        if (chance < 80)
-            powerUp.render(batch);
-
+        return chance;
     }
 
     private void comprobarVidas() {
@@ -401,7 +408,23 @@ public class PantallaNvl1 extends Pantalla {
             juego.perder.play();
         }
     }
-
+/**======================================================
+ //                    PowerUps                         ||
+ //====================================================*/
+    private void crearPower(float delta)
+    {
+        int x = (int)MathUtils.random();
+        int y = (int)MathUtils.random();
+        timerCrearPowerCup += delta;
+        System.out.println("" + timerCrearPowerCup);
+        if (timerCrearPowerCup >= TIEMPO_CREAR_POWERUP) {
+            System.out.println("Creando powwr");
+            timerCrearPowerCup = 0;
+            //crearlos
+            PowerUp power = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, x, y);
+            powerUpArray.add(power);
+        }
+    }
 
 /**======================================================
 //                    E. AGILES                        ||
@@ -440,16 +463,6 @@ public class PantallaNvl1 extends Pantalla {
                 alienAgil.setX(ANCHO);
             else if (alienAgil.getSprite().getX() >= ANCHO)
                 alienAgil.setX(0);
-
-//                          Movimiento Solo dentro de pantalla
-//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-//                alienAgil.moverHorizontal();
-//            else {
-//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-//                    alienAgil.setX(1);
-//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
-//            }
             depurarAlienAgil();
         }
     }

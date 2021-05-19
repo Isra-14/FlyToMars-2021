@@ -263,7 +263,6 @@ public class Hero extends Objeto {
             /**
              * Identifica el tipo de objeto al que pertenece el arreglo
              */
-
             if ( objetosColision.get(i) instanceof AlienAgil ) {
                 AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
                 if ( sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {

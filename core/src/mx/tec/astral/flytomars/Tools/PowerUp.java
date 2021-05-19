@@ -26,7 +26,7 @@ public class PowerUp extends Objeto{
 
     public PowerUp(Texture texturaCorazon, Texture texturaEscudo, Texture texturaMoneda, float x, float y)
     {
-        super(texturaCorazon, x, y);
+        super(texturaEscudo, x, y);
         this.textraVidaExtra = texturaCorazon;
         this.texturaEscudo = texturaEscudo;
         this.texturaMoneda = texturaMoneda;
@@ -37,21 +37,18 @@ public class PowerUp extends Objeto{
     public void creaNuevoPowerUp(SpriteBatch batch, int PowetUp)
     {
         tiempoVida += Gdx.graphics.getDeltaTime();
-        int x = random();
-        int y = random();
-        //if (tiempoVida == generacionPower) {
             switch (PowetUp) {
                 case 0:
                     sprite.setTexture(textraVidaExtra);
-                    batch.draw(sprite, x, y);
+                    batch.draw(sprite, sprite.getX(), sprite.getY());
                     break;
                 case 1:
                     sprite.setTexture(texturaEscudo);
-                    batch.draw(sprite, x, y);
+                    batch.draw(sprite,  sprite.getX(), sprite.getY());
                     break;
                 case 2:
                     sprite.setTexture(texturaMoneda);
-                    batch.draw(sprite, x, y);
+                    batch.draw(sprite, sprite.getX(), sprite.getY());
                     break;
                 default:
                     System.out.println("No se pudo crear ningun objeto");
@@ -59,11 +56,6 @@ public class PowerUp extends Objeto{
             }
     }
 
-
-    public void render(SpriteBatch batch) {
-       int  numeroPower = (int)(Math.random()*3);
-        creaNuevoPowerUp(batch, numeroPower);
-    }
 
     private int random() {
         return (int)(Math.random()*600 + 100);
