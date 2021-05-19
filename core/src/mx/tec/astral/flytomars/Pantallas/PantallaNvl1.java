@@ -13,8 +13,15 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoJuego;
@@ -41,6 +48,7 @@ import mx.tec.astral.flytomars.Tools.Vida;
 
 
 public class PantallaNvl1 extends Pantalla {
+
     // Estados del juego
     EstadoJuego estadoJuego;
 
@@ -53,9 +61,9 @@ public class PantallaNvl1 extends Pantalla {
     Texto texto;
     private int puntos = 0;
 
-    private Juego juego;
-    Texture texturaFondo;
-    private Stage escenaMenuNiveles;
+    private final Juego juego;
+//    Texture texturaFondo;
+//    private Stage escenaMenuNiveles;
 
     //  Personaje (Hero)
     private Hero hero;
@@ -104,7 +112,7 @@ public class PantallaNvl1 extends Pantalla {
     private Bala bala;
 
     //  Buttons
-    private Texture texturaBack;
+//    private Texture texturaBack;
     private Texture texturaA;
     private Texture texturaB;
     private Texture texturaIzq;
@@ -126,6 +134,11 @@ public class PantallaNvl1 extends Pantalla {
     private boolean moviendoIzquierda = false;
     private boolean moviendoDerecha = false;
 
+    // PAUSE
+    private EscenaPausa escenaPausa;
+
+    private ProcesadorEntrada procesadorEntrada;
+
 
     public PantallaNvl1(Juego juego) {
         this.juego = juego;
@@ -142,10 +155,11 @@ public class PantallaNvl1 extends Pantalla {
         crearAlienTanque();
 
         //crea los objetos
+        crearHero();
         crearVidas();
         crearPowerUp();
 
-        crearBotonBack();
+//        crearBotonBack();
         crearBotonA();
         crearBotonB();
         crearBotonIzq();
@@ -156,14 +170,14 @@ public class PantallaNvl1 extends Pantalla {
 
         crearBalas();
 
-        crearHero();
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
-        Gdx.input.setInputProcessor(new ProcesadorEntrada());
+        procesadorEntrada = new ProcesadorEntrada();
+        Gdx.input.setInputProcessor(procesadorEntrada);
 
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-/**======================================================
+    /**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
 
@@ -194,7 +208,7 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearBotonPause() {
-        texturaPause = new Texture("buttons/pause.png");
+        texturaPause = new Texture("buttons/Pause_Idle.png");
     }
 
     private void crearBotonDer() {
@@ -213,9 +227,9 @@ public class PantallaNvl1 extends Pantalla {
         texturaB = new Texture("buttons/btn_B.png");
     }
 
-    private void crearBotonBack() {
-        texturaBack = new Texture("Menu/btn_back.png");
-    }
+//    private void crearBotonBack() {
+//        texturaBack = new Texture("Menu/btn_back.png");
+//    }
 
 /**======================================================
 //                    PERSONAJE                        ||
@@ -227,6 +241,7 @@ public class PantallaNvl1 extends Pantalla {
         hero = new Hero(spriteSheet);
         hero.setPosition(0, 64);
 
+        hero.cargarMapa(mapa, TAM_CELDA);
     }
 
     private void crearPowerUp() {
@@ -244,7 +259,7 @@ public class PantallaNvl1 extends Pantalla {
     private void crearVidas() {
         texturaVida = new Texture("items/heart.png");
 
-        arrVidas = new Array<>(3);
+        arrVidas = new Array<>(hero.getVidas());
         for (int i = 0; i < 3; i++){
             Vida vida = new Vida(texturaVida,  ANCHO-(i*60+65),ALTO-60);
             arrVidas.add(vida); //Lo guarda en el arrelo
@@ -281,7 +296,7 @@ public class PantallaNvl1 extends Pantalla {
 //===================================================*/
     @Override
     public void render(float delta) {
-        if(estadoJuego != EstadoJuego.PERDIO)
+        if(estadoJuego == EstadoJuego.EN_JUEGO)
             actualizar(delta);
 
         borrarPantalla(0, 0, 0); //Borrar con color negro}
@@ -356,6 +371,10 @@ public class PantallaNvl1 extends Pantalla {
         //probabilidad(batch);
 
         batch.end();
+
+        if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null)
+            escenaPausa.draw();
+
     }
 
     private void actualizar(float delta){
@@ -384,8 +403,10 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void comprobarVidas() {
-        if(arrVidas.size <= 0)
+        if(arrVidas.size <= 0) {
             estadoJuego = EstadoJuego.PERDIO;
+            juego.perder.play();
+        }
     }
 
 
@@ -689,57 +710,13 @@ private void crearTanque(float delta) {
                 hero.actualizarVuelo();
         }
 
-        if ( hero.getEstadoSalto() != EstadoSalto.SUBIENDO ) {
-            int celdaX = (int) (hero.getSprite().getX() / TAM_CELDA);
-            int celdaY = (int) ( (hero.getSprite().getY() + hero.getVelocity()) / TAM_CELDA);
+        hero.verificarPlataforma();
 
-            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
-            TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
-            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+        hero.colision(arrAliensAgiles);
+        arrVidas.size = hero.getVidas();
 
-            if( celdaAbajo==null && celdaDerecha==null ){
-                hero.caer();
-                hero.setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
-            }else {
-                hero.setPosition(hero.getSprite().getX(), (celdaY + 1) * TAM_CELDA);
-                hero.setEstadoSalto(EstadoSalto.EN_PISO);
-                hero.setyBase((celdaY+1)*TAM_CELDA);
-            }
-        }
+        comprobarVidas();
 
-        colsionesHero();
-    }
-
-    private void colsionesHero() {
-        for(int i = arrAliensAgiles.size-1; i>=0; i--){
-            AlienAgil alienAgil = arrAliensAgiles.get(i);
-            if( hero.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
-                alienAgil.setEstado(EstadoAlien.MUERE);
-                arrVidas.removeIndex(arrVidas.size-1);
-
-                comprobarVidas();
-            }
-        }
-
-        for(int i = arrTanques.size-1; i>=0; i--){
-            AlienTanque alienTanque = arrTanques.get(i);
-            if( hero.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())){
-                alienTanque.setEstado(EstadoAlien.MUERE);
-                arrVidas.removeIndex(arrVidas.size-1);
-
-                comprobarVidas();
-            }
-        }
-
-        for(int i = arrLetales.size-1; i>=0; i--){
-            AlienLetal alienLetal = arrLetales.get(i);
-            if( hero.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())){
-                alienLetal.setEstado(EstadoAlien.MUERE);
-                arrVidas.removeIndex(arrVidas.size-1);
-
-                comprobarVidas();
-            }
-        }
     }
 
 
@@ -762,8 +739,6 @@ private void crearTanque(float delta) {
         arrTanques.clear();
         arrLetales.clear();
         bgMusic.dispose();
-        juego.mp3.dispose();
-
     }
 
 
@@ -800,34 +775,12 @@ private void crearTanque(float delta) {
             // Pause button
             if(v.x >= ANCHO/2 - texturaPause.getWidth()/2f && v.x <= ANCHO/2 + texturaPause.getWidth()/2f &&
                     v.y >= ALTO - texturaPause.getHeight()*1.5f && v.y <= ALTO - texturaPause.getHeight()*0.5f) {
-                juego.setScreen(new PantallaJuego(juego));
-                bgMusic.stop();
-            }
-            //  A button (Jump)
-            else if(v.x >= ANCHO-texturaA.getWidth()*2 && v.x <=ANCHO-texturaA.getWidth() &&
-                    v.y >= texturaA.getHeight()/2f && v.y <= texturaA.getHeight()*1.5f) {
-                hero.saltar();
-            }
-
-            //  B button (Shoot)
-            else if(v.x >= ANCHO-texturaB.getWidth() && v.x <= ANCHO &&
-                    v.y >= texturaB.getHeight()/2f && v.y <= texturaB.getHeight()*1.5f) {
-
-                Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
-                        (hero.getSprite().getY() + hero.getSprite().getHeight()/2f));
-
-                if(hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
-                    bala.setEstado(EstadoBala.DERECHA);
-                    bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth()/2f,
-                            (hero.getSprite().getY() + hero.getSprite().getHeight()/2f) - bala.getSprite().getHeight()/2f);
-                    arrBalas.add(bala);
-                } else if(hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA){
-                    bala.setEstado(EstadoBala.IZQUIERDA);
-                    bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth()/2f,
-                            (hero.getSprite().getY() + hero.getSprite().getHeight()/2f)- bala.getSprite().getHeight()/2);
-                    arrBalas.add(bala);
-                }
-
+//                juego.setScreen(new PantallaJuego(juego));
+                if ( escenaPausa == null )
+                    escenaPausa = new EscenaPausa(vista);
+                estadoJuego = EstadoJuego.PAUSA;
+                Gdx.input.setInputProcessor(escenaPausa);
+                bgMusic.pause();
             }
             else {
                 // Left Button
@@ -835,11 +788,44 @@ private void crearTanque(float delta) {
                         v.y >= texturaIzq.getHeight() / 3f && v.y <= texturaIzq.getHeight() * 1.3f)
                     moviendoIzquierda = true;
 
-                // Right Button
+                    // Right Button
                 else if (v.x >= texturaDer.getWidth() * 2f && v.x <= texturaDer.getWidth() * 3f &&
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;
             }
+            if (estadoJuego != EstadoJuego.PERDIO) {
+                //  A button (Jump)
+            if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
+                        v.y >= texturaA.getHeight() / 2f && v.y <= texturaA.getHeight() * 1.5f) {
+                    juego.soundSalto.play(.5f);
+                    hero.saltar();
+                }
+
+                //  B button (Shoot)
+                else if (v.x >= ANCHO - texturaB.getWidth() && v.x <= ANCHO &&
+                        v.y >= texturaB.getHeight() / 2f && v.y <= texturaB.getHeight() * 1.5f) {
+
+                    //Sonido disparo
+                    juego.soundDisparo.play(.2f);
+                    Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
+                            (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f));
+
+                    if(hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
+                        if (hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
+                            bala.setEstado(EstadoBala.DERECHA);
+                            bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth() / 2f,
+                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2f);
+                            arrBalas.add(bala);
+                        } else if (hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA) {
+                            bala.setEstado(EstadoBala.IZQUIERDA);
+                            bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth() / 2f,
+                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2);
+                            arrBalas.add(bala);
+                        }
+                    }
+            }
+        }
+
 
             return true; //Porque el juego ya proceso el evento
         }
@@ -867,6 +853,43 @@ private void crearTanque(float delta) {
         @Override
         public boolean scrolled(float amountX, float amountY) {
             return false;
+        }
+    }
+
+    private class EscenaPausa extends Stage{
+        private Texture texturaFondo;
+
+        public EscenaPausa(Viewport vista){
+            super(vista);
+
+            texturaFondo = new Texture("pausa/fondoPausa.png");
+            Image imageFondo = new Image(texturaFondo);
+            imageFondo.setPosition(ANCHO/2, ALTO/2, Align.center);
+            addActor(imageFondo);
+
+            Texture textureBtnContinuar = new Texture("pausa/Play_Idle.png");
+            TextureRegionDrawable trdContinuar = new TextureRegionDrawable(textureBtnContinuar);
+            Button btnContinuar = new Button(trdContinuar);
+
+            addActor(btnContinuar);
+            btnContinuar.setPosition(ANCHO/2, 0.3f*ALTO, Align.center);
+
+            btnContinuar.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    if(arrVidas.size > 0) {
+                        estadoJuego = EstadoJuego.EN_JUEGO;
+                        bgMusic.play();
+                        bgMusic.setLooping(true);
+                        bgMusic.setVolume(0.12f);
+                    } else
+                        estadoJuego = EstadoJuego.PERDIO;
+
+                    Gdx.input.setInputProcessor(procesadorEntrada);
+                }
+            });
         }
     }
 }

@@ -53,13 +53,8 @@ public class AlienLetal extends Objeto {
         this.estado = estado;
     }
 
-    public Sprite getSprite(){
-        return sprite;
-    }
+    public Sprite getSprite(){return sprite;}
 
-    public float getX(){
-        return sprite.getX();
-    }
     public void setX(float dx){
         sprite.setX(dx);
     }

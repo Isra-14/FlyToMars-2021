@@ -1,13 +1,22 @@
 package mx.tec.astral.flytomars.Heroe;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.Array;
 
+import mx.tec.astral.flytomars.Enemigos.AlienAgil;
+import mx.tec.astral.flytomars.Enemigos.AlienLetal;
+import mx.tec.astral.flytomars.Enemigos.AlienTanque;
+import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Tools.Objeto;
 
 /*
@@ -16,8 +25,15 @@ Autor(es) : Misael Delgado, Israel Sanchez
  */
 
 public class Hero extends Objeto {
+
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
+
+    private int vidas;
+
+    // Mapa
+    private int TAM_CELDA;
+    private TiledMap mapa;
 
     private Sprite idleD, idleI;
 
@@ -38,6 +54,9 @@ public class Hero extends Objeto {
     private float tVuelo;               // Fly time
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
+
+    //sonidos
+    public Sound soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));;
 
     public void setyBase(float newYbase) {
         yBase = newYbase;
@@ -77,10 +96,10 @@ public class Hero extends Objeto {
         TextureRegion[] arrFramesCorrerDer = { texturas[1][0], texturas[1][1], texturas[1][2], texturas[1][3], texturas[1][4], texturas[1][5],
                                             texturas[1][6], texturas[1][7], texturas[1][8], texturas[1][9], texturas[1][10], texturas[1][11]};
 
-        animacionCorre_D = new Animation<TextureRegion>(0.08f, arrFramesCorrerDer);
+        animacionCorre_D = new Animation<>(0.08f, arrFramesCorrerDer);
         animacionCorre_D.setPlayMode(Animation.PlayMode.LOOP);
 
-        animacionCorre_I = new Animation<TextureRegion>(0.08f, arrFramesCorrerIzq);
+        animacionCorre_I = new Animation<>(0.08f, arrFramesCorrerIzq);
         animacionCorre_I.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
         timerAnimation = 0;
 
@@ -93,6 +112,8 @@ public class Hero extends Objeto {
         // Initial states
         estado = EstadoHeroe.DERECHA;
         estadoSalto = EstadoSalto.EN_PISO;
+
+        vidas = 3;
 
     }
 
@@ -119,19 +140,6 @@ public class Hero extends Objeto {
                 frame = animacionCorre_I.getKeyFrame(timerAnimation);
                 batch.draw(frame, sprite.getX(), sprite.getY());
                 break;
-//            case SALTO:
-//                actualizarVuelo();
-//                switch (estadoPrev){
-//                    case DERECHA:
-//                    case IDLE_D:
-//                        batch.draw(idleD, sprite.getX(), sprite.getY());
-//                        break;
-//                    case IZQUIERDA:
-//                    case IDLE_I:
-//                        batch.draw(idleI, sprite.getX(), sprite.getY());
-//                        break;
-//                }
-//                break;
             default:
                 Gdx.app.log("Caso no contemplado al dibujar ", estado.toString());
                 break;
@@ -217,6 +225,64 @@ public class Hero extends Objeto {
             estadoSalto = EstadoSalto.EN_PISO;
             sprite.setY(yBase);
         }
+    }
+
+    public void cargarMapa(TiledMap mapa, int TAM_CELDA){
+        this.mapa = mapa;
+        this.TAM_CELDA = TAM_CELDA;
+    }
+
+    public void verificarPlataforma(){
+        if ( getEstadoSalto() != EstadoSalto.SUBIENDO ) {
+            int celdaX = (int) (sprite.getX() / TAM_CELDA);
+            int celdaY = (int) ( (sprite.getY() + DY) / TAM_CELDA);
+
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
+            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+
+            if( celdaAbajo==null && celdaDerecha==null ){
+                caer();
+                setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
+            }else {
+                setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
+                setEstadoSalto(EstadoSalto.EN_PISO);
+                setyBase((celdaY+1)*TAM_CELDA);
+            }
+        }
+    }
+
+    /**
+     * Metodo generico para identificar las colisiones contra el personaje principal
+     * Recibe un arreglo de objetos de tipo T llamados objetosColision.
+     *
+     * */
+    public < T > void colision(Array < T > objetosColision){
+        for(int i = objetosColision.size-1; i>=0; i--){
+
+            /**
+             * Identifica el tipo de objeto al que pertenece el arreglo
+             */
+
+            if ( objetosColision.get(i) instanceof AlienAgil ) {
+                AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
+                if ( sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
+                    alienAgil.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
+                    vidas--;
+                }
+            } else if ( objetosColision.get(i) instanceof AlienTanque ){
+                // Falta añadir la logica de que le hará al hero.
+
+            } else if ( objetosColision.get(i) instanceof AlienLetal){
+                // Falta añadir la logica de que le hará al hero.
+
+            }
+        }
+    }
+
+    public int getVidas(){
+        return vidas;
     }
 
 }

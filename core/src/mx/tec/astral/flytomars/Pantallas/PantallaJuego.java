@@ -23,6 +23,8 @@ public class PantallaJuego extends Pantalla {
     Texture texturaFondo;
     private Stage escenaMenuNiveles;
 
+    private boolean abiertas = false;
+
     public PantallaJuego(Juego juego) {
         this.juego = juego;
     }
@@ -32,9 +34,21 @@ public class PantallaJuego extends Pantalla {
         //checamos si la musica fue parada al regresar a esta pantalla
         if (!juego.getMusica()){
             juego.mp3.play();
+            juego.mp3.setVolume(.15f);
         }
         crearMenu();
+        crearHistoria();
     }
+    //Historia
+    PantallaHistoria historia;
+    Texture texturaHistoria;
+    private void crearHistoria()
+    {
+        texturaHistoria = new Texture("fondos/hitoryBG.jpg");
+        historia = new PantallaHistoria(juego);
+        historia.setTexturaFondo(texturaHistoria);
+    }
+
 
     private void crearMenu() {
         texturaFondo = new Texture("Menu/FondoMenu.png");
@@ -66,7 +80,13 @@ public class PantallaJuego extends Pantalla {
             public void clicked(InputEvent event, float x, float y) {
                 juego.soundBotones.play();
                 juego.mp3.stop();
-                juego.setScreen(new PantallaNvl1(juego));
+                if(abiertas == false) {
+                    abiertas = true;
+                    juego.setScreen(historia);
+                }
+                else {
+                    juego.setScreen(new PantallaNvl1(juego));
+                }
             }
         });
 
@@ -133,6 +153,7 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
+        escenaMenuNiveles.dispose();
 
     }
 }
