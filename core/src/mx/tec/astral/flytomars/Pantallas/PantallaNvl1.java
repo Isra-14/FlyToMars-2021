@@ -85,19 +85,21 @@ public class PantallaNvl1 extends Pantalla {
     //Alien Letal
 //    private AlienLetal aLetal;
     private Array<AlienLetal> arrLetales;
-    private Texture texturaLetal;
-    private float timerCrearAlienLetal;
+    private Texture texturaLetal_left;
+    private Texture texturaLetal_right;
+    private float timerCrearAlienLetal=10;
     private float timerCambioLetal;
     private final float TIEMPO_CREAR_LETAL = 20;
-    private final float TIEMPO_CAMBIO_LETAL = 6;
+    private final float TIEMPO_CAMBIO_LETAL = 6f;
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
-    private Texture texturaTanque;
-    private float timerCrearAlienTanque;
+    private Texture texturaTanque_left;
+    private Texture texturaTanque_right;
+    private float timerCrearAlienTanque=10;
     private float timerCambioTanque;
     private final float TIEMPO_CREAR_TANQUE = 15;
-    private final float TIEMPO_CAMBIO_TANQUE = 6;
+    private final float TIEMPO_CAMBIO_TANQUE = 6f;
 
 
     //  Objetos vida
@@ -269,13 +271,15 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearAlienTanque() {
-        texturaTanque=new Texture("enemigos/alienTanque2.png");
+        texturaTanque_left = new Texture("enemigos/alienTanque_Left.png");
+        texturaTanque_right = new Texture("enemigos/alienTanque_Right.png");
         arrTanques = new Array<>();
 
     }
 
     private void crearAlienLetal() {
-        texturaLetal=new Texture("enemigos/alienLetal2.png");
+        texturaLetal_left = new Texture("enemigos/alienLetal_Left.png");
+        texturaLetal_right = new Texture("enemigos/alienLetal_Right.png");
         arrLetales= new Array<>();
 
     }
@@ -377,15 +381,18 @@ public class PantallaNvl1 extends Pantalla {
         actualizarHero(hero);
         actualizarBalas(delta);
         crearAgil(delta);
-        actualizarTanque(delta);
-        actualizarLetal(delta);
+        crearTanque(delta);
+        crearLetal(delta);
 
 
         // moverAliensAgiles(delta);
 
-        if(arrBalas.size != 0)
+        if(arrBalas.size != 0){
             colisionesAlienAgil();
-    }
+            colisionesAlienLetal();
+            colisionesAlienTanque();
+
+    }}
 
     private void probabilidad(SpriteBatch batch) {
 
@@ -489,79 +496,162 @@ public class PantallaNvl1 extends Pantalla {
 //                  E. LETALES                         ||
 //====================================================*/
 
-    private void actualizarLetal(float delta) {
+    private void crearLetal(float delta) {
         timerCrearAlienLetal+=delta;
         if(timerCrearAlienLetal>=TIEMPO_CREAR_LETAL){
             timerCrearAlienLetal=0;
             //Crear
-            float xLetal= MathUtils.random(10,ANCHO-texturaLetal.getWidth());
-            AlienLetal aLetal= new AlienLetal(texturaLetal,xLetal,200);
+            float xLetal= MathUtils.random(10,ANCHO-texturaLetal_right.getWidth());
+            AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,200);
             arrLetales.add(aLetal);
         }
         moverAliensLetales(delta);
     }
 
     private void moverAliensLetales(float delta) {
-
-        int velocidad = 10;
         for (AlienLetal alienLetal : arrLetales) {
-            timerCambioLetal += delta;
-            if (timerCambioLetal >= TIEMPO_CAMBIO_LETAL) {
+            timerCambioLetal+=delta;
+            if(timerCambioLetal >= TIEMPO_CAMBIO_LETAL){
+                int tipo = MathUtils.random(1,2);
+                timerCambioLetal = 0;
+                if( tipo == 1 && alienLetal.getEstado() == EstadoAlien.DERECHA)
+                    alienLetal.cambiarEstado();
+                else if(tipo == 2 && alienLetal.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienLetal.cambiarEstado();
+            }
 
-                int valor = MathUtils.random(0, 1);
-                if (valor >0) {
-                    velocidad*=-1;
-                    alienLetal.moverHorizontal(30);
-                    timerCambioLetal=3;
-                } else {
-                    velocidad*=-1;
-                    alienLetal.moverHorizontal(-30);
-                    timerCambioLetal=3;
+            alienLetal.moverHorizontal();
 
+
+            if(alienLetal.getSprite().getX() <= 0 - alienLetal.getSprite().getWidth())
+                alienLetal.setX(ANCHO);
+            else if (alienLetal.getSprite().getX() >= ANCHO)
+                alienLetal.setX(0);
+
+//                          Movimiento Solo dentro de pantalla
+//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
+//                alienAgil.moverHorizontal();
+//            else {
+//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+//                    alienAgil.setX(1);
+//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+//            }
+            depurarAlienLetal();
+        }
+    }
+
+    private void colisionesAlienLetal() {
+        for(int i= arrLetales.size-1; i>=0; i--){
+            AlienLetal alienLetal = arrLetales.get(i);
+            if (alienLetal.getEstado() == EstadoAlien.MUERE )
+                arrLetales.removeIndex(i);
+
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
+
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())){
+                    //Le pegó
+                    alienLetal.setEstado(EstadoAlien.MUERE);
+                    //Contar puntos
+                    puntos +=150;
+                    //Desaparecer la bala
+
+                    arrBalas.removeIndex(j);
                 }
             }
         }
     }
 
+    private void depurarAlienLetal() {
+        for (int i = arrLetales.size-1; i>=0; i--){
+            AlienLetal letal = arrLetales.get(i);
+            if(letal.getEstado() == EstadoAlien.MUERE)
+                arrLetales.removeIndex(i);
+        }
+    }
 
 /**======================================================
 //                  E. TANQUE                          ||
 //====================================================*/
 
-    private void actualizarTanque(float delta) {
+private void crearTanque(float delta) {
+    timerCrearAlienTanque += delta;
 
-        timerCrearAlienTanque+=delta;
-        if(timerCrearAlienTanque>=TIEMPO_CREAR_TANQUE){
-            timerCrearAlienTanque=0;
-            //Crear
-            float xTanque = MathUtils.random(10,ANCHO-texturaTanque.getWidth());
-            AlienTanque aTanque = new AlienTanque(texturaTanque,xTanque,100);
-            arrTanques.add(aTanque);
+    if(timerCrearAlienTanque >= TIEMPO_CREAR_AGIL){
+        timerCrearAlienTanque = 0;
+
+        //Crear
+        float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
+        AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,200);
+        arrTanques.add(aTanque);
+    }
+    moverAliensTanques(delta);
+}
+
+    private void moverAliensTanques(float delta) {
+        for (AlienTanque alienTanque : arrTanques) {
+            timerCambioTanque+=delta;
+            if(timerCambioTanque >= TIEMPO_CAMBIO_TANQUE){
+                int tipo = MathUtils.random(1,2);
+                timerCambioTanque = 0;
+                if( tipo == 1 && alienTanque.getEstado() == EstadoAlien.DERECHA)
+                    alienTanque.cambiarEstado();
+                else if(tipo == 2 && alienTanque.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienTanque.cambiarEstado();
+            }
+
+            alienTanque.moverHorizontal();
+
+
+            if(alienTanque.getSprite().getX() <= 0 - alienTanque.getSprite().getWidth())
+                alienTanque.setX(ANCHO);
+            else if (alienTanque.getSprite().getX() >= ANCHO)
+                alienTanque.setX(0);
+
+//                          Movimiento Solo dentro de pantalla
+//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
+//                alienAgil.moverHorizontal();
+//            else {
+//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
+//                    alienAgil.setX(1);
+//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
+//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
+//            }
+            depurarAlienTanque();
         }
-        moverAliensTanque(delta);
     }
 
-    private void moverAliensTanque(float delta) {
-        int velocidad =10;
-        for (AlienTanque alienTanque : arrTanques) {
-            timerCambioTanque += delta;
+    private void colisionesAlienTanque() {
+        for(int i= arrTanques.size-1; i>=0; i--){
+            AlienTanque alienTanque = arrTanques.get(i);
+            if (alienTanque.getEstado() == EstadoAlien.MUERE )
+                arrTanques.removeIndex(i);
 
-            if (timerCambioTanque >= TIEMPO_CAMBIO_TANQUE) {
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
 
-                int valor = MathUtils.random(0, 1);
-                if (valor >0) {
-                    velocidad*=-1;
-                    alienTanque.moverHorizontal(10);
-                    timerCambioTanque=4;
-                } else {
-                    velocidad*=-1;
-                    alienTanque.moverHorizontal(-10);
-                    timerCambioTanque=4;
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())){
+                    //Le pegó
+                    alienTanque.setEstado(EstadoAlien.MUERE);
+                    //Contar puntos
+                    puntos +=200;
+                    //Desaparecer la bala
 
+                    arrBalas.removeIndex(j);
                 }
             }
         }
     }
+
+    private void depurarAlienTanque() {
+        for (int i = arrTanques.size-1; i>=0; i--){
+            AlienTanque tanque = arrTanques.get(i);
+            if(tanque.getEstado() == EstadoAlien.MUERE)
+                arrTanques.removeIndex(i);
+        }
+    }
+
 
 
 /**======================================================
