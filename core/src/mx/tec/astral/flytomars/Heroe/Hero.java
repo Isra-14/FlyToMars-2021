@@ -273,9 +273,23 @@ public class Hero extends Objeto {
                 }
             } else if ( objetosColision.get(i) instanceof AlienTanque ){
                 // Falta añadir la logica de que le hará al hero.
+                AlienTanque alienTanque = (AlienTanque) objetosColision.get(i);
+                if (sprite.getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle()))
+                {
+                    alienTanque.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
+                    vidas--;
+                }
 
             } else if ( objetosColision.get(i) instanceof AlienLetal){
                 // Falta añadir la logica de que le hará al hero.
+                AlienLetal alienLetal = (AlienLetal) objetosColision.get(i);
+                if (sprite.getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle()))
+                {
+                    alienLetal.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
+                    vidas--;
+                }
 
             }
         }

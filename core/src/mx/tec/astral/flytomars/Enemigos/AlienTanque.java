@@ -57,7 +57,7 @@ public class AlienTanque extends Objeto {
         return sprite;
     }
 
-
-    public Sprite getSprite(){return sprite;
+    public void setX(float i) {
+        sprite.setX(i);
     }
 }

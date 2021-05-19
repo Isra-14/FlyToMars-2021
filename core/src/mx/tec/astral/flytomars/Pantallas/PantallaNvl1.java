@@ -422,7 +422,8 @@ public class PantallaNvl1 extends Pantalla {
 
             //Crear
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
-            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200);
+            float yAgil= MathUtils.random(10,ALTO-texturaAgil_right.getHeight());
+            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,yAgil);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
@@ -447,16 +448,6 @@ public class PantallaNvl1 extends Pantalla {
                 alienAgil.setX(ANCHO);
             else if (alienAgil.getSprite().getX() >= ANCHO)
                 alienAgil.setX(0);
-
-//                          Movimiento Solo dentro de pantalla
-//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-//                alienAgil.moverHorizontal();
-//            else {
-//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-//                    alienAgil.setX(1);
-//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
-//            }
             depurarAlienAgil();
         }
     }
@@ -502,7 +493,8 @@ public class PantallaNvl1 extends Pantalla {
             timerCrearAlienLetal=0;
             //Crear
             float xLetal= MathUtils.random(10,ANCHO-texturaLetal_right.getWidth());
-            AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,200);
+            float yLetal= MathUtils.random(10,ALTO-texturaLetal_right.getHeight());
+            AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,yLetal);
             arrLetales.add(aLetal);
         }
         moverAliensLetales(delta);
@@ -527,16 +519,6 @@ public class PantallaNvl1 extends Pantalla {
                 alienLetal.setX(ANCHO);
             else if (alienLetal.getSprite().getX() >= ANCHO)
                 alienLetal.setX(0);
-
-//                          Movimiento Solo dentro de pantalla
-//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-//                alienAgil.moverHorizontal();
-//            else {
-//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-//                    alienAgil.setX(1);
-//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
-//            }
             depurarAlienLetal();
         }
     }
@@ -583,7 +565,8 @@ private void crearTanque(float delta) {
 
         //Crear
         float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
-        AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,200);
+        float yTanque= MathUtils.random(10,ALTO-texturaTanque_right.getHeight());
+        AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,yTanque);
         arrTanques.add(aTanque);
     }
     moverAliensTanques(delta);
@@ -608,16 +591,6 @@ private void crearTanque(float delta) {
                 alienTanque.setX(ANCHO);
             else if (alienTanque.getSprite().getX() >= ANCHO)
                 alienTanque.setX(0);
-
-//                          Movimiento Solo dentro de pantalla
-//            if(alienAgil.getSprite().getX() >= 0 && alienAgil.getSprite().getX() <= ANCHO - alienAgil.getSprite().getWidth())
-//                alienAgil.moverHorizontal();
-//            else {
-//                if (alienAgil.getSprite().getX() <= 0 && alienAgil.getEstado() == EstadoAlien.DERECHA)
-//                    alienAgil.setX(1);
-//                else if (alienAgil.getX() >= ANCHO - alienAgil.getSprite().getWidth() && alienAgil.getEstado() == EstadoAlien.IZQUIERDA)
-//                    alienAgil.setX(ANCHO - alienAgil.getSprite().getWidth() - 1);
-//            }
             depurarAlienTanque();
         }
     }
@@ -713,8 +686,9 @@ private void crearTanque(float delta) {
         hero.verificarPlataforma();
 
         hero.colision(arrAliensAgiles);
+        hero.colision(arrLetales);
+        hero.colision(arrTanques);
         arrVidas.size = hero.getVidas();
-
         comprobarVidas();
 
     }
