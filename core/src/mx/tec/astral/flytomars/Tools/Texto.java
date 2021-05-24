@@ -20,4 +20,8 @@ public class Texto {
         float anchoTexto = glyph.width;
         font.draw(batch, glyph, x-anchoTexto/2, y);
     }
+
+    public BitmapFont getBitmap (){
+        return font;
+    }
 }

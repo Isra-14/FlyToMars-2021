@@ -14,8 +14,10 @@ import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
 import mx.tec.astral.flytomars.Enemigos.AlienTanque;
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
+import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Objeto;
+import mx.tec.astral.flytomars.Tools.PowerUp;
 
 /*
 Personaje controlado por el usuario
@@ -64,18 +66,21 @@ public class Hero extends Objeto {
 //    private EstadoHeroe estadoPrev;
     private EstadoSalto estadoSalto;
 
-    // Default constructor
-    public Hero(Texture textura, float x, float y){
-        super(textura, x, y);
-    }
-
-    // Two different textures constructor
-    public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
-        super( texturaDerecha, x, y);
-        this.texturaDerecha = texturaDerecha;
-        this.texturaIzquierda = texturaIzquierda;
-        estado = EstadoHeroe.DERECHA;
-    }
+    private boolean tieneEscudo;
+    private boolean obtuvoMoneda;
+//
+//    // Default constructor
+//    public Hero(Texture textura, float x, float y){
+//        super(textura, x, y);
+//    }
+//
+//    // Two different textures constructor
+//    public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
+//        super( texturaDerecha, x, y);
+//        this.texturaDerecha = texturaDerecha;
+//        this.texturaIzquierda = texturaIzquierda;
+//        estado = EstadoHeroe.DERECHA;
+//    }
 
     // Constructor with a spriteSheet
     public Hero ( Texture texture){
@@ -106,6 +111,9 @@ public class Hero extends Objeto {
         // Initial states
         estado = EstadoHeroe.DERECHA;
         estadoSalto = EstadoSalto.EN_PISO;
+
+        obtuvoMoneda = false;
+        tieneEscudo = false;
 
         vidas = 3;
 
@@ -270,6 +278,32 @@ public class Hero extends Objeto {
             } else if ( objetosColision.get(i) instanceof AlienLetal){
                 // Falta añadir la logica de que le hará al hero.
 
+            } else if ( objetosColision.get(i) instanceof PowerUp){
+                PowerUp powerUp = (PowerUp) objetosColision.get(i);
+                if (sprite.getBoundingRectangle().overlaps(powerUp.getSprite().getBoundingRectangle())) {
+                    powerUp.setEstado(EstadoPowerUps.TOMADO);
+                    switch (powerUp.getTipo()) {
+                        // VIDA EXTRA
+                        case 0:
+                            if (vidas < 3)
+                                vidas++;
+                            break;
+
+                        // Escudo
+                        case 1:
+                            tieneEscudo = true;
+                            break;
+
+                        // Moneda
+                        case 2:
+                            obtuvoMoneda = true;
+                            break;
+
+                        default:
+                            Gdx.app.log("Hero Colision err:", "Error en la colision de powerUp, Caso no contemplado...");
+                            break;
+                    }
+                }
             }
         }
     }
@@ -278,4 +312,19 @@ public class Hero extends Objeto {
         return vidas;
     }
 
+    public boolean getTieneEscudo() {
+        return tieneEscudo;
+    }
+
+    public void setTieneEscudo(boolean tieneEscudo) {
+        this.tieneEscudo = tieneEscudo;
+    }
+
+    public boolean getObtuvoMoneda() {
+        return obtuvoMoneda;
+    }
+
+    public void setObtuvoMoneda(boolean obtuvoMoneda) {
+        this.obtuvoMoneda = obtuvoMoneda;
+    }
 }

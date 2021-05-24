@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoJuego;
+import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
@@ -56,6 +57,7 @@ public class PantallaNvl1 extends Pantalla {
     private TiledMap mapa;
     private OrthogonalTiledMapRenderer rendererMapa;
     private Music bgMusic;
+    private float volume;
 
     // Font of score.
     Texto texto;
@@ -117,12 +119,13 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaDer;
     private Texture texturaPause;
 
-    //Objetos de PowerUps
-    private Texture texturaEscudo;
-    private Texture texturaMoneda;
+//  Objetos de PowerUps
     private Texture texturaVida;
-    private int numeroPower;
-    private int timerPower = 3;
+    private float timerPower = 0f;
+    private final float TIEMPO_CREAR_ITEM = 30.0f;
+
+
+    private Array<PowerUp> arrPowerUps;
 
 
     //Clase powerUp
@@ -175,6 +178,7 @@ public class PantallaNvl1 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
+
 /**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
@@ -196,9 +200,11 @@ public class PantallaNvl1 extends Pantalla {
     private void cargarMusica() {
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
         bgMusic.play();
-        bgMusic.setVolume(0.12f);
+        volume = 0.12f;
+        bgMusic.setVolume(volume);
         bgMusic.setLooping(true);
     }
+
 
 
 /**======================================================
@@ -243,9 +249,8 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearPowerUp() {
-        texturaEscudo = new Texture("items/shield.png");
-        texturaMoneda = new Texture("items/coin.png");
-        powerUp = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, 0, 0);
+
+        arrPowerUps = new Array<>();
     }
 
     private void crearBalas() {
@@ -295,8 +300,15 @@ public class PantallaNvl1 extends Pantalla {
         if(estadoJuego == EstadoJuego.EN_JUEGO)
             actualizar(delta);
 
+
+
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
+
+/**======================================================
+ //                      MAPA                           ||
+ //======================================================
+ */
 
         rendererMapa.setView(camara);
         rendererMapa.render();
@@ -342,6 +354,9 @@ public class PantallaNvl1 extends Pantalla {
 */
         hero.render(batch);
 
+        for (PowerUp powerUp : arrPowerUps ) {
+            powerUp.render(batch);
+        }
 
 /**======================================================
 //                       BOTONES                       ||
@@ -379,6 +394,8 @@ public class PantallaNvl1 extends Pantalla {
         crearAgil(delta);
         actualizarTanque(delta);
         actualizarLetal(delta);
+        actualizarItems(delta);
+        depurarPowerUps();
 
 
         // moverAliensAgiles(delta);
@@ -387,12 +404,20 @@ public class PantallaNvl1 extends Pantalla {
             colisionesAlienAgil();
     }
 
-    private void probabilidad(SpriteBatch batch) {
+    private void actualizarItems(float delta) {
+        timerPower += delta;
+        // Aproximadamente se crea un powerUp c/30 seg.
+        if ( timerPower >= TIEMPO_CREAR_ITEM) {
+            timerPower = 0;
+            int posX = (int) Math.floor(Math.random()*((ANCHO-(80)-14)+15));
+            int posY = (int) Math.floor(Math.random()*((ALTO-(40))-2*TAM_CELDA+1)+2*TAM_CELDA);
 
-        int chance = (int)(Math.random()*100);
-        if (chance < 80)
-            powerUp.render(batch);
+            int tipo = (int) Math.floor(Math.random()*3);
+            powerUp = new PowerUp(posX, posY, tipo);
 
+            arrPowerUps.add(powerUp);
+
+        }
     }
 
     private void comprobarVidas() {
@@ -621,10 +646,25 @@ public class PantallaNvl1 extends Pantalla {
         hero.verificarPlataforma();
 
         hero.colision(arrAliensAgiles);
+        hero.colision(arrPowerUps);
         arrVidas.size = hero.getVidas();
+
+        if(hero.getObtuvoMoneda()) {
+            puntos += 50;
+            hero.setObtuvoMoneda(false);
+        }
+
 
         comprobarVidas();
 
+    }
+
+    private void depurarPowerUps() {
+        for (int i = arrPowerUps.size-1; i>=0; i--){
+            PowerUp powerUp = arrPowerUps.get(i);
+            if(powerUp.getEstado() == EstadoPowerUps.TOMADO)
+                arrPowerUps.removeIndex(i);
+        }
     }
 
 
@@ -690,7 +730,7 @@ public class PantallaNvl1 extends Pantalla {
                     escenaPausa = new EscenaPausa(vista);
                 estadoJuego = EstadoJuego.PAUSA;
                 Gdx.input.setInputProcessor(escenaPausa);
-                bgMusic.pause();
+//                bgMusic.pause();
             }
             else {
                 // Left Button
@@ -708,7 +748,9 @@ public class PantallaNvl1 extends Pantalla {
                 //  A button (Jump)
                 if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
                         v.y >= texturaA.getHeight() / 2f && v.y <= texturaA.getHeight() * 1.5f) {
-                    juego.soundSalto.play(.5f);
+
+                    if(hero.getEstadoSalto() == EstadoSalto.EN_PISO)
+                        juego.soundSalto.play(.5f);
                     hero.saltar();
                 }
 
@@ -767,6 +809,7 @@ public class PantallaNvl1 extends Pantalla {
 
     private class EscenaPausa extends Stage{
         private Texture texturaFondo;
+        private int volumen = 2;
 
         public EscenaPausa(Viewport vista){
             super(vista);
@@ -783,6 +826,21 @@ public class PantallaNvl1 extends Pantalla {
             addActor(btnContinuar);
             btnContinuar.setPosition(ANCHO/2, 0.3f*ALTO, Align.center);
 
+            Texture textureBtnBajarV = new Texture("pausa/Mute_Idle.png");
+            TextureRegionDrawable trdBajarV = new TextureRegionDrawable(textureBtnBajarV);
+            Button btnBajarV = new Button(trdBajarV);
+
+            addActor(btnBajarV);
+            btnBajarV.setPosition(ANCHO/3, 0.3f*ALTO, Align.center);
+
+            Texture textureBtnSubirV = new Texture("pausa/Volume_2_Idle.png");
+            TextureRegionDrawable trdSubirV = new TextureRegionDrawable(textureBtnSubirV);
+            Button btnSubirV = new Button(trdSubirV);
+
+            addActor(btnSubirV);
+            btnSubirV.setPosition(ANCHO*2/3, 0.3f*ALTO, Align.center);
+
+
             btnContinuar.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -790,15 +848,68 @@ public class PantallaNvl1 extends Pantalla {
 
                     if(arrVidas.size > 0) {
                         estadoJuego = EstadoJuego.EN_JUEGO;
-                        bgMusic.play();
-                        bgMusic.setLooping(true);
-                        bgMusic.setVolume(0.12f);
+//                        bgMusic.play();
                     } else
                         estadoJuego = EstadoJuego.PERDIO;
 
                     Gdx.input.setInputProcessor(procesadorEntrada);
                 }
             });
+
+            btnBajarV.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    if(volumen > 0 ) {
+                        volumen--;
+                        switch (volumen){
+                            case 0:
+                                bgMusic.setVolume(0f);
+                                break;
+                            case 1:
+                                bgMusic.setVolume(0.06f);
+                                break;
+                            case 2:
+                                bgMusic.setVolume(0.12f);
+                                break;
+                            case 3:
+                                bgMusic.setVolume(0.18f);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+
+            btnSubirV.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    if(volumen < 4 ) {
+                        volumen++;
+                        switch (volumen){
+                            case 1:
+                                bgMusic.setVolume(0.06f);
+                                break;
+                            case 2:
+                                bgMusic.setVolume(0.12f);
+                                break;
+                            case 3:
+                                bgMusic.setVolume(0.18f);
+                                break;
+                            case 4:
+                                bgMusic.setVolume(0.24f);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+
         }
     }
 }
