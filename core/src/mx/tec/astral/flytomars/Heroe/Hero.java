@@ -28,9 +28,6 @@ Autor(es) : Misael Delgado, Israel Sanchez
 
 public class Hero extends Objeto {
 
-    private Texture texturaDerecha;
-    private Texture texturaIzquierda;
-
     private int vidas;
 
     // Mapa
@@ -154,20 +151,6 @@ public class Hero extends Objeto {
         }
     }
 
-
-    public void cambiarEstado() {
-        switch (estado){
-            case IZQUIERDA:
-                estado = EstadoHeroe.DERECHA;
-                sprite.setTexture(texturaDerecha);
-                break;
-            case DERECHA:
-                estado = EstadoHeroe.IZQUIERDA;
-                sprite.setTexture(texturaIzquierda);
-                break;
-        }
-    }
-
     public void setEstado( EstadoHeroe nuevoEstado){
         estado = nuevoEstado;
 //        if(nuevoEstado == EstadoHeroe.MUERE)
@@ -253,9 +236,11 @@ public class Hero extends Objeto {
                 caer();
                 setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
             }else {
-                setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
-                setEstadoSalto(EstadoSalto.EN_PISO);
-                setyBase((celdaY+1)*TAM_CELDA);
+                if( sprite.getY() >= 2* TAM_CELDA ) {
+                    setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
+                    setEstadoSalto(EstadoSalto.EN_PISO);
+                    setyBase((celdaY + 1) * TAM_CELDA);
+                }
             }
         }
     }
@@ -280,7 +265,6 @@ public class Hero extends Objeto {
                     vidas--;
                 }
             } else if ( objetosColision.get(i) instanceof AlienTanque ){
-                // Falta añadir la logica de que le hará al hero.
                 AlienTanque alienTanque = (AlienTanque) objetosColision.get(i);
                 if (sprite.getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle()))
                 {
@@ -290,7 +274,6 @@ public class Hero extends Objeto {
                 }
 
             } else if ( objetosColision.get(i) instanceof AlienLetal){
-                // Falta añadir la logica de que le hará al hero.
                 AlienLetal alienLetal = (AlienLetal) objetosColision.get(i);
                 if (sprite.getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle()))
                 {

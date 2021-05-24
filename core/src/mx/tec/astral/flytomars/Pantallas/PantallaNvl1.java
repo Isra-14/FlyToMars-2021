@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -56,7 +57,6 @@ public class PantallaNvl1 extends Pantalla {
     private TiledMap mapa;
     private OrthogonalTiledMapRenderer rendererMapa;
     private Music bgMusic;
-    private float volume;
 
     // Font of score.
     Texto texto;
@@ -175,6 +175,8 @@ public class PantallaNvl1 extends Pantalla {
         //Ahora la misma pantalla RECIBE Y PROCESA los eventos
         procesadorEntrada = new ProcesadorEntrada();
         Gdx.input.setInputProcessor(procesadorEntrada);
+
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
 
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
@@ -304,9 +306,9 @@ public class PantallaNvl1 extends Pantalla {
         batch.setProjectionMatrix(camara.combined);
 
 /**======================================================
- //                      MAPA                           ||
- //======================================================
- */
+//                      MAPA                           ||
+//======================================================
+*/
 
         rendererMapa.setView(camara);
         rendererMapa.render();
@@ -384,6 +386,9 @@ public class PantallaNvl1 extends Pantalla {
         if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null)
             escenaPausa.draw();
 
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaJuego(juego) );
+
     }
 
     private void actualizar(float delta){
@@ -443,6 +448,7 @@ public class PantallaNvl1 extends Pantalla {
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
             float yAgil= MathUtils.random(10,ALTO-texturaAgil_right.getHeight());
             AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,yAgil);
+            aAgil.cargarMapa(mapa, TAM_CELDA);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
@@ -450,6 +456,8 @@ public class PantallaNvl1 extends Pantalla {
 
     private void moverAliensAgiles(float delta) {
         for (AlienAgil alienAgil : arrAliensAgiles) {
+
+
             timerCambioAgil+=delta;
             if(timerCambioAgil >= TIEMPO_CAMBIO_AGIL){
                 int tipo = MathUtils.random(1,2);
@@ -462,11 +470,17 @@ public class PantallaNvl1 extends Pantalla {
 
             alienAgil.moverHorizontal();
 
-
             if(alienAgil.getSprite().getX() <= 0 - alienAgil.getSprite().getWidth())
                 alienAgil.setX(ANCHO);
             else if (alienAgil.getSprite().getX() >= ANCHO)
                 alienAgil.setX(0);
+
+            alienAgil.verificarPlataforma();
+            if(alienAgil.getSprite().getY() < 2*TAM_CELDA)
+                alienAgil.caer();
+            if ( alienAgil.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienAgil.getSprite().getY() <= -alienAgil.getSprite().getHeight())
+                alienAgil.getSprite().setY(ALTO);
+
             depurarAlienAgil();
         }
     }
@@ -514,6 +528,7 @@ public class PantallaNvl1 extends Pantalla {
             float xLetal= MathUtils.random(10,ANCHO-texturaLetal_right.getWidth());
             float yLetal= MathUtils.random(10,ALTO-texturaLetal_right.getHeight());
             AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,yLetal);
+            aLetal.cargarMapa(mapa, TAM_CELDA);
             arrLetales.add(aLetal);
         }
         moverAliensLetales(delta);
@@ -538,6 +553,13 @@ public class PantallaNvl1 extends Pantalla {
                 alienLetal.setX(ANCHO);
             else if (alienLetal.getSprite().getX() >= ANCHO)
                 alienLetal.setX(0);
+
+            alienLetal.verificarPlataforma();
+            if(alienLetal.getSprite().getY() < 2*TAM_CELDA)
+                alienLetal.caer();
+            if ( alienLetal.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienLetal.getSprite().getY() <= -alienLetal.getSprite().getHeight())
+                alienLetal.getSprite().setY(ALTO);
+
             depurarAlienLetal();
         }
     }
@@ -576,7 +598,7 @@ public class PantallaNvl1 extends Pantalla {
 //                  E. TANQUE                          ||
 //====================================================*/
 
-private void crearTanque(float delta) {
+    private void crearTanque(float delta) {
     timerCrearAlienTanque += delta;
 
     if(timerCrearAlienTanque >= TIEMPO_CREAR_AGIL){
@@ -586,6 +608,7 @@ private void crearTanque(float delta) {
         float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
         float yTanque= MathUtils.random(10,ALTO-texturaTanque_right.getHeight());
         AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,yTanque);
+        aTanque.cargarMapa(mapa, TAM_CELDA);
         arrTanques.add(aTanque);
     }
     moverAliensTanques(delta);
@@ -610,6 +633,14 @@ private void crearTanque(float delta) {
                 alienTanque.setX(ANCHO);
             else if (alienTanque.getSprite().getX() >= ANCHO)
                 alienTanque.setX(0);
+
+            alienTanque.verificarPlataforma();
+            if(alienTanque.getSprite().getY() < 2*TAM_CELDA)
+                alienTanque.caer();
+            if ( alienTanque.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienTanque.getSprite().getY() <= -alienTanque.getSprite().getHeight())
+                alienTanque.getSprite().setY(ALTO);
+
+
             depurarAlienTanque();
         }
     }
@@ -693,6 +724,10 @@ private void crearTanque(float delta) {
         if ( moviendoDerecha && hero.getSprite().getX() >= ANCHO )
             hero.setX( 0 - hero.getSprite().getWidth() );
 
+        if ( hero.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && hero.getSprite().getY() <= -hero.getSprite().getHeight())
+            hero.getSprite().setY(ALTO);
+
+
         else if ( moviendoIzquierda && hero.getSprite().getX() < 0 - hero.getSprite().getWidth() )
             hero.setX( ANCHO );
 
@@ -701,6 +736,9 @@ private void crearTanque(float delta) {
             case BAJANDO:
                 hero.actualizarVuelo();
         }
+
+        if(hero.getSprite().getY() < 2*TAM_CELDA)
+            hero.caer();
 
         hero.verificarPlataforma();
 
@@ -714,7 +752,6 @@ private void crearTanque(float delta) {
             puntos += 50;
             hero.setObtuvoMoneda(false);
         }
-
 
         comprobarVidas();
 
@@ -748,7 +785,7 @@ private void crearTanque(float delta) {
         arrTanques.clear();
         arrLetales.clear();
         bgMusic.dispose();
-        juego.mp3.dispose();
+//        juego.mp3.dispose();
 
     }
 

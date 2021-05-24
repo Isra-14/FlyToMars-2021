@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -38,6 +39,9 @@ public class PantallaJuego extends Pantalla {
         }
         crearMenu();
         crearHistoria();
+
+
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
     }
     //Historia
     PantallaHistoria historia;
@@ -117,6 +121,10 @@ public class PantallaJuego extends Pantalla {
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenuNiveles);
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaJuego(juego) );
     }
 
     private Button crearBoton(String archivo, String clickeado) {
@@ -139,6 +147,10 @@ public class PantallaJuego extends Pantalla {
         batch.end();
 
         escenaMenuNiveles.draw();
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaMenu(juego) );
     }
 
     @Override

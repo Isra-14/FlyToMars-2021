@@ -1,5 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import mx.tec.astral.flytomars.Juego;
@@ -16,6 +18,7 @@ public class PantallaNvl3 extends Pantalla {
     @Override
     public void show() {
 
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
     }
 
     @Override
@@ -25,6 +28,10 @@ public class PantallaNvl3 extends Pantalla {
         font.getData().setScale(3,3);
         font.draw(batch, "Pantalla Nivel 3:", 25, ALTO - 25 );
         batch.end();
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaJuego(juego) );
     }
 
     @Override
