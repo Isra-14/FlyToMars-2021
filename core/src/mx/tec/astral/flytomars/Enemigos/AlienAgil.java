@@ -2,8 +2,6 @@ package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
-import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 import mx.tec.astral.flytomars.Tools.Objeto;
 
 public class AlienAgil extends Objeto {
@@ -11,6 +9,7 @@ public class AlienAgil extends Objeto {
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
     EstadoAlien estado;
+
     public AlienAgil(Texture textura, float x, float y){
         super(textura, x, y);
     }

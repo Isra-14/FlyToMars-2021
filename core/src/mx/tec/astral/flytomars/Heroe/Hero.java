@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Heroe;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -16,6 +17,7 @@ import mx.tec.astral.flytomars.Enemigos.AlienTanque;
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Tools.Objeto;
 import mx.tec.astral.flytomars.Tools.PowerUp;
 
@@ -25,6 +27,7 @@ Autor(es) : Misael Delgado, Israel Sanchez
  */
 
 public class Hero extends Objeto {
+
     private Texture texturaDerecha;
     private Texture texturaIzquierda;
 
@@ -53,6 +56,9 @@ public class Hero extends Objeto {
     private float tVuelo;               // Fly time
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
+
+    //sonidos
+    public Sound soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));;
 
     public void setyBase(float newYbase) {
         yBase = newYbase;
@@ -270,13 +276,28 @@ public class Hero extends Objeto {
                 AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
                 if ( sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
                     alienAgil.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
                     vidas--;
                 }
             } else if ( objetosColision.get(i) instanceof AlienTanque ){
                 // Falta añadir la logica de que le hará al hero.
+                AlienTanque alienTanque = (AlienTanque) objetosColision.get(i);
+                if (sprite.getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle()))
+                {
+                    alienTanque.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
+                    vidas--;
+                }
 
             } else if ( objetosColision.get(i) instanceof AlienLetal){
                 // Falta añadir la logica de que le hará al hero.
+                AlienLetal alienLetal = (AlienLetal) objetosColision.get(i);
+                if (sprite.getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle()))
+                {
+                    alienLetal.setEstado(EstadoAlien.MUERE);
+                    soundHerido.play();
+                    vidas--;
+                }
 
             } else if ( objetosColision.get(i) instanceof PowerUp){
                 PowerUp powerUp = (PowerUp) objetosColision.get(i);

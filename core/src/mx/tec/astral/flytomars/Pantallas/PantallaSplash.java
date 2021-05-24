@@ -31,8 +31,6 @@ public class PantallaSplash extends Pantalla
     {
         super();
         this.p = juego;
-//        this.batch = new SpriteBatch();
-//        this.texturaSplash = new Texture("Menu/FondoMenu.png");
     }
 
     @Override
@@ -103,7 +101,6 @@ public class PantallaSplash extends Pantalla
     {
 //        texturaSplash.dispose();
         batch.dispose();
-
         texturaLogo.dispose();
         pruebas.dispose();
 
