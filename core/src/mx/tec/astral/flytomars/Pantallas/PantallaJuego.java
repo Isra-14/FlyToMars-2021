@@ -44,7 +44,7 @@ public class PantallaJuego extends Pantalla {
     Texture texturaHistoria;
     private void crearHistoria()
     {
-        texturaHistoria = new Texture("fondos/hitoryBG.jpg");
+        texturaHistoria = new Texture("fondos/historyBG.png");
         historia = new PantallaHistoria(juego);
         historia.setTexturaFondo(texturaHistoria);
     }

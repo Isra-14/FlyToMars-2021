@@ -43,7 +43,7 @@ import mx.tec.astral.flytomars.Tools.Vida;
 // EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
 //======================================================||
 // IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
-// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
+// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO Q.||
  //====================================================*/
 
 
