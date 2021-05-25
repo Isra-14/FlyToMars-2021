@@ -10,7 +10,7 @@ import mx.tec.astral.flytomars.Tools.Objeto;
 import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 
 public class AlienLetal extends Objeto {
-    private float DX = 5;
+    private float DX = 4;
     private float DY = -4f;
     private Texture texturaDerecha;
     private Texture texturaIzquierda;

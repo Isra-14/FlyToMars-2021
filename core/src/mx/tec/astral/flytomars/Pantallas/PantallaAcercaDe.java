@@ -34,7 +34,7 @@ public class PantallaAcercaDe extends Pantalla {
 
     private void crearMenu() {
         texto = new Texto();
-        texturaFondo = new Texture("fondos/fondoAcerca2.jpg");
+        texturaFondo = new Texture("fondos/AcercaDe.jpg");
 
         // MENU, necesitamos una escena
         //Escena

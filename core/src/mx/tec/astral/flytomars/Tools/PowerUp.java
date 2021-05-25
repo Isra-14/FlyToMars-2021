@@ -31,27 +31,18 @@ public class PowerUp extends Objeto{
 
     public PowerUp( float x, float y, int tipo )
     {
-//        super(texturaCorazon, x, y);
-//        this.textraVidaExtra = texturaCorazon;
-//        this.texturaEscudo = texturaEscudo;
-//        this.texturaMoneda = texturaMoneda;
-
         this.tipo = tipo;
-        Gdx.app.log("Tipo", Integer.toString(tipo));
         sprite = new Sprite(textraVidaExtra);
         switch (tipo) {
             case 0:
                 sprite.setTexture(textraVidaExtra);
-//                    sprite.draw(batch);
-//                    batch.draw(sprite, x, y);
                 break;
             case 1:
                 sprite.setTexture(texturaEscudo);
-//                    batch.draw(sprite, x, y);
+
                 break;
             case 2:
                 sprite.setTexture(texturaMoneda);
-//                    batch.draw(sprite, x, y);
                 break;
             default:
                 System.out.println("No se pudo crear ningun objeto");
@@ -61,9 +52,6 @@ public class PowerUp extends Objeto{
         estado = EstadoPowerUps.EN_PANTALLA;
     }
 
-    private int random() {
-        return (int)(Math.random()*600 + 100);
-    }
 
     public int getTipo(){
         return tipo;

@@ -10,7 +10,7 @@ import mx.tec.astral.flytomars.Tools.Objeto;
 import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 
 public class AlienTanque extends Objeto {
-    private float DX = 3;
+    private float DX = 2;
     private float DY = -4f;
     private Texture texturaDerecha;
     private Texture texturaIzquierda;

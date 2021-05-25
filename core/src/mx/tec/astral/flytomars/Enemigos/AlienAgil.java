@@ -9,7 +9,7 @@ import mx.tec.astral.flytomars.EstadoSalto;
 import mx.tec.astral.flytomars.Tools.Objeto;
 
 public class AlienAgil extends Objeto {
-    private float DX = 10;
+    private float DX = 6;
     private float DY = -4f;
     private Texture texturaDerecha;
     private Texture texturaIzquierda;

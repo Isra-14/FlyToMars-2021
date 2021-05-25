@@ -90,17 +90,18 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaLetal_right;
     private float timerCrearAlienLetal=10;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 20;
+    private final float TIEMPO_CREAR_LETAL = 30;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
+    private int counterHitLetal = 0;
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
     private Texture texturaTanque_left;
     private Texture texturaTanque_right;
-    private float timerCrearAlienTanque=10;
+    private float TIMER_CREAR_TANQUE= 20;
     private float timerCambioTanque;
-    private final float TIEMPO_CREAR_TANQUE = 15;
     private final float TIEMPO_CAMBIO_TANQUE = 6f;
+    private int counterHitTanque = 0;
 
 
     //  Objetos vida
@@ -123,7 +124,7 @@ public class PantallaNvl1 extends Pantalla {
 //  Objetos de PowerUps
     private Texture texturaVida;
     private float timerPower = 0f;
-    private final float TIEMPO_CREAR_ITEM = 30.0f;
+    private final float TIEMPO_CREAR_ITEM = 10.0f;
 
 
     private Array<PowerUp> arrPowerUps;
@@ -574,12 +575,15 @@ public class PantallaNvl1 extends Pantalla {
                 bala = arrBalas.get(j);
 
                 if(bala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())){
-                    //Le pegó
-                    alienLetal.setEstado(EstadoAlien.MUERE);
-                    //Contar puntos
-                    puntos +=150;
-                    //Desaparecer la bala
-
+                    counterHitLetal ++;
+                    if (counterHitLetal == 3) {
+                        //Le pegó
+                        alienLetal.setEstado(EstadoAlien.MUERE);
+                        //Contar puntos
+                        puntos += 150;
+                        //Desaparecer la bala
+                        counterHitLetal = 0;
+                    }
                     arrBalas.removeIndex(j);
                 }
             }
@@ -599,10 +603,10 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearTanque(float delta) {
-    timerCrearAlienTanque += delta;
+    TIMER_CREAR_TANQUE += delta;
 
-    if(timerCrearAlienTanque >= TIEMPO_CREAR_AGIL){
-        timerCrearAlienTanque = 0;
+    if(TIMER_CREAR_TANQUE >= TIEMPO_CREAR_AGIL){
+        TIMER_CREAR_TANQUE = 0;
 
         //Crear
         float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
@@ -655,12 +659,16 @@ public class PantallaNvl1 extends Pantalla {
                 bala = arrBalas.get(j);
 
                 if(bala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())){
-                    //Le pegó
-                    alienTanque.setEstado(EstadoAlien.MUERE);
-                    //Contar puntos
-                    puntos +=200;
-                    //Desaparecer la bala
-
+                    counterHitTanque ++;
+                    System.out.println("" + counterHitTanque);
+                    if (counterHitTanque == 5) {
+                        //Le pegó
+                        alienTanque.setEstado(EstadoAlien.MUERE);
+                        //Contar puntos
+                        puntos += 200;
+                        //Desaparecer la bala
+                        counterHitTanque = 0;
+                    }
                     arrBalas.removeIndex(j);
                 }
             }
