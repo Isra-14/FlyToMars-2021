@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -17,6 +18,7 @@ import mx.tec.astral.flytomars.Enemigos.AlienTanque;
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.EstadosMovimiento;
 import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Pantallas.PantallaNvl1;
 import mx.tec.astral.flytomars.Tools.Objeto;
@@ -57,6 +59,8 @@ public class Hero extends Objeto {
 
     private float timerEscudo;
 
+    int _capa;
+
     //sonidos
     public Sound soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));
     ;
@@ -72,6 +76,7 @@ public class Hero extends Objeto {
     private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, MUERE)
     //    private EstadoHeroe estadoPrev;
     private EstadoSalto estadoSalto;
+    private EstadosMovimiento estadoMovimiento;
 
     private boolean tieneEscudo;
     private boolean obtuvoMoneda;
@@ -118,6 +123,7 @@ public class Hero extends Objeto {
         // Initial states
         estado = EstadoHeroe.DERECHA;
         estadoSalto = EstadoSalto.EN_PISO;
+        estadoMovimiento = EstadosMovimiento.QUIETO;
 
         obtuvoMoneda = false;
         tieneEscudo = false;
@@ -226,9 +232,10 @@ public class Hero extends Objeto {
         }
     }
 
-    public void cargarMapa(TiledMap mapa, int TAM_CELDA) {
+    public void cargarMapa(TiledMap mapa, int TAM_CELDA, int capa) {
         this.mapa = mapa;
         this.TAM_CELDA = TAM_CELDA;
+        _capa = capa;
     }
 
     public void verificarPlataforma() {
@@ -236,7 +243,7 @@ public class Hero extends Objeto {
             int celdaX = (int) (sprite.getX() / TAM_CELDA);
             int celdaY = (int) ((sprite.getY() + DY) / TAM_CELDA);
 
-            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(_capa);
             TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
             TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX + 1, celdaY);
 
@@ -250,6 +257,33 @@ public class Hero extends Objeto {
                     setyBase((celdaY + 1) * TAM_CELDA);
                 }
             }
+        }
+    }
+
+    public EstadosMovimiento getEstadoMovimiento() {
+        return estadoMovimiento;
+    }
+
+    public void setEstadoMovimiento(EstadosMovimiento estadoMovimiento) {
+        this.estadoMovimiento = estadoMovimiento;
+    }
+
+    public void probarChoqueParedes(){
+        float px = sprite.getX();    // Posición actual
+        // Posición después de actualizar
+        px = getEstado() == EstadoHeroe.DERECHA ? px+ DX:
+                px-DX;
+        int celdaX = (int)(px/TAM_CELDA);   // Casilla del personaje en X
+        if (getEstado() == EstadoHeroe.DERECHA)
+            celdaX++;   // Casilla del lado derecho
+
+        int celdaY = (int)(sprite.getY()/TAM_CELDA); // Casilla del personaje en Y
+        TiledMapTileLayer capaPlataforma = (TiledMapTileLayer) mapa.getLayers().get(_capa);
+        if ( capaPlataforma.getCell(celdaX+1,celdaY) != null || capaPlataforma.getCell(celdaX,celdaY+1) != null ) {
+            // Colisionará, dejamos de moverlo
+            setEstadoMovimiento(EstadosMovimiento.QUIETO);
+        } else {
+            mover();
         }
     }
 
@@ -330,14 +364,8 @@ public class Hero extends Objeto {
 
 }
 
-    private boolean getInvesible()
-    {
-        if (estado == EstadoHeroe.INVENSIBLE) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private boolean getInvesible(){
+        return estado == EstadoHeroe.INVENSIBLE;
     }
 
     public int getVidas(){

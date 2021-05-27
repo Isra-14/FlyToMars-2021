@@ -103,12 +103,12 @@ public class AlienTanque extends Objeto {
         this.estadoSalto = estadoSalto;
     }
 
-    public void verificarPlataforma(){
+    public void verificarPlataforma(int c){
         if ( getEstadoSalto() != EstadoSalto.SUBIENDO ) {
             int celdaX = (int) (sprite.getX() / TAM_CELDA);
             int celdaY = (int) ( (sprite.getY() + DY) / TAM_CELDA);
 
-            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(c);
             TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
             TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
 

@@ -28,6 +28,7 @@ import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoJuego;
 import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.EstadosMovimiento;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -190,8 +191,12 @@ public class PantallaNvl1 extends Pantalla {
         AssetManager manager = new AssetManager();
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load("mapas/Mapa1.tmx", TiledMap.class);
+//        manager.load("mapas/prueba1.tmx", TiledMap.class);
+//        manager.load("mapas/nivel_2.tmx", TiledMap.class);
         manager.finishLoading();
         mapa = manager.get("mapas/Mapa1.tmx");
+//        mapa = manager.get("mapas/prueba1.tmx");
+//        mapa = manager.get("mapas/nivel_2.tmx");
         rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
     }
@@ -246,7 +251,7 @@ public class PantallaNvl1 extends Pantalla {
         hero = new Hero(spriteSheet);
         hero.setPosition(0, 64);
 
-        hero.cargarMapa(mapa, TAM_CELDA);
+        hero.cargarMapa(mapa, TAM_CELDA, 2);
     }
 
     private void crearPowerUp() {
@@ -302,6 +307,8 @@ public class PantallaNvl1 extends Pantalla {
     public void render(float delta) {
         if(estadoJuego == EstadoJuego.EN_JUEGO)
             actualizar(delta);
+        else if ( estadoJuego == EstadoJuego.PERDIO)
+            bgMusic.setVolume(0);
 
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
@@ -390,6 +397,9 @@ public class PantallaNvl1 extends Pantalla {
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
             juego.setScreen( new PantallaJuego(juego) );
 
+        if ( !juego.isPassedLvl1 && puntos >= 2500 )
+            juego.isPassedLvl1 = true;
+
     }
 
     private void actualizar(float delta){
@@ -476,7 +486,8 @@ public class PantallaNvl1 extends Pantalla {
             else if (alienAgil.getSprite().getX() >= ANCHO)
                 alienAgil.setX(0);
 
-            alienAgil.verificarPlataforma();
+            alienAgil.verificarPlataforma(2);
+
             if(alienAgil.getSprite().getY() < 2*TAM_CELDA)
                 alienAgil.caer();
             if ( alienAgil.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienAgil.getSprite().getY() <= -alienAgil.getSprite().getHeight())
@@ -555,7 +566,8 @@ public class PantallaNvl1 extends Pantalla {
             else if (alienLetal.getSprite().getX() >= ANCHO)
                 alienLetal.setX(0);
 
-            alienLetal.verificarPlataforma();
+            alienLetal.verificarPlataforma(2);
+
             if(alienLetal.getSprite().getY() < 2*TAM_CELDA)
                 alienLetal.caer();
             if ( alienLetal.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienLetal.getSprite().getY() <= -alienLetal.getSprite().getHeight())
@@ -638,7 +650,8 @@ public class PantallaNvl1 extends Pantalla {
             else if (alienTanque.getSprite().getX() >= ANCHO)
                 alienTanque.setX(0);
 
-            alienTanque.verificarPlataforma();
+            alienTanque.verificarPlataforma(2);
+
             if(alienTanque.getSprite().getY() < 2*TAM_CELDA)
                 alienTanque.caer();
             if ( alienTanque.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienTanque.getSprite().getY() <= -alienTanque.getSprite().getHeight())
@@ -711,8 +724,11 @@ public class PantallaNvl1 extends Pantalla {
         else if (moviendoIzquierda && hero.getEstado() != EstadoHeroe.SALTO)
             hero.setEstado(EstadoHeroe.IZQUIERDA);
 
-        if ( moviendoIzquierda || moviendoDerecha)
-            hero.mover();
+        if ( moviendoIzquierda || moviendoDerecha) {
+//            hero.mover();
+
+            hero.probarChoqueParedes();
+        }
 
         else if ( hero.getEstado() != EstadoHeroe.SALTO ){
 
@@ -722,6 +738,11 @@ public class PantallaNvl1 extends Pantalla {
             else if (prevState == EstadoHeroe.IZQUIERDA)
                 hero.setEstado(EstadoHeroe.IDLE_I);
 
+            else if (hero.getEstadoMovimiento() == EstadosMovimiento.QUIETO && prevState == EstadoHeroe.DERECHA)
+                hero.setEstado(EstadoHeroe.IDLE_D);
+
+            else if (hero.getEstadoMovimiento() == EstadosMovimiento.QUIETO && prevState == EstadoHeroe.IZQUIERDA)
+                hero.setEstado(EstadoHeroe.IDLE_I);
         }
 
         if( moviendoDerecha )
@@ -748,6 +769,7 @@ public class PantallaNvl1 extends Pantalla {
         if(hero.getSprite().getY() < 2*TAM_CELDA)
             hero.caer();
 
+        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
         hero.verificarPlataforma();
 
         hero.colision(arrAliensAgiles);
@@ -786,7 +808,8 @@ public class PantallaNvl1 extends Pantalla {
 
     @Override
     public void dispose() {
-        arrVidas.clear();
+        if (arrVidas.size > 0)
+            arrVidas.clear();
         batch.dispose();
         arrBalas.clear();
         arrAliensAgiles.clear();
