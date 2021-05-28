@@ -322,11 +322,9 @@ public class Hero extends Objeto {
                 }
             }
         if (objetosColision.get(i) instanceof PowerUp) {
-            System.out.println("Choco con powerUp");
             PowerUp powerUp = (PowerUp) objetosColision.get(i);
             if (sprite.getBoundingRectangle().overlaps(powerUp.getSprite().getBoundingRectangle())) {
                 powerUp.setEstado(EstadoPowerUps.TOMADO);
-                Gdx.app.log("" + powerUp.getEstado(), "");
                 switch (powerUp.getTipo()) {
                     // VIDA EXTRA
                     case 0:
@@ -352,7 +350,6 @@ public class Hero extends Objeto {
             }
             if (getTieneEscudo() == true) {
                 timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
-                System.out.println("" + timerEscudo);
                 if (timerEscudo > 1000) {
                     timerEscudo = 0;
                     setTieneEscudo(false);
