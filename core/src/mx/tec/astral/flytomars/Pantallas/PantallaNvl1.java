@@ -46,7 +46,7 @@ import mx.tec.astral.flytomars.Tools.Vida;
 // EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
 //======================================================||
 // IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
-// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO Q.||
+// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
  //====================================================*/
 
 
@@ -124,7 +124,6 @@ public class PantallaNvl1 extends Pantalla {
 
 //  Objetos de PowerUps
     private Texture texturaVida;
-
     private float timerPower = 0f;
     private final float TIEMPO_CREAR_ITEM = 10.0f;
 
@@ -256,6 +255,7 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearPowerUp() {
+
         arrPowerUps = new Array<>();
     }
 
@@ -361,13 +361,6 @@ public class PantallaNvl1 extends Pantalla {
 //======================================================
 */
         hero.render(batch);
-        if(powerUpArray.size != 0 ) {
-            System.out.println("Se dibuja power");
-            int random = (int)MathUtils.random()*3;
-            for (PowerUp power : powerUpArray) {
-                power.creaNuevoPowerUp(batch, random);
-            }
-        }
 
         for (PowerUp powerUp : arrPowerUps ) {
             powerUp.render(batch);
@@ -418,17 +411,15 @@ public class PantallaNvl1 extends Pantalla {
         actualizarItems(delta);
         depurarPowerUps();
 
-        //if (probabilidad() >= 80) {
-            System.out.println("Se crea power");
-            crearPower(delta);
+
+        // moverAliensAgiles(delta);
 
         if(arrBalas.size != 0){
             colisionesAlienAgil();
             colisionesAlienLetal();
             colisionesAlienTanque();
 
-    }
-    }
+    }}
 
     private void actualizarItems(float delta) {
         timerPower += delta;
@@ -452,23 +443,7 @@ public class PantallaNvl1 extends Pantalla {
             juego.perder.play();
         }
     }
-/**======================================================
- //                    PowerUps                         ||
- //====================================================*/
-    private void crearPower(float delta)
-    {
-        int x = (int)MathUtils.random();
-        int y = (int)MathUtils.random();
-        timerCrearPowerCup += delta;
-        System.out.println("" + timerCrearPowerCup);
-        if (timerCrearPowerCup >= TIEMPO_CREAR_POWERUP) {
-            System.out.println("Creando powwr");
-            timerCrearPowerCup = 0;
-            //crearlos
-            PowerUp power = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, x, y);
-            powerUpArray.add(power);
-        }
-    }
+
 
 /**======================================================
 //                    E. AGILES                        ||
@@ -517,6 +492,7 @@ public class PantallaNvl1 extends Pantalla {
                 alienAgil.caer();
             if ( alienAgil.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienAgil.getSprite().getY() <= -alienAgil.getSprite().getHeight())
                 alienAgil.getSprite().setY(ALTO);
+
             depurarAlienAgil();
         }
     }
