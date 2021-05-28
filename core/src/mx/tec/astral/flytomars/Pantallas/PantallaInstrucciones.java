@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,6 +37,7 @@ public class PantallaInstrucciones extends Pantalla {
     @Override
     public void show() {
         crearMenu();
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
     }
 
     private void crearMenu() {
@@ -102,6 +104,10 @@ public class PantallaInstrucciones extends Pantalla {
         batch.end();
 
         escenaMenuNiveles.draw();
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaMenu(juego) );
     }
 
     @Override

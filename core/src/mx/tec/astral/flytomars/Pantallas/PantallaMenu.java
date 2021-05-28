@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,10 +23,9 @@ public class PantallaMenu extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
     private Stage escenaMenu;
-    private float timerCrearAsteroid = 3;
-    private float timerCrearMoon = 7;
-    private float timerCrearStar = 12;
-
+    private float timerCrearAsteroid = (float)Math.floor(Math.random()*(4));
+    private float timerCrearMoon = (float)Math.floor(Math.random()*(8));
+    private float timerCrearStar = (float)Math.floor(Math.random()*(13));
     private Array<Asteroid> asteroids = new Array<>();
     private Array<Moon> moons = new Array<>();
     private Array<Star> stars = new Array<>();
@@ -41,6 +41,8 @@ public class PantallaMenu extends Pantalla {
     @Override
     public void show() {
         crearMenu();
+
+        Gdx.input.setCatchKey( Input.Keys.BACK, false );
     }
 
     private void crearAsteroide() {
@@ -53,16 +55,7 @@ public class PantallaMenu extends Pantalla {
 
         int posX = (int) Math.floor(Math.random()*((ANCHO + 80)-(-80)+1)+(-80));
         int posY = (int) Math.floor(Math.random()*((ALTO + 80)-(-80)+1)+(-80));
-//        int posX;
-//        int posY;
-//        if( prob == 0 ) {
-//            posX = -80;
-//            posY = (int) Math.floor(Math.random()*((ALTO + 80)-(-80)+1)+(-80));
-//        }else{
-//            posX = (int)ANCHO + 80;
-//            posY = (int) Math.floor(Math.random()*((ALTO + 80)-(-80)+1)+(-80));
-//
-//        }
+
         Asteroid asteroid = new Asteroid(texture, posX, posY);
         asteroids.add(asteroid);
     }

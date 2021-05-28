@@ -10,14 +10,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
 import mx.tec.astral.flytomars.Enemigos.AlienTanque;
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
+import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.EstadosMovimiento;
 import mx.tec.astral.flytomars.Juego;
+import mx.tec.astral.flytomars.Pantallas.PantallaNvl1;
 import mx.tec.astral.flytomars.Tools.Objeto;
+import mx.tec.astral.flytomars.Tools.PowerUp;
 
 /*
 Personaje controlado por el usuario
@@ -25,9 +30,6 @@ Autor(es) : Misael Delgado, Israel Sanchez
  */
 
 public class Hero extends Objeto {
-
-    private Texture texturaDerecha;
-    private Texture texturaIzquierda;
 
     private int vidas;
 
@@ -38,8 +40,8 @@ public class Hero extends Objeto {
     private Sprite idleD, idleI;
 
     // Animacion
-    private Animation <TextureRegion> animacionCorre_D;
-    private Animation <TextureRegion> animacionCorre_I;
+    private Animation<TextureRegion> animacionCorre_D;
+    private Animation<TextureRegion> animacionCorre_I;
     private float timerAnimation;
 //    private Texture texturaSalto;
 //    private Texture texturaMuere;
@@ -55,46 +57,55 @@ public class Hero extends Objeto {
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
+    private float timerEscudo;
+
+    int _capa;
+
     //sonidos
-    public Sound soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));;
+    public Sound soundHerido = Gdx.audio.newSound(Gdx.files.internal("Efectos/hurt.wav"));
+    ;
 
     public void setyBase(float newYbase) {
         yBase = newYbase;
     }
 
-    public Float getVelocity(){
+    public Float getVelocity() {
         return DY;
     }
 
     private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, MUERE)
-//    private EstadoHeroe estadoPrev;
+    //    private EstadoHeroe estadoPrev;
     private EstadoSalto estadoSalto;
+    private EstadosMovimiento estadoMovimiento;
 
-    // Default constructor
-    public Hero(Texture textura, float x, float y){
-        super(textura, x, y);
-    }
-
-    // Two different textures constructor
-    public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
-        super( texturaDerecha, x, y);
-        this.texturaDerecha = texturaDerecha;
-        this.texturaIzquierda = texturaIzquierda;
-        estado = EstadoHeroe.DERECHA;
-    }
+    private boolean tieneEscudo;
+    private boolean obtuvoMoneda;
+//
+//    // Default constructor
+//    public Hero(Texture textura, float x, float y){
+//        super(textura, x, y);
+//    }
+//
+//    // Two different textures constructor
+//    public Hero (Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
+//        super( texturaDerecha, x, y);
+//        this.texturaDerecha = texturaDerecha;
+//        this.texturaIzquierda = texturaIzquierda;
+//        estado = EstadoHeroe.DERECHA;
+//    }
 
     // Constructor with a spriteSheet
-    public Hero ( Texture texture){
+    public Hero(Texture texture) {
 
         TextureRegion region = new TextureRegion(texture);
         TextureRegion[][] texturas = region.split(84, 128);
 
         // Frames to walk
-        TextureRegion[] arrFramesCorrerIzq = { texturas[0][0], texturas[0][1], texturas[0][2], texturas[0][3], texturas[0][4], texturas[0][5],
-                                            texturas[0][6], texturas[0][7], texturas[0][8], texturas[0][9], texturas[0][10], texturas[0][11]};
+        TextureRegion[] arrFramesCorrerIzq = {texturas[0][0], texturas[0][1], texturas[0][2], texturas[0][3], texturas[0][4], texturas[0][5],
+                texturas[0][6], texturas[0][7], texturas[0][8], texturas[0][9], texturas[0][10], texturas[0][11]};
 
-        TextureRegion[] arrFramesCorrerDer = { texturas[1][0], texturas[1][1], texturas[1][2], texturas[1][3], texturas[1][4], texturas[1][5],
-                                            texturas[1][6], texturas[1][7], texturas[1][8], texturas[1][9], texturas[1][10], texturas[1][11]};
+        TextureRegion[] arrFramesCorrerDer = {texturas[1][0], texturas[1][1], texturas[1][2], texturas[1][3], texturas[1][4], texturas[1][5],
+                texturas[1][6], texturas[1][7], texturas[1][8], texturas[1][9], texturas[1][10], texturas[1][11]};
 
         animacionCorre_D = new Animation<>(0.08f, arrFramesCorrerDer);
         animacionCorre_D.setPlayMode(Animation.PlayMode.LOOP);
@@ -112,18 +123,24 @@ public class Hero extends Objeto {
         // Initial states
         estado = EstadoHeroe.DERECHA;
         estadoSalto = EstadoSalto.EN_PISO;
+        estadoMovimiento = EstadosMovimiento.QUIETO;
+
+        obtuvoMoneda = false;
+        tieneEscudo = false;
 
         vidas = 3;
 
     }
 
-    public Sprite getSprite(){ return sprite; }
+    public Sprite getSprite() {
+        return sprite;
+    }
 
     @Override
     public void render(SpriteBatch batch) {
         TextureRegion frame;
         float delta = Gdx.graphics.getDeltaTime();
-        switch (estado){
+        switch (estado) {
             case IDLE_D:
                 batch.draw(idleD, sprite.getX(), sprite.getY());
                 break;
@@ -146,34 +163,22 @@ public class Hero extends Objeto {
         }
     }
 
-
-    public void cambiarEstado() {
-        switch (estado){
-            case IZQUIERDA:
-                estado = EstadoHeroe.DERECHA;
-                sprite.setTexture(texturaDerecha);
-                break;
-            case DERECHA:
-                estado = EstadoHeroe.IZQUIERDA;
-                sprite.setTexture(texturaIzquierda);
-                break;
-        }
-    }
-
-    public void setEstado( EstadoHeroe nuevoEstado){
+    public void setEstado(EstadoHeroe nuevoEstado) {
         estado = nuevoEstado;
 //        if(nuevoEstado == EstadoHeroe.MUERE)
 //            sprite.setTexture(texturaMuere);
     }
 
-    public EstadoHeroe getEstado() { return estado; }
+    public EstadoHeroe getEstado() {
+        return estado;
+    }
 
-    public void caer(){
+    public void caer() {
         sprite.setY(sprite.getY() + DY);
     }
 
-    public void mover (){
-        switch (estado){
+    public void mover() {
+        switch (estado) {
             case DERECHA:
                 sprite.setX(sprite.getX() + DX);
                 break;
@@ -186,24 +191,24 @@ public class Hero extends Objeto {
 
     }
 
-    public EstadoSalto getEstadoSalto(){
+    public EstadoSalto getEstadoSalto() {
         return estadoSalto;
     }
 
-    public void setEstadoSalto (EstadoSalto estadoSalto){
+    public void setEstadoSalto(EstadoSalto estadoSalto) {
         this.estadoSalto = estadoSalto;
     }
 
-    public void setPosition (float newX, float newY){
+    public void setPosition(float newX, float newY) {
         sprite.setPosition(newX, newY);
     }
 
-    public void setX(float newX){
+    public void setX(float newX) {
         sprite.setX(newX);
     }
 
-    public void saltar(){
-        if(estadoSalto == EstadoSalto.EN_PISO){
+    public void saltar() {
+        if (estadoSalto == EstadoSalto.EN_PISO) {
             tAire = 0;
             tVuelo = 2 * v0y / g;
             //estadoPrev = estado;
@@ -211,77 +216,172 @@ public class Hero extends Objeto {
         }
     }
 
-    public void actualizarVuelo(){
+    public void actualizarVuelo() {
         float delta = Gdx.graphics.getDeltaTime();
-        tAire += 2.5f*delta;
-        float y = yBase + v0y * tAire - 0.5f * g * tAire *tAire;
+        tAire += 2.5f * delta;
+        float y = yBase + v0y * tAire - 0.5f * g * tAire * tAire;
         sprite.setY(y);
 
-        if ( tAire > tVuelo/2 )
+        if (tAire > tVuelo / 2)
             estadoSalto = EstadoSalto.BAJANDO;
 
-        if(tAire >= tVuelo || y <= yBase){
+        if (tAire >= tVuelo || y <= yBase) {
 //            estado = estadoPrev;
             estadoSalto = EstadoSalto.EN_PISO;
             sprite.setY(yBase);
         }
     }
 
-    public void cargarMapa(TiledMap mapa, int TAM_CELDA){
+    public void cargarMapa(TiledMap mapa, int TAM_CELDA, int capa) {
         this.mapa = mapa;
         this.TAM_CELDA = TAM_CELDA;
+        _capa = capa;
     }
 
-    public void verificarPlataforma(){
-        if ( getEstadoSalto() != EstadoSalto.SUBIENDO ) {
+    public void verificarPlataforma() {
+        if (getEstadoSalto() != EstadoSalto.SUBIENDO) {
             int celdaX = (int) (sprite.getX() / TAM_CELDA);
-            int celdaY = (int) ( (sprite.getY() + DY) / TAM_CELDA);
+            int celdaY = (int) ((sprite.getY() + DY) / TAM_CELDA);
 
-            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(2);
+            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getLayers().get(_capa);
             TiledMapTileLayer.Cell celdaAbajo = capa.getCell(celdaX, celdaY);
-            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX+1, celdaY);
+            TiledMapTileLayer.Cell celdaDerecha = capa.getCell(celdaX + 1, celdaY);
 
-            if( celdaAbajo==null && celdaDerecha==null ){
+            if (celdaAbajo == null && celdaDerecha == null) {
                 caer();
                 setEstadoSalto(EstadoSalto.CAIDA_LIBRE);
-            }else {
-                setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
-                setEstadoSalto(EstadoSalto.EN_PISO);
-                setyBase((celdaY+1)*TAM_CELDA);
+            } else {
+                if (sprite.getY() >= 2 * TAM_CELDA) {
+                    setPosition(sprite.getX(), (celdaY + 1) * TAM_CELDA);
+                    setEstadoSalto(EstadoSalto.EN_PISO);
+                    setyBase((celdaY + 1) * TAM_CELDA);
+                }
             }
+        }
+    }
+
+    public EstadosMovimiento getEstadoMovimiento() {
+        return estadoMovimiento;
+    }
+
+    public void setEstadoMovimiento(EstadosMovimiento estadoMovimiento) {
+        this.estadoMovimiento = estadoMovimiento;
+    }
+
+    public void probarChoqueParedes(){
+        float px = sprite.getX();    // Posición actual
+        // Posición después de actualizar
+        px = getEstado() == EstadoHeroe.DERECHA ? px+ DX:
+                px-DX;
+        int celdaX = (int)(px/TAM_CELDA);   // Casilla del personaje en X
+        if (getEstado() == EstadoHeroe.DERECHA)
+            celdaX++;   // Casilla del lado derecho
+
+        int celdaY = (int)(sprite.getY()/TAM_CELDA); // Casilla del personaje en Y
+        TiledMapTileLayer capaPlataforma = (TiledMapTileLayer) mapa.getLayers().get(_capa);
+        if ( capaPlataforma.getCell(celdaX+1,celdaY) != null || capaPlataforma.getCell(celdaX,celdaY+1) != null ) {
+            // Colisionará, dejamos de moverlo
+            setEstadoMovimiento(EstadosMovimiento.QUIETO);
+        } else {
+            mover();
         }
     }
 
     /**
      * Metodo generico para identificar las colisiones contra el personaje principal
      * Recibe un arreglo de objetos de tipo T llamados objetosColision.
-     *
-     * */
-    public < T > void colision(Array < T > objetosColision){
-        for(int i = objetosColision.size-1; i>=0; i--){
-
+     */
+    public <T> void colision(Array<T> objetosColision) {
+        for (int i = objetosColision.size - 1; i >= 0; i--) {
             /**
              * Identifica el tipo de objeto al que pertenece el arreglo
              */
-            if ( objetosColision.get(i) instanceof AlienAgil ) {
-                AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
-                if ( sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
-                    alienAgil.setEstado(EstadoAlien.MUERE);
-                    soundHerido.play();
-                    vidas--;
+            if (getTieneEscudo() == false) {
+                if (objetosColision.get(i) instanceof AlienAgil) {
+                    AlienAgil alienAgil = (AlienAgil) objetosColision.get(i);
+                    if (sprite.getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())) {
+                        alienAgil.setEstado(EstadoAlien.MUERE);
+                        soundHerido.play();
+                        vidas--;
+                    }
+                } else if (objetosColision.get(i) instanceof AlienTanque) {
+                    AlienTanque alienTanque = (AlienTanque) objetosColision.get(i);
+                    if (sprite.getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())) {
+                        alienTanque.setEstado(EstadoAlien.MUERE);
+                        soundHerido.play();
+                        vidas-= 2;
+                    }
+
+                } else if (objetosColision.get(i) instanceof AlienLetal) {
+                    AlienLetal alienLetal = (AlienLetal) objetosColision.get(i);
+                    if (sprite.getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())) {
+                        alienLetal.setEstado(EstadoAlien.MUERE);
+                        soundHerido.play();
+                        vidas-=3;
+                    }
                 }
-            } else if ( objetosColision.get(i) instanceof AlienTanque ){
-                // Falta añadir la logica de que le hará al hero.
-
-            } else if ( objetosColision.get(i) instanceof AlienLetal){
-                // Falta añadir la logica de que le hará al hero.
-
             }
+        if (objetosColision.get(i) instanceof PowerUp) {
+            PowerUp powerUp = (PowerUp) objetosColision.get(i);
+            if (sprite.getBoundingRectangle().overlaps(powerUp.getSprite().getBoundingRectangle())) {
+                powerUp.setEstado(EstadoPowerUps.TOMADO);
+                switch (powerUp.getTipo()) {
+                    // VIDA EXTRA
+                    case 0:
+                        if (vidas < 3) {
+                            vidas++;
+                        }
+                        break;
+
+                    // Escudo
+                    case 1:
+                        tieneEscudo = true;
+                        break;
+
+                    // Moneda
+                    case 2:
+                        obtuvoMoneda = true;
+                        break;
+
+                    default:
+                        Gdx.app.log("Hero Colision err:", "Error en la colision de powerUp, Caso no contemplado...");
+                        break;
+                }
+            }
+            if (getTieneEscudo() == true) {
+                timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
+                if (timerEscudo > 1000) {
+                    timerEscudo = 0;
+                    setTieneEscudo(false);
+                }
+            }
+
         }
+    }
+
+}
+
+    private boolean getInvesible(){
+        return estado == EstadoHeroe.INVENSIBLE;
     }
 
     public int getVidas(){
         return vidas;
     }
 
+    public boolean getTieneEscudo() {
+        return tieneEscudo;
+    }
+
+    public void setTieneEscudo(boolean tieneEscudo) {
+        this.tieneEscudo = tieneEscudo;
+    }
+
+    public boolean getObtuvoMoneda() {
+        return obtuvoMoneda;
+    }
+
+    public void setObtuvoMoneda(boolean obtuvoMoneda) {
+        this.obtuvoMoneda = obtuvoMoneda;
+    }
 }
