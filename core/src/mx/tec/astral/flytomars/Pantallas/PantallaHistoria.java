@@ -21,6 +21,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 public class PantallaHistoria extends Pantalla
 {
     Sound efectoCrash;
+    private int nivel;
 
     private Stage escena;
 
@@ -51,6 +52,9 @@ public class PantallaHistoria extends Pantalla
         efectoCrash.play(.20f);
 
     }
+    public void setNumeroNivel( int nivel){
+        this.nivel = nivel;
+    }
 
     private void crearPantalla()
     {
@@ -61,15 +65,32 @@ public class PantallaHistoria extends Pantalla
         imagen.setScaling(Scaling.fillY);
         escena.addActor(imagen);
         imagen.addAction(sequence(alpha(0),
-                fadeIn(10),
+                fadeIn(15),
                 fadeOut(3),
                 run(new Runnable() {
                     @Override
                     public void run() {
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new PantallaNvl1(juego));
-                        efectoCrash.stop();
+                        cambiarPantalla();
                     }
                 })));
+    }
+
+    private void cambiarPantalla()
+    {
+        if (nivel == 1) {
+            ((Game) Gdx.app.getApplicationListener()).setScreen(new PantallaNvl1(juego));
+            efectoCrash.stop();
+        }
+        if (nivel == 2){
+            ((Game) Gdx.app.getApplicationListener()).setScreen(new PantallaNvl2(juego));
+            efectoCrash.stop();
+        }
+        if (nivel == 3)
+        {
+            ((Game) Gdx.app.getApplicationListener()).setScreen(new PantallaNvl3(juego));
+            efectoCrash.stop();
+        }
+
     }
 
     @Override
