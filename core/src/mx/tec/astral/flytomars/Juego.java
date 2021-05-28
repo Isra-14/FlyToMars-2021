@@ -25,11 +25,19 @@ public class Juego extends Game
 
 	public Music mp3;
 
+	public boolean isViewedStory1 = false;
+	public boolean isViewedStory2 = false;
+	public boolean isViewedStory3 = false;
+
+	public boolean isPassedLvl1 = false;
+	public boolean isPassedLvl2 = false;
+
 	//cargamos sonido
 	public Sound soundBotones;
 	public Sound soundDisparo;
 	public Sound soundSalto;
 	public  Sound perder;
+	public  Music error;
 
 	//Se carga el texto
 	public Texto texto;
@@ -63,6 +71,7 @@ public class Juego extends Game
 		soundDisparo = Gdx.audio.newSound(Gdx.files.internal("Efectos/bubble_shot.wav"));
 		soundSalto = Gdx.audio.newSound(Gdx.files.internal("Efectos/Jump.wav"));
 		perder = Gdx.audio.newSound(Gdx.files.internal("Efectos/Lost_sound.wav"));
+		error = Gdx.audio.newMusic(Gdx.files.internal("Efectos/error.mp3"));
 	}
 
 	//checa si se paro la musica

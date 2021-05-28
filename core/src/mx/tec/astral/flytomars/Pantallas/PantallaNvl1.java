@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -25,7 +26,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.EstadoJuego;
+import mx.tec.astral.flytomars.EstadoPowerUps;
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.EstadosMovimiento;
 import mx.tec.astral.flytomars.Tools.Bala;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
@@ -48,7 +51,6 @@ import mx.tec.astral.flytomars.Tools.Vida;
 
 
 public class PantallaNvl1 extends Pantalla {
-
     // Estados del juego
     EstadoJuego estadoJuego;
 
@@ -85,19 +87,22 @@ public class PantallaNvl1 extends Pantalla {
     //Alien Letal
 //    private AlienLetal aLetal;
     private Array<AlienLetal> arrLetales;
-    private Texture texturaLetal;
-    private float timerCrearAlienLetal;
+    private Texture texturaLetal_left;
+    private Texture texturaLetal_right;
+    private float timerCrearAlienLetal=10;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 20;
-    private final float TIEMPO_CAMBIO_LETAL = 6;
+    private final float TIEMPO_CREAR_LETAL = 30;
+    private final float TIEMPO_CAMBIO_LETAL = 6f;
+    private int counterHitLetal = 0;
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
-    private Texture texturaTanque;
-    private float timerCrearAlienTanque;
+    private Texture texturaTanque_left;
+    private Texture texturaTanque_right;
+    private float TIMER_CREAR_TANQUE= 20;
     private float timerCambioTanque;
-    private final float TIEMPO_CREAR_TANQUE = 15;
-    private final float TIEMPO_CAMBIO_TANQUE = 6;
+    private final float TIEMPO_CAMBIO_TANQUE = 6f;
+    private int counterHitTanque = 0;
 
 
     //  Objetos vida
@@ -117,13 +122,14 @@ public class PantallaNvl1 extends Pantalla {
     private Texture texturaDer;
     private Texture texturaPause;
 
-    //Objetos de PowerUps
-    private Texture texturaEscudo;
-    private Texture texturaMoneda;
+//  Objetos de PowerUps
     private Texture texturaVida;
-    private Array<PowerUp> powerUpArray;
-    private int timerCrearPowerCup = 8;
-    private final float TIEMPO_CREAR_POWERUP = 8;
+
+    private float timerPower = 0f;
+    private final float TIEMPO_CREAR_ITEM = 10.0f;
+
+
+    private Array<PowerUp> arrPowerUps;
 
 
     //Clase powerUp
@@ -173,10 +179,12 @@ public class PantallaNvl1 extends Pantalla {
         procesadorEntrada = new ProcesadorEntrada();
         Gdx.input.setInputProcessor(procesadorEntrada);
 
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
+
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-    /**======================================================
+/**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
 
@@ -184,8 +192,12 @@ public class PantallaNvl1 extends Pantalla {
         AssetManager manager = new AssetManager();
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load("mapas/Mapa1.tmx", TiledMap.class);
+//        manager.load("mapas/prueba1.tmx", TiledMap.class);
+//        manager.load("mapas/nivel_2.tmx", TiledMap.class);
         manager.finishLoading();
         mapa = manager.get("mapas/Mapa1.tmx");
+//        mapa = manager.get("mapas/prueba1.tmx");
+//        mapa = manager.get("mapas/nivel_2.tmx");
         rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
     }
@@ -240,13 +252,11 @@ public class PantallaNvl1 extends Pantalla {
         hero = new Hero(spriteSheet);
         hero.setPosition(0, 64);
 
-        hero.cargarMapa(mapa, TAM_CELDA);
+        hero.cargarMapa(mapa, TAM_CELDA, 2);
     }
 
     private void crearPowerUp() {
-        texturaEscudo = new Texture("items/shield.png");
-        texturaMoneda = new Texture("items/coin.png");
-        powerUpArray = new Array<>();
+        arrPowerUps = new Array<>();
     }
 
     private void crearBalas() {
@@ -270,13 +280,15 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearAlienTanque() {
-        texturaTanque=new Texture("enemigos/alienTanque2.png");
+        texturaTanque_left = new Texture("enemigos/alienTanque_Left.png");
+        texturaTanque_right = new Texture("enemigos/alienTanque_Right.png");
         arrTanques = new Array<>();
 
     }
 
     private void crearAlienLetal() {
-        texturaLetal=new Texture("enemigos/alienLetal2.png");
+        texturaLetal_left = new Texture("enemigos/alienLetal_Left.png");
+        texturaLetal_right = new Texture("enemigos/alienLetal_Right.png");
         arrLetales= new Array<>();
 
     }
@@ -295,9 +307,16 @@ public class PantallaNvl1 extends Pantalla {
     public void render(float delta) {
         if(estadoJuego == EstadoJuego.EN_JUEGO)
             actualizar(delta);
+        else if ( estadoJuego == EstadoJuego.PERDIO)
+            bgMusic.setVolume(0);
 
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
+
+/**======================================================
+//                      MAPA                           ||
+//======================================================
+*/
 
         rendererMapa.setView(camara);
         rendererMapa.render();
@@ -350,6 +369,9 @@ public class PantallaNvl1 extends Pantalla {
             }
         }
 
+        for (PowerUp powerUp : arrPowerUps ) {
+            powerUp.render(batch);
+        }
 
 /**======================================================
 //                       BOTONES                       ||
@@ -379,27 +401,49 @@ public class PantallaNvl1 extends Pantalla {
         if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null)
             escenaPausa.draw();
 
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaJuego(juego) );
+
+        if ( !juego.isPassedLvl1 && puntos >= 2500 )
+            juego.isPassedLvl1 = true;
+
     }
 
     private void actualizar(float delta){
         actualizarHero(hero);
         actualizarBalas(delta);
         crearAgil(delta);
-        actualizarTanque(delta);
-        actualizarLetal(delta);
+        crearTanque(delta);
+        crearLetal(delta);
+        actualizarItems(delta);
+        depurarPowerUps();
 
         //if (probabilidad() >= 80) {
             System.out.println("Se crea power");
             crearPower(delta);
 
-        if(arrBalas.size != 0)
+        if(arrBalas.size != 0){
             colisionesAlienAgil();
+            colisionesAlienLetal();
+            colisionesAlienTanque();
+
+    }
     }
 
-    private int probabilidad()
-    {
-        int chance = (int)(Math.random()*100);
-        return chance;
+    private void actualizarItems(float delta) {
+        timerPower += delta;
+        // Aproximadamente se crea un powerUp c/30 seg.
+        if ( timerPower >= TIEMPO_CREAR_ITEM) {
+            timerPower = 0;
+            int posX = (int) Math.floor(Math.random()*((ANCHO-(80)-14)+15));
+            int posY = (int) Math.floor(Math.random()*((ALTO-(40))-2*TAM_CELDA+1)+2*TAM_CELDA);
+
+            int tipo = (int) Math.floor(Math.random()*3);
+            powerUp = new PowerUp(posX, posY, tipo);
+
+            arrPowerUps.add(powerUp);
+
+        }
     }
 
     private void comprobarVidas() {
@@ -438,7 +482,9 @@ public class PantallaNvl1 extends Pantalla {
 
             //Crear
             float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
-            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,200);
+            float yAgil= MathUtils.random(10,ALTO-texturaAgil_right.getHeight());
+            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,yAgil);
+            aAgil.cargarMapa(mapa, TAM_CELDA);
             arrAliensAgiles.add(aAgil);
         }
         moverAliensAgiles(delta);
@@ -446,6 +492,8 @@ public class PantallaNvl1 extends Pantalla {
 
     private void moverAliensAgiles(float delta) {
         for (AlienAgil alienAgil : arrAliensAgiles) {
+
+
             timerCambioAgil+=delta;
             if(timerCambioAgil >= TIEMPO_CAMBIO_AGIL){
                 int tipo = MathUtils.random(1,2);
@@ -458,11 +506,17 @@ public class PantallaNvl1 extends Pantalla {
 
             alienAgil.moverHorizontal();
 
-
             if(alienAgil.getSprite().getX() <= 0 - alienAgil.getSprite().getWidth())
                 alienAgil.setX(ANCHO);
             else if (alienAgil.getSprite().getX() >= ANCHO)
                 alienAgil.setX(0);
+
+            alienAgil.verificarPlataforma(2);
+
+            if(alienAgil.getSprite().getY() < 2*TAM_CELDA)
+                alienAgil.caer();
+            if ( alienAgil.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienAgil.getSprite().getY() <= -alienAgil.getSprite().getHeight())
+                alienAgil.getSprite().setY(ALTO);
             depurarAlienAgil();
         }
     }
@@ -502,79 +556,170 @@ public class PantallaNvl1 extends Pantalla {
 //                  E. LETALES                         ||
 //====================================================*/
 
-    private void actualizarLetal(float delta) {
+    private void crearLetal(float delta) {
         timerCrearAlienLetal+=delta;
         if(timerCrearAlienLetal>=TIEMPO_CREAR_LETAL){
             timerCrearAlienLetal=0;
             //Crear
-            float xLetal= MathUtils.random(10,ANCHO-texturaLetal.getWidth());
-            AlienLetal aLetal= new AlienLetal(texturaLetal,xLetal,200);
+            float xLetal= MathUtils.random(10,ANCHO-texturaLetal_right.getWidth());
+            float yLetal= MathUtils.random(10,ALTO-texturaLetal_right.getHeight());
+            AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,yLetal);
+            aLetal.cargarMapa(mapa, TAM_CELDA);
             arrLetales.add(aLetal);
         }
         moverAliensLetales(delta);
     }
 
     private void moverAliensLetales(float delta) {
-
-        int velocidad = 10;
         for (AlienLetal alienLetal : arrLetales) {
-            timerCambioLetal += delta;
-            if (timerCambioLetal >= TIEMPO_CAMBIO_LETAL) {
+            timerCambioLetal+=delta;
+            if(timerCambioLetal >= TIEMPO_CAMBIO_LETAL){
+                int tipo = MathUtils.random(1,2);
+                timerCambioLetal = 0;
+                if( tipo == 1 && alienLetal.getEstado() == EstadoAlien.DERECHA)
+                    alienLetal.cambiarEstado();
+                else if(tipo == 2 && alienLetal.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienLetal.cambiarEstado();
+            }
 
-                int valor = MathUtils.random(0, 1);
-                if (valor >0) {
-                    velocidad*=-1;
-                    alienLetal.moverHorizontal(30);
-                    timerCambioLetal=3;
-                } else {
-                    velocidad*=-1;
-                    alienLetal.moverHorizontal(-30);
-                    timerCambioLetal=3;
+            alienLetal.moverHorizontal();
 
+
+            if(alienLetal.getSprite().getX() <= 0 - alienLetal.getSprite().getWidth())
+                alienLetal.setX(ANCHO);
+            else if (alienLetal.getSprite().getX() >= ANCHO)
+                alienLetal.setX(0);
+
+            alienLetal.verificarPlataforma(2);
+
+            if(alienLetal.getSprite().getY() < 2*TAM_CELDA)
+                alienLetal.caer();
+            if ( alienLetal.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienLetal.getSprite().getY() <= -alienLetal.getSprite().getHeight())
+                alienLetal.getSprite().setY(ALTO);
+
+            depurarAlienLetal();
+        }
+    }
+
+    private void colisionesAlienLetal() {
+        for(int i= arrLetales.size-1; i>=0; i--){
+            AlienLetal alienLetal = arrLetales.get(i);
+            if (alienLetal.getEstado() == EstadoAlien.MUERE )
+                arrLetales.removeIndex(i);
+
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
+
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())){
+                    counterHitLetal ++;
+                    if (counterHitLetal == 3) {
+                        //Le pegó
+                        alienLetal.setEstado(EstadoAlien.MUERE);
+                        //Contar puntos
+                        puntos += 150;
+                        //Desaparecer la bala
+                        counterHitLetal = 0;
+                    }
+                    arrBalas.removeIndex(j);
                 }
             }
         }
     }
 
+    private void depurarAlienLetal() {
+        for (int i = arrLetales.size-1; i>=0; i--){
+            AlienLetal letal = arrLetales.get(i);
+            if(letal.getEstado() == EstadoAlien.MUERE)
+                arrLetales.removeIndex(i);
+        }
+    }
 
 /**======================================================
 //                  E. TANQUE                          ||
 //====================================================*/
 
-    private void actualizarTanque(float delta) {
+    private void crearTanque(float delta) {
+    TIMER_CREAR_TANQUE += delta;
 
-        timerCrearAlienTanque+=delta;
-        if(timerCrearAlienTanque>=TIEMPO_CREAR_TANQUE){
-            timerCrearAlienTanque=0;
-            //Crear
-            float xTanque = MathUtils.random(10,ANCHO-texturaTanque.getWidth());
-            AlienTanque aTanque = new AlienTanque(texturaTanque,xTanque,100);
-            arrTanques.add(aTanque);
+    if(TIMER_CREAR_TANQUE >= TIEMPO_CREAR_AGIL){
+        TIMER_CREAR_TANQUE = 0;
+
+        //Crear
+        float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
+        float yTanque= MathUtils.random(10,ALTO-texturaTanque_right.getHeight());
+        AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,yTanque);
+        aTanque.cargarMapa(mapa, TAM_CELDA);
+        arrTanques.add(aTanque);
+    }
+    moverAliensTanques(delta);
+}
+
+    private void moverAliensTanques(float delta) {
+        for (AlienTanque alienTanque : arrTanques) {
+            timerCambioTanque+=delta;
+            if(timerCambioTanque >= TIEMPO_CAMBIO_TANQUE){
+                int tipo = MathUtils.random(1,2);
+                timerCambioTanque = 0;
+                if( tipo == 1 && alienTanque.getEstado() == EstadoAlien.DERECHA)
+                    alienTanque.cambiarEstado();
+                else if(tipo == 2 && alienTanque.getEstado() == EstadoAlien.IZQUIERDA)
+                    alienTanque.cambiarEstado();
+            }
+
+            alienTanque.moverHorizontal();
+
+
+            if(alienTanque.getSprite().getX() <= 0 - alienTanque.getSprite().getWidth())
+                alienTanque.setX(ANCHO);
+            else if (alienTanque.getSprite().getX() >= ANCHO)
+                alienTanque.setX(0);
+
+            alienTanque.verificarPlataforma(2);
+
+            if(alienTanque.getSprite().getY() < 2*TAM_CELDA)
+                alienTanque.caer();
+            if ( alienTanque.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && alienTanque.getSprite().getY() <= -alienTanque.getSprite().getHeight())
+                alienTanque.getSprite().setY(ALTO);
+
+
+            depurarAlienTanque();
         }
-        moverAliensTanque(delta);
     }
 
-    private void moverAliensTanque(float delta) {
-        int velocidad =10;
-        for (AlienTanque alienTanque : arrTanques) {
-            timerCambioTanque += delta;
+    private void colisionesAlienTanque() {
+        for(int i= arrTanques.size-1; i>=0; i--){
+            AlienTanque alienTanque = arrTanques.get(i);
+            if (alienTanque.getEstado() == EstadoAlien.MUERE )
+                arrTanques.removeIndex(i);
 
-            if (timerCambioTanque >= TIEMPO_CAMBIO_TANQUE) {
+            for( int j = arrBalas.size-1; j >=0; j--){
+                bala = arrBalas.get(j);
 
-                int valor = MathUtils.random(0, 1);
-                if (valor >0) {
-                    velocidad*=-1;
-                    alienTanque.moverHorizontal(10);
-                    timerCambioTanque=4;
-                } else {
-                    velocidad*=-1;
-                    alienTanque.moverHorizontal(-10);
-                    timerCambioTanque=4;
-
+                if(bala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())){
+                    counterHitTanque ++;
+                    System.out.println("" + counterHitTanque);
+                    if (counterHitTanque == 5) {
+                        //Le pegó
+                        alienTanque.setEstado(EstadoAlien.MUERE);
+                        //Contar puntos
+                        puntos += 200;
+                        //Desaparecer la bala
+                        counterHitTanque = 0;
+                    }
+                    arrBalas.removeIndex(j);
                 }
             }
         }
     }
+
+    private void depurarAlienTanque() {
+        for (int i = arrTanques.size-1; i>=0; i--){
+            AlienTanque tanque = arrTanques.get(i);
+            if(tanque.getEstado() == EstadoAlien.MUERE)
+                arrTanques.removeIndex(i);
+        }
+    }
+
 
 
 /**======================================================
@@ -603,8 +748,11 @@ public class PantallaNvl1 extends Pantalla {
         else if (moviendoIzquierda && hero.getEstado() != EstadoHeroe.SALTO)
             hero.setEstado(EstadoHeroe.IZQUIERDA);
 
-        if ( moviendoIzquierda || moviendoDerecha)
-            hero.mover();
+        if ( moviendoIzquierda || moviendoDerecha) {
+//            hero.mover();
+
+            hero.probarChoqueParedes();
+        }
 
         else if ( hero.getEstado() != EstadoHeroe.SALTO ){
 
@@ -614,6 +762,11 @@ public class PantallaNvl1 extends Pantalla {
             else if (prevState == EstadoHeroe.IZQUIERDA)
                 hero.setEstado(EstadoHeroe.IDLE_I);
 
+            else if (hero.getEstadoMovimiento() == EstadosMovimiento.QUIETO && prevState == EstadoHeroe.DERECHA)
+                hero.setEstado(EstadoHeroe.IDLE_D);
+
+            else if (hero.getEstadoMovimiento() == EstadosMovimiento.QUIETO && prevState == EstadoHeroe.IZQUIERDA)
+                hero.setEstado(EstadoHeroe.IDLE_I);
         }
 
         if( moviendoDerecha )
@@ -624,6 +777,10 @@ public class PantallaNvl1 extends Pantalla {
         if ( moviendoDerecha && hero.getSprite().getX() >= ANCHO )
             hero.setX( 0 - hero.getSprite().getWidth() );
 
+        if ( hero.getEstadoSalto() == EstadoSalto.CAIDA_LIBRE  && hero.getSprite().getY() <= -hero.getSprite().getHeight())
+            hero.getSprite().setY(ALTO);
+
+
         else if ( moviendoIzquierda && hero.getSprite().getX() < 0 - hero.getSprite().getWidth() )
             hero.setX( ANCHO );
 
@@ -633,13 +790,33 @@ public class PantallaNvl1 extends Pantalla {
                 hero.actualizarVuelo();
         }
 
+        if(hero.getSprite().getY() < 2*TAM_CELDA)
+            hero.caer();
+
+        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
         hero.verificarPlataforma();
 
         hero.colision(arrAliensAgiles);
+        hero.colision(arrPowerUps);
+        hero.colision(arrLetales);
+        hero.colision(arrTanques);
         arrVidas.size = hero.getVidas();
+
+        if(hero.getObtuvoMoneda()) {
+            puntos += 50;
+            hero.setObtuvoMoneda(false);
+        }
 
         comprobarVidas();
 
+    }
+
+    private void depurarPowerUps() {
+        for (int i = arrPowerUps.size-1; i>=0; i--){
+            PowerUp powerUp = arrPowerUps.get(i);
+            if(powerUp.getEstado() == EstadoPowerUps.TOMADO)
+                arrPowerUps.removeIndex(i);
+        }
     }
 
 
@@ -655,13 +832,16 @@ public class PantallaNvl1 extends Pantalla {
 
     @Override
     public void dispose() {
-        arrVidas.clear();
+        if (arrVidas.size > 0)
+            arrVidas.clear();
         batch.dispose();
         arrBalas.clear();
         arrAliensAgiles.clear();
         arrTanques.clear();
         arrLetales.clear();
         bgMusic.dispose();
+//        juego.mp3.dispose();
+
     }
 
 
@@ -703,7 +883,7 @@ public class PantallaNvl1 extends Pantalla {
                     escenaPausa = new EscenaPausa(vista);
                 estadoJuego = EstadoJuego.PAUSA;
                 Gdx.input.setInputProcessor(escenaPausa);
-                bgMusic.pause();
+//                bgMusic.pause();
             }
             else {
                 // Left Button
@@ -716,11 +896,14 @@ public class PantallaNvl1 extends Pantalla {
                         v.y >= texturaDer.getHeight() / 3f && v.y <= texturaDer.getHeight() * 1.3f)
                     moviendoDerecha = true;
             }
-            if (estadoJuego != EstadoJuego.PERDIO) {
+
+            if(estadoJuego != EstadoJuego.PERDIO) {
                 //  A button (Jump)
-            if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
+                if (v.x >= ANCHO - texturaA.getWidth() * 2 && v.x <= ANCHO - texturaA.getWidth() &&
                         v.y >= texturaA.getHeight() / 2f && v.y <= texturaA.getHeight() * 1.5f) {
-                    juego.soundSalto.play(.5f);
+
+                    if(hero.getEstadoSalto() == EstadoSalto.EN_PISO)
+                        juego.soundSalto.play(.5f);
                     hero.saltar();
                 }
 
@@ -733,21 +916,19 @@ public class PantallaNvl1 extends Pantalla {
                     Bala bala = new Bala(texturaBalaIzq, texturaBalaDer, hero.getSprite().getX() + hero.getSprite().getWidth(),
                             (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f));
 
-                    if(hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
-                        if (hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
-                            bala.setEstado(EstadoBala.DERECHA);
-                            bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth() / 2f,
-                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2f);
-                            arrBalas.add(bala);
-                        } else if (hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA) {
-                            bala.setEstado(EstadoBala.IZQUIERDA);
-                            bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth() / 2f,
-                                    (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2);
-                            arrBalas.add(bala);
-                        }
+                    if (hero.getEstado() == EstadoHeroe.DERECHA || prevState == EstadoHeroe.DERECHA) {
+                        bala.setEstado(EstadoBala.DERECHA);
+                        bala.setPosition((hero.getSprite().getX() + hero.getSprite().getWidth()) - bala.getSprite().getWidth() / 2f,
+                                (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2f);
+                        arrBalas.add(bala);
+                    } else if (hero.getEstado() == EstadoHeroe.IZQUIERDA || prevState == EstadoHeroe.IZQUIERDA) {
+                        bala.setEstado(EstadoBala.IZQUIERDA);
+                        bala.setPosition(hero.getSprite().getX() - bala.getSprite().getWidth() / 2f,
+                                (hero.getSprite().getY() + hero.getSprite().getHeight() / 2f) - bala.getSprite().getHeight() / 2);
+                        arrBalas.add(bala);
                     }
+                }
             }
-        }
 
 
             return true; //Porque el juego ya proceso el evento
@@ -781,6 +962,7 @@ public class PantallaNvl1 extends Pantalla {
 
     private class EscenaPausa extends Stage{
         private Texture texturaFondo;
+        private int volumen = 2;
 
         public EscenaPausa(Viewport vista){
             super(vista);
@@ -797,6 +979,21 @@ public class PantallaNvl1 extends Pantalla {
             addActor(btnContinuar);
             btnContinuar.setPosition(ANCHO/2, 0.3f*ALTO, Align.center);
 
+            Texture textureBtnBajarV = new Texture("pausa/Mute_Idle.png");
+            TextureRegionDrawable trdBajarV = new TextureRegionDrawable(textureBtnBajarV);
+            Button btnBajarV = new Button(trdBajarV);
+
+            addActor(btnBajarV);
+            btnBajarV.setPosition(ANCHO/3, 0.3f*ALTO, Align.center);
+
+            Texture textureBtnSubirV = new Texture("pausa/Volume_2_Idle.png");
+            TextureRegionDrawable trdSubirV = new TextureRegionDrawable(textureBtnSubirV);
+            Button btnSubirV = new Button(trdSubirV);
+
+            addActor(btnSubirV);
+            btnSubirV.setPosition(ANCHO*2/3, 0.3f*ALTO, Align.center);
+
+
             btnContinuar.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -804,15 +1001,68 @@ public class PantallaNvl1 extends Pantalla {
 
                     if(arrVidas.size > 0) {
                         estadoJuego = EstadoJuego.EN_JUEGO;
-                        bgMusic.play();
-                        bgMusic.setLooping(true);
-                        bgMusic.setVolume(0.12f);
+//                        bgMusic.play();
                     } else
                         estadoJuego = EstadoJuego.PERDIO;
 
                     Gdx.input.setInputProcessor(procesadorEntrada);
                 }
             });
+
+            btnBajarV.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    if(volumen > 0 ) {
+                        volumen--;
+                        switch (volumen){
+                            case 0:
+                                bgMusic.setVolume(0f);
+                                break;
+                            case 1:
+                                bgMusic.setVolume(0.06f);
+                                break;
+                            case 2:
+                                bgMusic.setVolume(0.12f);
+                                break;
+                            case 3:
+                                bgMusic.setVolume(0.18f);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+
+            btnSubirV.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    if(volumen < 4 ) {
+                        volumen++;
+                        switch (volumen){
+                            case 1:
+                                bgMusic.setVolume(0.06f);
+                                break;
+                            case 2:
+                                bgMusic.setVolume(0.12f);
+                                break;
+                            case 3:
+                                bgMusic.setVolume(0.18f);
+                                break;
+                            case 4:
+                                bgMusic.setVolume(0.24f);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+
         }
     }
 }
