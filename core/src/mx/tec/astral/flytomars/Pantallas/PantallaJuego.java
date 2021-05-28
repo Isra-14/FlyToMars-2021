@@ -1,6 +1,7 @@
 package mx.tec.astral.flytomars.Pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -42,6 +43,9 @@ public class PantallaJuego extends Pantalla {
         }
         crearMenu();
         crearHistoria();
+
+
+        Gdx.input.setCatchKey( Input.Keys.BACK, true );
     }
     //Historia
     PantallaHistoria historia;
@@ -85,13 +89,12 @@ public class PantallaJuego extends Pantalla {
             public void clicked(InputEvent event, float x, float y) {
                 juego.soundBotones.play();
                 juego.mp3.stop();
-                historia.setNumeroNivel(1);
-                historia.setTexturaFondo(texturaHistoria);
-                if(abiertas == 0) {
-                    //abiertas++;
+                if(!juego.isViewedStory1) {
+                    juego.isViewedStory1 = true;
+                    historia.setNumeroNivel(1);
+                    historia.setTexturaFondo(texturaHistoria);
                     juego.setScreen(historia);
-                }
-                else {
+                } else {
                     juego.setScreen(new PantallaNvl1(juego));
                 }
             }
@@ -100,32 +103,37 @@ public class PantallaJuego extends Pantalla {
         btnNvl2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.soundBotones.play();
-                juego.mp3.stop();
-                historia.setNumeroNivel(2);
-                historia.setTexturaFondo(textruaHistoria2);
-                if (abiertas == 0)
-                {
-                    juego.setScreen(historia);
+                if ( juego.isPassedLvl1 ) {
+                    juego.soundBotones.play();
+                    juego.mp3.stop();
+                    if (!juego.isViewedStory2) {
+                        historia.setNumeroNivel(2);
+                        historia.setTexturaFondo(texturaHistoria);
+                        juego.setScreen(historia);
+                    } else
+                        juego.setScreen(new PantallaNvl2(juego));
+                } else {
+                    juego.error.setVolume(0.2f);
+                    juego.error.play();
                 }
-                else{
-                juego.setScreen(new PantallaNvl2(juego));}
             }
         });
 
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.soundBotones.play();
-                juego.mp3.stop();
-                historia.setTexturaFondo(texturaHistoria3);
-                historia.setNumeroNivel(3);
-                if(abiertas == 0)
-                {
-                    juego.setScreen(historia);
-                }
-                else {
-                    juego.setScreen(new PantallaNvl3(juego));
+                if ( juego.isPassedLvl2 ){
+                    juego.soundBotones.play();
+                    juego.mp3.stop();
+                    if (!juego.isViewedStory3) {
+                        historia.setNumeroNivel(3);
+                        historia.setTexturaFondo(texturaHistoria);
+                        juego.setScreen(historia);
+                    }else
+                        juego.setScreen(new PantallaNvl3(juego));
+                } else {
+                    juego.error.setVolume(0.2f);
+                    juego.error.play();
                 }
             }
         });
@@ -139,6 +147,10 @@ public class PantallaJuego extends Pantalla {
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenuNiveles);
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaJuego(juego) );
     }
 
     private Button crearBoton(String archivo, String clickeado) {
@@ -149,7 +161,6 @@ public class PantallaJuego extends Pantalla {
         TextureRegionDrawable trdBtnClick = new TextureRegionDrawable(texturaClickeada);
         return new Button(trdBtn, trdBtnClick);
     }
-
     @Override
     public void render(float delta) {
 
@@ -162,6 +173,10 @@ public class PantallaJuego extends Pantalla {
         batch.end();
 
         escenaMenuNiveles.draw();
+
+
+        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+            juego.setScreen( new PantallaMenu(juego) );
     }
 
     @Override

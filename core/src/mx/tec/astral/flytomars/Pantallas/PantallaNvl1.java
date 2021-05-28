@@ -61,11 +61,15 @@ public class PantallaNvl1 extends Pantalla {
 
     // Font of score.
     Texto texto;
+    Texto textoPausa;
+    Texto textoPasado;
     private int puntos = 0;
 
     private final Juego juego;
 //    Texture texturaFondo;
 //    private Stage escenaMenuNiveles;
+
+    private final int PUNTOS_SIGUIENTE_NIVEL = 2500;
 
     //  Personaje (Hero)
     private Hero hero;
@@ -204,6 +208,8 @@ public class PantallaNvl1 extends Pantalla {
 
     private void crearTexto() {
         texto = new Texto();
+        textoPausa = new Texto();
+        textoPasado = new Texto();
     }
 
     private void cargarMusica() {
@@ -313,6 +319,7 @@ public class PantallaNvl1 extends Pantalla {
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
+
 /**======================================================
 //                      MAPA                           ||
 //======================================================
@@ -361,13 +368,6 @@ public class PantallaNvl1 extends Pantalla {
 //======================================================
 */
         hero.render(batch);
-        if(powerUpArray.size != 0 ) {
-            System.out.println("Se dibuja power");
-            int random = (int)MathUtils.random()*3;
-            for (PowerUp power : powerUpArray) {
-                power.creaNuevoPowerUp(batch, random);
-            }
-        }
 
         for (PowerUp powerUp : arrPowerUps ) {
             powerUp.render(batch);
@@ -404,9 +404,19 @@ public class PantallaNvl1 extends Pantalla {
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
             juego.setScreen( new PantallaJuego(juego) );
 
-        if ( !juego.isPassedLvl1 && puntos >= 2500 )
+        if ( !juego.isPassedLvl1 && puntos >= PUNTOS_SIGUIENTE_NIVEL )
             juego.isPassedLvl1 = true;
 
+        if (estadoJuego == EstadoJuego.PAUSA) {
+            batch.begin();
+            textoPausa.mostrarMensaje(batch, "Score actual: " + puntos, ANCHO/2 - 50, ALTO - 250);
+            if ( !juego.isPassedLvl1 )
+                textoPasado.mostrarMensaje(batch, "Siguiente nivel a: " + (PUNTOS_SIGUIENTE_NIVEL - puntos) + " puntos", ANCHO/2 - 40, ALTO - 350);
+            else
+                textoPasado.mostrarMensaje(batch, "¡Nivel 2 desbloqueado!", ANCHO/2 - 50, ALTO - 350);
+
+            batch.end();
+        }
     }
 
     private void actualizar(float delta){
@@ -417,10 +427,6 @@ public class PantallaNvl1 extends Pantalla {
         crearLetal(delta);
         actualizarItems(delta);
         depurarPowerUps();
-
-        //if (probabilidad() >= 80) {
-            System.out.println("Se crea power");
-            crearPower(delta);
 
         if(arrBalas.size != 0){
             colisionesAlienAgil();
@@ -450,23 +456,6 @@ public class PantallaNvl1 extends Pantalla {
         if(arrVidas.size <= 0) {
             estadoJuego = EstadoJuego.PERDIO;
             juego.perder.play();
-        }
-    }
-/**======================================================
- //                    PowerUps                         ||
- //====================================================*/
-    private void crearPower(float delta)
-    {
-        int x = (int)MathUtils.random();
-        int y = (int)MathUtils.random();
-        timerCrearPowerCup += delta;
-        System.out.println("" + timerCrearPowerCup);
-        if (timerCrearPowerCup >= TIEMPO_CREAR_POWERUP) {
-            System.out.println("Creando powwr");
-            timerCrearPowerCup = 0;
-            //crearlos
-            PowerUp power = new PowerUp(texturaVida, texturaEscudo, texturaMoneda, x, y);
-            powerUpArray.add(power);
         }
     }
 

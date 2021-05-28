@@ -61,6 +61,7 @@ public class PantallaNvl2 extends Pantalla {
 
     // Font of score.
     Texto texto;
+    Texto textoPausa;
     private int puntos = 0;
 
     private final Juego juego;
@@ -203,6 +204,7 @@ public class PantallaNvl2 extends Pantalla {
 
     private void crearTexto() {
         texto = new Texto();
+        textoPausa = new Texto();
     }
 
     private void cargarMusica() {
@@ -313,6 +315,7 @@ public class PantallaNvl2 extends Pantalla {
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
+
 /**======================================================
  //                      MAPA                           ||
  //======================================================
@@ -400,6 +403,11 @@ public class PantallaNvl2 extends Pantalla {
         if ( !juego.isPassedLvl1 && puntos >= 2500 )
             juego.isPassedLvl1 = true;
 
+        if (estadoJuego == EstadoJuego.PAUSA) {
+            batch.begin();
+            textoPausa.mostrarMensaje(batch, "Score actual: " + puntos, ANCHO/2 - 50, ALTO - 250);
+            batch.end();
+        }
     }
 
     private void actualizar(float delta){
