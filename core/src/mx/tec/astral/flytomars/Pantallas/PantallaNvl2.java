@@ -51,6 +51,8 @@ import mx.tec.astral.flytomars.Tools.Vida;
  //====================================================*/
 
 public class PantallaNvl2 extends Pantalla {
+
+    private int PUNTOS_SIGUIENTE_NIVEL = 5000;
     // Estados del juego
     EstadoJuego estadoJuego;
 
@@ -82,8 +84,9 @@ public class PantallaNvl2 extends Pantalla {
     private Texture texturaAgil_right;
     private float timerCrearAlienAgil = 10;
     private float timerCambioAgil;
-    private final float TIEMPO_CREAR_AGIL = 10;
+    private final float TIEMPO_CREAR_AGIL = 8;
     private final float TIEMPO_CAMBIO_AGIL = 1f;
+    private int counterAgil = 0;
 
     //Alien Letal
 //    private AlienLetal aLetal;
@@ -92,7 +95,7 @@ public class PantallaNvl2 extends Pantalla {
     private Texture texturaLetal_right;
     private float timerCrearAlienLetal=10;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 30;
+    private final float TIEMPO_CREAR_LETAL = 60;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
     private int counterHitLetal = 0;
 
@@ -126,7 +129,7 @@ public class PantallaNvl2 extends Pantalla {
     //  Objetos de PowerUps
     private Texture texturaVida;
     private float timerPower = 0f;
-    private final float TIEMPO_CREAR_ITEM = 10.0f;
+    private final float TIEMPO_CREAR_ITEM = 15f;
 
 
     private Array<PowerUp> arrPowerUps;
@@ -191,12 +194,9 @@ public class PantallaNvl2 extends Pantalla {
     private void crearFondo() {
         AssetManager manager = new AssetManager();
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-//        manager.load("mapas/Mapa1.tmx", TiledMap.class);
-//        manager.load("mapas/prueba1.tmx", TiledMap.class);
+
         manager.load("mapas/nivel_2.tmx", TiledMap.class);
         manager.finishLoading();
-//        mapa = manager.get("mapas/Mapa1.tmx");
-//        mapa = manager.get("mapas/prueba1.tmx");
         mapa = manager.get("mapas/nivel_2.tmx");
         rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
@@ -248,7 +248,7 @@ public class PantallaNvl2 extends Pantalla {
      //====================================================*/
 
     private void crearHero() {
-        Texture spriteSheet = new Texture("nivel1/heroSprites.png");
+        Texture spriteSheet = new Texture("nivel1/AstronautaSPRITES.png");
 
         hero = new Hero(spriteSheet);
         hero.setPosition(ANCHO/2-hero.getSprite().getWidth()/2, 200);
@@ -400,8 +400,8 @@ public class PantallaNvl2 extends Pantalla {
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
             juego.setScreen( new PantallaJuego(juego) );
 
-        if ( !juego.isPassedLvl1 && puntos >= 2500 )
-            juego.isPassedLvl1 = true;
+        if ( !juego.isPassedLvl2 && puntos >= PUNTOS_SIGUIENTE_NIVEL )
+            juego.isPassedLvl2 = true;
 
         if (estadoJuego == EstadoJuego.PAUSA) {
             batch.begin();
@@ -515,11 +515,14 @@ public class PantallaNvl2 extends Pantalla {
                 bala = arrBalas.get(j);
 
                 if(bala.getSprite().getBoundingRectangle().overlaps(alienAgil.getSprite().getBoundingRectangle())){
-                    //Le pegó
-                    alienAgil.setEstado(EstadoAlien.MUERE);
-                    //Contar puntos
-                    puntos +=50;
-                    //Desaparecer la bala
+                    counterAgil++;
+                    if (counterAgil ==2 ) {
+                        //Le pegó
+                        alienAgil.setEstado(EstadoAlien.MUERE);
+                        //Contar puntos
+                        puntos += 50;
+                        //Desaparecer la bala
+                    }
 
                     arrBalas.removeIndex(j);
                 }
@@ -596,7 +599,7 @@ public class PantallaNvl2 extends Pantalla {
 
                 if(bala.getSprite().getBoundingRectangle().overlaps(alienLetal.getSprite().getBoundingRectangle())){
                     counterHitLetal ++;
-                    if (counterHitLetal == 3) {
+                    if (counterHitLetal == 4) {
                         //Le pegó
                         alienLetal.setEstado(EstadoAlien.MUERE);
                         //Contar puntos
@@ -681,8 +684,7 @@ public class PantallaNvl2 extends Pantalla {
 
                 if(bala.getSprite().getBoundingRectangle().overlaps(alienTanque.getSprite().getBoundingRectangle())){
                     counterHitTanque ++;
-                    System.out.println("" + counterHitTanque);
-                    if (counterHitTanque == 5) {
+                    if (counterHitTanque == 6) {
                         //Le pegó
                         alienTanque.setEstado(EstadoAlien.MUERE);
                         //Contar puntos

@@ -98,14 +98,16 @@ public class Hero extends Objeto {
     public Hero(Texture texture) {
 
         TextureRegion region = new TextureRegion(texture);
-        TextureRegion[][] texturas = region.split(84, 128);
+        TextureRegion[][] texturas = region.split(102, 111);
 
         // Frames to walk
-        TextureRegion[] arrFramesCorrerIzq = {texturas[0][0], texturas[0][1], texturas[0][2], texturas[0][3], texturas[0][4], texturas[0][5],
-                texturas[0][6], texturas[0][7], texturas[0][8], texturas[0][9], texturas[0][10], texturas[0][11]};
+        TextureRegion[] arrFramesCorrerIzq = {texturas[2][0], texturas[2][1], texturas[2][2], texturas[2][3], texturas[2][4], texturas[2][5],
+                texturas[2][6], texturas[2][7]};
+                //texturas[0][8], texturas[0][9], texturas[0][10], texturas[0][11]};
 
         TextureRegion[] arrFramesCorrerDer = {texturas[1][0], texturas[1][1], texturas[1][2], texturas[1][3], texturas[1][4], texturas[1][5],
-                texturas[1][6], texturas[1][7], texturas[1][8], texturas[1][9], texturas[1][10], texturas[1][11]};
+                texturas[1][6], texturas[1][7]};
+                //texturas[1][8], texturas[1][9], texturas[1][10], texturas[1][11]};
 
         animacionCorre_D = new Animation<>(0.08f, arrFramesCorrerDer);
         animacionCorre_D.setPlayMode(Animation.PlayMode.LOOP);
@@ -115,8 +117,8 @@ public class Hero extends Objeto {
         timerAnimation = 0;
 
         // IDLE
-        idleD = new Sprite(texturas[1][3]);
-        idleI = new Sprite(texturas[0][2]);
+        idleD = new Sprite(texturas[0][0]);
+        idleI = new Sprite(texturas[0][1]);
 
         sprite = new Sprite(texturas[1][3]);
 
