@@ -177,6 +177,14 @@ public class Hero extends Objeto {
         sprite.setY(sprite.getY() + DY);
     }
 
+    public void reiniciar(){
+        vidas = 3;
+
+        estado = EstadoHeroe.DERECHA;
+        estadoSalto = EstadoSalto.EN_PISO;
+        estadoMovimiento = EstadosMovimiento.QUIETO;
+    }
+
     public void mover() {
         switch (estado) {
             case DERECHA:

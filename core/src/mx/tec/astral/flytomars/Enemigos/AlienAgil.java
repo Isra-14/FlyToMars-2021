@@ -95,7 +95,7 @@ public class AlienAgil extends Objeto {
                 sprite.setX(sprite.getX() - DX);
                 break;
             default:
-                Gdx.app.log("Estado no contemplado mover ", estado.toString());
+                break;
         }
 
     }

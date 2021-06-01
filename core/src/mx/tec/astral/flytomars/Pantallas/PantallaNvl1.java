@@ -91,7 +91,7 @@ public class PantallaNvl1 extends Pantalla {
     private Array<AlienLetal> arrLetales;
     Texture spriteSheetLetal;
     private float TAMANIO_REGION_LETAL = 128f;
-    private float timerCrearAlienLetal=10;
+    private float timerCrearAlienLetal= 0;
     private float timerCambioLetal;
     private final float TIEMPO_CREAR_LETAL = 30;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
@@ -101,7 +101,8 @@ public class PantallaNvl1 extends Pantalla {
     private Array<AlienTanque> arrTanques;
     private Texture spriteSheetTanque;
     private float TAMANIO_REGION_TANQUE = 128f;
-    private float TIMER_CREAR_TANQUE= 20;
+    private float timerCrearAlienTanque = 0;
+    private float TIEMPO_CREAR_TANQUE = 20;
     private float timerCambioTanque;
     private final float TIEMPO_CAMBIO_TANQUE = 6f;
     private int counterHitTanque = 0;
@@ -142,6 +143,9 @@ public class PantallaNvl1 extends Pantalla {
 
     // PAUSE
     private EscenaPausa escenaPausa;
+
+    // GAME OVER
+    private EscenaGameOver escenaGameOver;
 
     private ProcesadorEntrada procesadorEntrada;
 
@@ -229,7 +233,7 @@ public class PantallaNvl1 extends Pantalla {
         texturaIzq = new Texture("buttons/btnIzquierda.png");
     }
 
-     private void crearBotonA() {
+    private void crearBotonA() {
         texturaA = new Texture("buttons/btn_A.png");
     }
 
@@ -303,9 +307,10 @@ public class PantallaNvl1 extends Pantalla {
     public void render(float delta) {
         if(estadoJuego == EstadoJuego.EN_JUEGO)
             actualizar(delta);
-        else if ( estadoJuego == EstadoJuego.PERDIO)
+        else if ( estadoJuego == EstadoJuego.PERDIO) {
+            Gdx.input.setInputProcessor(escenaGameOver);
             bgMusic.setVolume(0);
-
+        }
         borrarPantalla(0, 0, 0); //Borrar con color negro}
         batch.setProjectionMatrix(camara.combined);
 
@@ -388,8 +393,11 @@ public class PantallaNvl1 extends Pantalla {
 
         batch.end();
 
-        if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null)
+        if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null )
             escenaPausa.draw();
+
+        if ( estadoJuego == EstadoJuego.PERDIO && escenaGameOver != null )
+            escenaGameOver.draw();
 
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
             juego.setScreen( new PantallaJuego(juego) );
@@ -409,7 +417,14 @@ public class PantallaNvl1 extends Pantalla {
         }
 
         if (estadoJuego == EstadoJuego.PERDIO){
+            batch.begin();
+            textoPausa.mostrarMensaje(batch, "Obtuviste: " + puntos + " puntos.", ANCHO/2 - 50, ALTO - 250);
+            if ( !juego.isPassedLvl1 )
+                textoPasado.mostrarMensaje(batch, "Te faltaron: " + (PUNTOS_SIGUIENTE_NIVEL - puntos) + " puntos", ANCHO/2 - 40, ALTO - 350);
+            else
+                textoPasado.mostrarMensaje(batch, "Nivel 2 desbloqueado!", ANCHO/2 - 50, ALTO - 350);
 
+            batch.end();
         }
     }
 
@@ -427,7 +442,7 @@ public class PantallaNvl1 extends Pantalla {
             colisionesAlienLetal();
             colisionesAlienTanque();
 
-    }
+        }
     }
 
     private void actualizarItems(float delta) {
@@ -449,6 +464,8 @@ public class PantallaNvl1 extends Pantalla {
     private void comprobarVidas() {
         if(arrVidas.size <= 0) {
             estadoJuego = EstadoJuego.PERDIO;
+
+            escenaGameOver = new EscenaGameOver(vista);
             juego.perder.play();
         }
     }
@@ -622,20 +639,20 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearTanque(float delta) {
-    TIMER_CREAR_TANQUE += delta;
+        timerCrearAlienTanque += delta;
 
-    if(TIMER_CREAR_TANQUE >= TIEMPO_CREAR_AGIL){
-        TIMER_CREAR_TANQUE = 0;
+        if(timerCrearAlienTanque >= TIEMPO_CREAR_TANQUE){
+            timerCrearAlienTanque = 0;
 
-        //Crear
-        float xTanque= MathUtils.random(10,ANCHO-TAMANIO_REGION_TANQUE);
-        float yTanque= MathUtils.random(10,ALTO-TAMANIO_REGION_TANQUE);
-        AlienTanque aTanque= new AlienTanque(spriteSheetTanque, xTanque,yTanque);
-        aTanque.cargarMapa(mapa, TAM_CELDA);
-        arrTanques.add(aTanque);
+            //Crear
+            float xTanque= MathUtils.random(10,ANCHO-TAMANIO_REGION_TANQUE);
+            float yTanque= MathUtils.random(10,ALTO-TAMANIO_REGION_TANQUE);
+            AlienTanque aTanque= new AlienTanque(spriteSheetTanque, xTanque,yTanque);
+            aTanque.cargarMapa(mapa, TAM_CELDA);
+            arrTanques.add(aTanque);
+            }
+            moverAliensTanques(delta);
     }
-    moverAliensTanques(delta);
-}
 
     private void moverAliensTanques(float delta) {
         for (AlienTanque alienTanque : arrTanques) {
@@ -802,6 +819,33 @@ public class PantallaNvl1 extends Pantalla {
         }
     }
 
+    private void reiniciar(){
+        for (int i = arrPowerUps.size-1; i>=0; i--)
+            arrPowerUps.removeIndex(i);
+
+        for (int i = arrAliensAgiles.size-1; i>=0; i--)
+            arrAliensAgiles.removeIndex(i);
+
+        for (int i = arrLetales.size-1; i>=0; i--)
+            arrLetales.removeIndex(i);
+
+        for (int i = arrTanques.size-1; i>=0; i--)
+            arrTanques.removeIndex(i);
+
+        timerCrearAlienAgil = 10;
+        timerCrearAlienTanque = 0;
+        timerCrearAlienLetal = 0;
+        puntos = 0;
+        hero.reiniciar();
+        hero.setPosition(0, 64);
+
+        estadoJuego = EstadoJuego.EN_JUEGO;
+
+        bgMusic.setPosition(0f);
+        bgMusic.setVolume(0.12f);
+
+    }
+
 
     @Override
     public void pause() {
@@ -960,21 +1004,28 @@ public class PantallaNvl1 extends Pantalla {
             Button btnContinuar = new Button(trdContinuar);
 
             addActor(btnContinuar);
-            btnContinuar.setPosition(ANCHO/2, 0.3f*ALTO, Align.center);
+            btnContinuar.setPosition(ANCHO/2, 0.35f*ALTO, Align.center);
 
             Texture textureBtnBajarV = new Texture("pausa/Mute_Idle.png");
             TextureRegionDrawable trdBajarV = new TextureRegionDrawable(textureBtnBajarV);
             Button btnBajarV = new Button(trdBajarV);
 
             addActor(btnBajarV);
-            btnBajarV.setPosition(ANCHO/3, 0.3f*ALTO, Align.center);
+            btnBajarV.setPosition(ANCHO/3, 0.35f*ALTO, Align.center);
 
             Texture textureBtnSubirV = new Texture("pausa/Volume_2_Idle.png");
             TextureRegionDrawable trdSubirV = new TextureRegionDrawable(textureBtnSubirV);
             Button btnSubirV = new Button(trdSubirV);
 
             addActor(btnSubirV);
-            btnSubirV.setPosition(ANCHO*2/3, 0.3f*ALTO, Align.center);
+            btnSubirV.setPosition(ANCHO*2/3, 0.35f*ALTO, Align.center);
+
+            Texture textureBtnVolver = new Texture("Menu/btn_back.png");
+            TextureRegionDrawable trdVolver = new TextureRegionDrawable(textureBtnVolver);
+            Button btnVolver = new Button(trdVolver);
+
+            addActor(btnVolver);
+            btnVolver.setPosition(ANCHO/2, 0.2f*ALTO, Align.center);
 
 
             btnContinuar.addListener(new ClickListener(){
@@ -1043,6 +1094,67 @@ public class PantallaNvl1 extends Pantalla {
                                 break;
                         }
                     }
+                }
+            });
+
+            btnVolver.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    Gdx.input.setInputProcessor(procesadorEntrada);
+
+                    juego.setScreen( new PantallaJuego(juego) );
+                }
+            });
+
+
+        }
+    }
+
+    private class EscenaGameOver extends Stage{
+        private Texture texturaFondo;
+
+        public EscenaGameOver(Viewport vista){
+            super(vista);
+
+            texturaFondo = new Texture("gameOver/fondoGameOver.png");
+            Image imageFondo = new Image(texturaFondo);
+            imageFondo.setPosition(ANCHO/2, ALTO/2, Align.center);
+            addActor(imageFondo);
+
+            Texture textureBtnReiniciar = new Texture("Menu/btn_reiniciar.png");
+            TextureRegionDrawable trdReiniciar = new TextureRegionDrawable(textureBtnReiniciar);
+            Button btnReiniciar = new Button(trdReiniciar);
+
+            addActor(btnReiniciar);
+            btnReiniciar.setPosition(ANCHO/3, 0.3f*ALTO, Align.center);
+
+            Texture textureBtnVolver = new Texture("Menu/btn_back.png");
+            TextureRegionDrawable trdVolver = new TextureRegionDrawable(textureBtnVolver);
+            Button btnVolver = new Button(trdVolver);
+
+            addActor(btnVolver);
+            btnVolver.setPosition(2*ANCHO/3, 0.3f*ALTO, Align.center);
+
+
+            btnReiniciar.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+
+                    reiniciar();
+
+                    Gdx.input.setInputProcessor(procesadorEntrada);
+                }
+            });
+
+            btnVolver.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    Gdx.input.setInputProcessor(procesadorEntrada);
+
+                    juego.setScreen( new PantallaJuego(juego) );
                 }
             });
 
