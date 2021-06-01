@@ -248,7 +248,7 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearHero() {
-        Texture spriteSheet = new Texture("nivel1/heroSprites.png");
+        Texture spriteSheet = new Texture("nivel1/AstronautaSPRITES.png");
 
         hero = new Hero(spriteSheet);
         hero.setPosition(0, 64);
@@ -288,8 +288,8 @@ public class PantallaNvl1 extends Pantalla {
     }
 
     private void crearAlienLetal() {
-        texturaLetal_left = new Texture("enemigos/alienLetal_Left.png");
-        texturaLetal_right = new Texture("enemigos/alienLetal_Right.png");
+        texturaLetal_left = new Texture("enemigos/Letal_Left.png");
+        texturaLetal_right = new Texture("enemigos/Letal_Right.png");
         arrLetales= new Array<>();
 
     }

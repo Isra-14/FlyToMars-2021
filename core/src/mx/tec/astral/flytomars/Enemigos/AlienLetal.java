@@ -2,6 +2,7 @@ package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
@@ -35,6 +36,15 @@ public class AlienLetal extends Objeto {
 
     public AlienLetal(Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
         super( texturaIzquierda, x, y);
+        //IZQ
+        TextureRegion reqionIzquierda = new TextureRegion(texturaIzquierda);
+        TextureRegion[][] texturasIZQ = reqionIzquierda.split(128, 128);
+        TextureRegion[] arrCorrerIzquierda = {texturasIZQ[0][0],texturasIZQ[0][1],texturasIZQ[0][2], texturasIZQ[0][3], texturasIZQ[1][0],
+        texturasIZQ[1][1], texturasIZQ[1][2], texturasIZQ[1][3]};
+
+        TextureRegion regionDerecha = new TextureRegion(texturaDerecha);
+        TextureRegion[][] texturas = regionDerecha.split(128, 128);
+
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
         estado = EstadoAlien.IZQUIERDA;

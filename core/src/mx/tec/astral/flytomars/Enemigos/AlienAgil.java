@@ -1,7 +1,9 @@
 package mx.tec.astral.flytomars.Enemigos;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
@@ -15,6 +17,11 @@ public class AlienAgil extends Objeto {
     private Texture texturaIzquierda;
     EstadoAlien estado;
     private EstadoSalto estadoSalto;
+
+    //correr
+    private Animation<TextureRegion> animacionCorre_D;
+    private Animation<TextureRegion> animacionCorre_I;
+
 
 
     // Mapa
@@ -35,6 +42,8 @@ public class AlienAgil extends Objeto {
 
     public AlienAgil(Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
         super( texturaIzquierda, x, y);
+        TextureRegion regionIzquierda = new TextureRegion(texturaIzquierda);
+        TextureRegion regionDerecha = new TextureRegion(texturaDerecha);
         this.texturaDerecha = texturaDerecha;
         this.texturaIzquierda = texturaIzquierda;
         estado = EstadoAlien.IZQUIERDA;
