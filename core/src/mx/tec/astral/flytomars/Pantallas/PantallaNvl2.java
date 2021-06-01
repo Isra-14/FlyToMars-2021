@@ -43,10 +43,10 @@ import mx.tec.astral.flytomars.Tools.Texto;
 import mx.tec.astral.flytomars.Tools.Vida;
 
 /**=======================================================
- //              Pantalla nivel 1                        ||
- // EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
+ //              Pantalla nivel 2                        ||
+ // EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 2       ||
  //======================================================||
- // IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
+ // IN THIS CLASS ARE CREATED LEVEL 2 OBJECTS            ||
  // AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
  //====================================================*/
 
@@ -62,11 +62,14 @@ public class PantallaNvl2 extends Pantalla {
     // Font of score.
     Texto texto;
     Texto textoPausa;
+    Texto textoPasado;
     private int puntos = 0;
 
     private final Juego juego;
 //    Texture texturaFondo;
 //    private Stage escenaMenuNiveles;
+
+    private final int PUNTOS_SIGUIENTE_NIVEL = 2500;
 
     //  Personaje (Hero)
     private Hero hero;
@@ -184,19 +187,15 @@ public class PantallaNvl2 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-    /**======================================================
-     //              CRERACION DE OBJETOS                   ||
-     //====================================================*/
+/**======================================================
+//              CRERACION DE OBJETOS                   ||
+//====================================================*/
 
     private void crearFondo() {
         AssetManager manager = new AssetManager();
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-//        manager.load("mapas/Mapa1.tmx", TiledMap.class);
-//        manager.load("mapas/prueba1.tmx", TiledMap.class);
         manager.load("mapas/nivel_2.tmx", TiledMap.class);
         manager.finishLoading();
-//        mapa = manager.get("mapas/Mapa1.tmx");
-//        mapa = manager.get("mapas/prueba1.tmx");
         mapa = manager.get("mapas/nivel_2.tmx");
         rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
@@ -205,6 +204,7 @@ public class PantallaNvl2 extends Pantalla {
     private void crearTexto() {
         texto = new Texto();
         textoPausa = new Texto();
+        textoPasado = new Texto();
     }
 
     private void cargarMusica() {

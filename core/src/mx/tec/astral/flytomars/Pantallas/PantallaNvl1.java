@@ -128,7 +128,6 @@ public class PantallaNvl1 extends Pantalla {
 
 //  Objetos de PowerUps
     private Texture texturaVida;
-
     private float timerPower = 0f;
     private final float TIEMPO_CREAR_ITEM = 10.0f;
 
@@ -196,12 +195,8 @@ public class PantallaNvl1 extends Pantalla {
         AssetManager manager = new AssetManager();
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load("mapas/Mapa1.tmx", TiledMap.class);
-//        manager.load("mapas/prueba1.tmx", TiledMap.class);
-//        manager.load("mapas/nivel_2.tmx", TiledMap.class);
         manager.finishLoading();
         mapa = manager.get("mapas/Mapa1.tmx");
-//        mapa = manager.get("mapas/prueba1.tmx");
-//        mapa = manager.get("mapas/nivel_2.tmx");
         rendererMapa = new OrthogonalTiledMapRenderer(mapa);
 
     }
@@ -413,7 +408,7 @@ public class PantallaNvl1 extends Pantalla {
             if ( !juego.isPassedLvl1 )
                 textoPasado.mostrarMensaje(batch, "Siguiente nivel a: " + (PUNTOS_SIGUIENTE_NIVEL - puntos) + " puntos", ANCHO/2 - 40, ALTO - 350);
             else
-                textoPasado.mostrarMensaje(batch, "¡Nivel 2 desbloqueado!", ANCHO/2 - 50, ALTO - 350);
+                textoPasado.mostrarMensaje(batch, "Nivel 2 desbloqueado!", ANCHO/2 - 50, ALTO - 350);
 
             batch.end();
         }
