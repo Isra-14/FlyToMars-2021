@@ -31,6 +31,7 @@ public class Juego extends Game
 
 	public boolean isPassedLvl1 = false;
 	public boolean isPassedLvl2 = false;
+	public boolean isCompleted = false;
 
 	//cargamos sonido
 	public Sound soundBotones;

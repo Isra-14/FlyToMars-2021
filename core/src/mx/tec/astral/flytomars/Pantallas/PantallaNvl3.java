@@ -394,16 +394,16 @@ public class PantallaNvl3 extends Pantalla {
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
             juego.setScreen( new PantallaJuego(juego) );
 
-        if ( !juego.isPassedLvl1 && puntos >= PUNTOS_SIGUIENTE_NIVEL )
-            juego.isPassedLvl1 = true;
+        if ( !juego.isCompleted && puntos >= PUNTOS_SIGUIENTE_NIVEL )
+            juego.isCompleted = true;
 
         if (estadoJuego == EstadoJuego.PAUSA) {
             batch.begin();
             textoPausa.mostrarMensaje(batch, "Score actual: " + puntos, ANCHO/2 - 50, ALTO - 250);
-            if ( !juego.isPassedLvl1 )
+            if ( !juego.isCompleted )
                 textoPasado.mostrarMensaje(batch, "Colonizacion a: " + (PUNTOS_SIGUIENTE_NIVEL - puntos) + " puntos", ANCHO/2 - 40, ALTO - 350);
             else
-                textoPasado.mostrarMensaje(batch, "CONSEGUISTE CONQUISTAR MARTE!", ANCHO/2 - 50, ALTO - 350);
+                textoPasado.mostrarMensaje(batch, "LOGRASTE CONQUISTAR MARTE!", ANCHO/2 - 50, ALTO - 350);
 
             batch.end();
         }
@@ -775,10 +775,10 @@ public class PantallaNvl3 extends Pantalla {
         if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
             hero.verificarPlataforma();
 
-//        hero.colision(arrAliensAgiles);
-//        hero.colision(arrPowerUps);
-//        hero.colision(arrLetales);
-//        hero.colision(arrTanques);
+        hero.colision(arrAliensAgiles);
+        hero.colision(arrPowerUps);
+        hero.colision(arrLetales);
+        hero.colision(arrTanques);
         arrVidas.size = hero.getVidas();
 
         if(hero.getObtuvoMoneda()) {

@@ -27,7 +27,7 @@ public class PantallaJuego extends Pantalla {
     private int abiertas = 0;
 
     //Texturas para la historia
-    private Texture textruaHistoria2;
+    private Texture texturaHistoria2;
     private Texture texturaHistoria3;
 
     public PantallaJuego(Juego juego) {
@@ -54,7 +54,7 @@ public class PantallaJuego extends Pantalla {
     {
         texturaHistoria = new Texture("fondos/historyBG.png");
         historia = new PantallaHistoria(juego);
-        textruaHistoria2 = new Texture("fondos/historyBG2.jpg");
+        texturaHistoria2 = new Texture("fondos/historyBG2.jpg");
         texturaHistoria3 = new Texture("fondos/BG3.jpg");
     }
 
@@ -108,7 +108,7 @@ public class PantallaJuego extends Pantalla {
                     juego.mp3.stop();
                     if (!juego.isViewedStory2) {
                         historia.setNumeroNivel(2);
-                        historia.setTexturaFondo(texturaHistoria);
+                        historia.setTexturaFondo(texturaHistoria2);
                         juego.setScreen(historia);
                     } else
                         juego.setScreen(new PantallaNvl2(juego));
@@ -122,27 +122,19 @@ public class PantallaJuego extends Pantalla {
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.soundBotones.play();
-                juego.mp3.stop();
-                if (!juego.isViewedStory3) {
-                    historia.setNumeroNivel(3);
-                    historia.setTexturaFondo(texturaHistoria);
-                    juego.setScreen(historia);
-                }else
-                    juego.setScreen(new PantallaNvl3(juego));
-//                if ( juego.isPassedLvl2 ){
-//                    juego.soundBotones.play();
-//                    juego.mp3.stop();
-//                    if (!juego.isViewedStory3) {
-//                        historia.setNumeroNivel(3);
-//                        historia.setTexturaFondo(texturaHistoria);
-//                        juego.setScreen(historia);
-//                    }else
-//                        juego.setScreen(new PantallaNvl3(juego));
-//                } else {
-//                    juego.error.setVolume(0.2f);
-//                    juego.error.play();
-//                }
+                if ( juego.isPassedLvl2 ){
+                    juego.soundBotones.play();
+                    juego.mp3.stop();
+                    if (!juego.isViewedStory3) {
+                        historia.setNumeroNivel(3);
+                        historia.setTexturaFondo(texturaHistoria3);
+                        juego.setScreen(historia);
+                    }else
+                        juego.setScreen(new PantallaNvl3(juego));
+                } else {
+                    juego.error.setVolume(0.2f);
+                    juego.error.play();
+                }
             }
         });
         btnBack.addListener(new ClickListener(){

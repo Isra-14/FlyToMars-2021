@@ -407,6 +407,10 @@ public class PantallaNvl1 extends Pantalla {
 
             batch.end();
         }
+
+        if (estadoJuego == EstadoJuego.PERDIO){
+
+        }
     }
 
     private void actualizar(float delta){
@@ -775,10 +779,10 @@ public class PantallaNvl1 extends Pantalla {
         if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
         hero.verificarPlataforma();
 
-//        hero.colision(arrAliensAgiles);
-//        hero.colision(arrPowerUps);
-//        hero.colision(arrLetales);
-//        hero.colision(arrTanques);
+        hero.colision(arrAliensAgiles);
+        hero.colision(arrPowerUps);
+        hero.colision(arrLetales);
+        hero.colision(arrTanques);
         arrVidas.size = hero.getVidas();
 
         if(hero.getObtuvoMoneda()) {
