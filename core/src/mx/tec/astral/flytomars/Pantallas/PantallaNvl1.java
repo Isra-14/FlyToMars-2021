@@ -7,9 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -46,7 +44,7 @@ import mx.tec.astral.flytomars.Tools.Vida;
 // EN ESTA CLASE SE CREAN LOS OBJETOS DEL NIVEL 1       ||
 //======================================================||
 // IN THIS CLASS ARE CREATED LEVEL 1 OBJECTS            ||
-// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO Q.||
+// AUTHOR(S): ISRAEL SANCHEZ, MISAEL DELGADO, ALEJANDRO ||
  //====================================================*/
 
 
@@ -81,8 +79,8 @@ public class PantallaNvl1 extends Pantalla {
     //Alien Agil
 //    private AlienAgil aAgil;
     private Array<AlienAgil> arrAliensAgiles;
-    private Texture texturaAgil_left;
-    private Texture texturaAgil_right;
+    private Texture spriteSheetAgil;
+    private float TAMANIO_REGION_AGIL = 128f;
     private float timerCrearAlienAgil = 10;
     private float timerCambioAgil;
     private final float TIEMPO_CREAR_AGIL = 10;
@@ -91,8 +89,8 @@ public class PantallaNvl1 extends Pantalla {
     //Alien Letal
 //    private AlienLetal aLetal;
     private Array<AlienLetal> arrLetales;
-    private Texture texturaLetal_left;
-    private Texture texturaLetal_right;
+    Texture spriteSheetLetal;
+    private float TAMANIO_REGION_LETAL = 128f;
     private float timerCrearAlienLetal=10;
     private float timerCambioLetal;
     private final float TIEMPO_CREAR_LETAL = 30;
@@ -101,8 +99,8 @@ public class PantallaNvl1 extends Pantalla {
 
     //Alien Tanque
     private Array<AlienTanque> arrTanques;
-    private Texture texturaTanque_left;
-    private Texture texturaTanque_right;
+    private Texture spriteSheetTanque;
+    private float TAMANIO_REGION_TANQUE = 128f;
     private float TIMER_CREAR_TANQUE= 20;
     private float timerCambioTanque;
     private final float TIEMPO_CAMBIO_TANQUE = 6f;
@@ -281,22 +279,19 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearAlienTanque() {
-        texturaTanque_left = new Texture("enemigos/alienTanque_Left.png");
-        texturaTanque_right = new Texture("enemigos/alienTanque_Right.png");
+        spriteSheetTanque = new Texture("enemigos/Tanque.png");
         arrTanques = new Array<>();
 
     }
 
     private void crearAlienLetal() {
-        texturaLetal_left = new Texture("enemigos/Letal_Left.png");
-        texturaLetal_right = new Texture("enemigos/Letal_Right.png");
+        spriteSheetLetal = new Texture("enemigos/Letal.png");
         arrLetales= new Array<>();
 
     }
 
     private void crearAlienAgil() {
-        texturaAgil_left = new Texture("enemigos/alienAgil_Left.png");
-        texturaAgil_right = new Texture("enemigos/alienAgil_Right.png");
+        spriteSheetAgil = new Texture("enemigos/Agil.png");
         arrAliensAgiles= new Array<>();
     }
 
@@ -465,9 +460,9 @@ public class PantallaNvl1 extends Pantalla {
             timerCrearAlienAgil = 0;
 
             //Crear
-            float xAgil= MathUtils.random(10,ANCHO-texturaAgil_right.getWidth());
-            float yAgil= MathUtils.random(10,ALTO-texturaAgil_right.getHeight());
-            AlienAgil aAgil= new AlienAgil(texturaAgil_right, texturaAgil_left, xAgil,yAgil);
+            float xAgil= MathUtils.random(10,ANCHO-TAMANIO_REGION_AGIL);
+            float yAgil= MathUtils.random(10,ALTO-TAMANIO_REGION_AGIL);
+            AlienAgil aAgil= new AlienAgil(spriteSheetAgil, xAgil,yAgil);
             aAgil.cargarMapa(mapa, TAM_CELDA);
             arrAliensAgiles.add(aAgil);
         }
@@ -545,9 +540,9 @@ public class PantallaNvl1 extends Pantalla {
         if(timerCrearAlienLetal>=TIEMPO_CREAR_LETAL){
             timerCrearAlienLetal=0;
             //Crear
-            float xLetal= MathUtils.random(10,ANCHO-texturaLetal_right.getWidth());
-            float yLetal= MathUtils.random(10,ALTO-texturaLetal_right.getHeight());
-            AlienLetal aLetal= new AlienLetal(texturaLetal_right,texturaLetal_left,xLetal,yLetal);
+            float xLetal= MathUtils.random(10,ANCHO-TAMANIO_REGION_LETAL);
+            float yLetal= MathUtils.random(10,ALTO-TAMANIO_REGION_LETAL);
+            AlienLetal aLetal = new AlienLetal(spriteSheetLetal, xLetal, yLetal);
             aLetal.cargarMapa(mapa, TAM_CELDA);
             arrLetales.add(aLetal);
         }
@@ -629,9 +624,9 @@ public class PantallaNvl1 extends Pantalla {
         TIMER_CREAR_TANQUE = 0;
 
         //Crear
-        float xTanque= MathUtils.random(10,ANCHO-texturaTanque_right.getWidth());
-        float yTanque= MathUtils.random(10,ALTO-texturaTanque_right.getHeight());
-        AlienTanque aTanque= new AlienTanque(texturaTanque_right, texturaTanque_left, xTanque,yTanque);
+        float xTanque= MathUtils.random(10,ANCHO-TAMANIO_REGION_TANQUE);
+        float yTanque= MathUtils.random(10,ALTO-TAMANIO_REGION_TANQUE);
+        AlienTanque aTanque= new AlienTanque(spriteSheetTanque, xTanque,yTanque);
         aTanque.cargarMapa(mapa, TAM_CELDA);
         arrTanques.add(aTanque);
     }
@@ -780,10 +775,10 @@ public class PantallaNvl1 extends Pantalla {
         if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
         hero.verificarPlataforma();
 
-        hero.colision(arrAliensAgiles);
-        hero.colision(arrPowerUps);
-        hero.colision(arrLetales);
-        hero.colision(arrTanques);
+//        hero.colision(arrAliensAgiles);
+//        hero.colision(arrPowerUps);
+//        hero.colision(arrLetales);
+//        hero.colision(arrTanques);
         arrVidas.size = hero.getVidas();
 
         if(hero.getObtuvoMoneda()) {

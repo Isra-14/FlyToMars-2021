@@ -122,19 +122,27 @@ public class PantallaJuego extends Pantalla {
         btnNvl3.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if ( juego.isPassedLvl2 ){
-                    juego.soundBotones.play();
-                    juego.mp3.stop();
-                    if (!juego.isViewedStory3) {
-                        historia.setNumeroNivel(3);
-                        historia.setTexturaFondo(texturaHistoria);
-                        juego.setScreen(historia);
-                    }else
-                        juego.setScreen(new PantallaNvl3(juego));
-                } else {
-                    juego.error.setVolume(0.2f);
-                    juego.error.play();
-                }
+                juego.soundBotones.play();
+                juego.mp3.stop();
+                if (!juego.isViewedStory3) {
+                    historia.setNumeroNivel(3);
+                    historia.setTexturaFondo(texturaHistoria);
+                    juego.setScreen(historia);
+                }else
+                    juego.setScreen(new PantallaNvl3(juego));
+//                if ( juego.isPassedLvl2 ){
+//                    juego.soundBotones.play();
+//                    juego.mp3.stop();
+//                    if (!juego.isViewedStory3) {
+//                        historia.setNumeroNivel(3);
+//                        historia.setTexturaFondo(texturaHistoria);
+//                        juego.setScreen(historia);
+//                    }else
+//                        juego.setScreen(new PantallaNvl3(juego));
+//                } else {
+//                    juego.error.setVolume(0.2f);
+//                    juego.error.play();
+//                }
             }
         });
         btnBack.addListener(new ClickListener(){

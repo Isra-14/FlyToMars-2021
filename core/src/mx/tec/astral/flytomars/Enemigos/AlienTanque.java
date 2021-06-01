@@ -1,7 +1,11 @@
 package mx.tec.astral.flytomars.Enemigos;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
@@ -12,11 +16,13 @@ import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 public class AlienTanque extends Objeto {
     private float DX = 2;
     private float DY = -4f;
-    private Texture texturaDerecha;
-    private Texture texturaIzquierda;
     EstadoAlien estado;
     EstadoSalto estadoSalto;
 
+    // Animacion
+    private Animation<TextureRegion> animacionCorre_D;
+    private Animation<TextureRegion> animacionCorre_I;
+    private float timerAnimation;
 
     // Mapa
     private int TAM_CELDA;
@@ -29,18 +35,58 @@ public class AlienTanque extends Objeto {
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
-    public AlienTanque(Texture textura, float x, float y){
-        super(textura, x, y);
+//    public AlienTanque(Texture textura, float x, float y){
+//        super(textura, x, y);
+//    }
+
+    public AlienTanque(Texture spriteSheet, float x, float y){
+//        super( texturaIzquierda, x, y);
+        TextureRegion region = new TextureRegion(spriteSheet);
+        TextureRegion[][] texturas = region.split(128, 128);
+
+        TextureRegion[] arrCorrerIzquierda = {texturas[1][0],texturas[1][1],texturas[1][2], texturas[1][3], texturas[1][4], texturas[1][5],
+                texturas[1][6], texturas[1][7], texturas[1][8]};
+
+        TextureRegion[] arrCorrerDerecha = {texturas[0][0],texturas[0][1],texturas[0][2], texturas[0][3], texturas[0][4], texturas[0][5],
+                texturas[0][6], texturas[0][7], texturas[0][8]};
+
+        animacionCorre_D = new Animation<>(0.08f, arrCorrerDerecha);
+        animacionCorre_D.setPlayMode(Animation.PlayMode.LOOP);
+
+        animacionCorre_I = new Animation<>(0.08f, arrCorrerIzquierda);
+        animacionCorre_I.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+        timerAnimation = 0;
+
+        sprite = new Sprite(texturas[0][0]);
+        sprite.setPosition(x, y);
+
+        // Initial states
+        estado = EstadoAlien.DERECHA;
+        estadoSalto = EstadoSalto.EN_PISO;
     }
 
-    public AlienTanque(Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
-        super( texturaIzquierda, x, y);
-        this.texturaDerecha = texturaDerecha;
-        this.texturaIzquierda = texturaIzquierda;
-        estado = EstadoAlien.IZQUIERDA;
+    @Override
+    public void render(SpriteBatch batch) {
+        TextureRegion frame;
+        float delta = Gdx.graphics.getDeltaTime();
+        switch (estado) {
+            case DERECHA:
+                timerAnimation += delta;
+                frame = animacionCorre_D.getKeyFrame(timerAnimation);
+                batch.draw(frame, sprite.getX(), sprite.getY());
+                break;
+            case IZQUIERDA:
+                timerAnimation += delta;
+                frame = animacionCorre_I.getKeyFrame(timerAnimation);
+                batch.draw(frame, sprite.getX(), sprite.getY());
+                break;
+            default:
+                break;
+        }
     }
-    public void moverHorizontal (){
-        switch (estado){
+
+    public void moverHorizontal() {
+        switch (estado) {
             case DERECHA:
                 sprite.setX(sprite.getX() + DX);
                 break;
@@ -48,8 +94,9 @@ public class AlienTanque extends Objeto {
                 sprite.setX(sprite.getX() - DX);
                 break;
             default:
-                break;
+                Gdx.app.log("Estado no contemplado mover ", estado.toString());
         }
+
     }
 
     public EstadoAlien getEstado() { return estado; }
@@ -58,11 +105,9 @@ public class AlienTanque extends Objeto {
         switch (estado){
             case IZQUIERDA:
                 estado = EstadoAlien.DERECHA;
-                sprite.setTexture(texturaDerecha);
                 break;
             case DERECHA:
                 estado = EstadoAlien.IZQUIERDA;
-                sprite.setTexture(texturaIzquierda);
                 break;
         }
     }

@@ -1,22 +1,29 @@
 package mx.tec.astral.flytomars.Enemigos;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import mx.tec.astral.flytomars.EstadoSalto;
+import mx.tec.astral.flytomars.EstadosMovimiento;
 import mx.tec.astral.flytomars.Tools.Objeto;
 import mx.tec.astral.flytomars.Heroe.EstadoHeroe;
 
 public class AlienLetal extends Objeto {
     private float DX = 4;
     private float DY = -4f;
-    private Texture texturaDerecha;
-    private Texture texturaIzquierda;
     EstadoAlien estado;
     EstadoSalto estadoSalto;
+
+    // Animacion
+    private Animation<TextureRegion> animacionCorre_D;
+    private Animation<TextureRegion> animacionCorre_I;
+    private float timerAnimation;
 
 
     // Mapa
@@ -30,36 +37,33 @@ public class AlienLetal extends Objeto {
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
-    public AlienLetal(Texture textura, float x, float y){
-        super(textura, x, y);
-    }
+//    public AlienLetal(Texture textura, float x, float y){
+//        super(textura, x, y);
+//    }
 
-    public AlienLetal(Texture texturaDerecha, Texture texturaIzquierda, float x, float y){
-        super( texturaIzquierda, x, y);
-        //IZQ
-        TextureRegion reqionIzquierda = new TextureRegion(texturaIzquierda);
-        TextureRegion[][] texturasIZQ = reqionIzquierda.split(128, 128);
-        TextureRegion[] arrCorrerIzquierda = {texturasIZQ[0][0],texturasIZQ[0][1],texturasIZQ[0][2], texturasIZQ[0][3], texturasIZQ[1][0],
-        texturasIZQ[1][1], texturasIZQ[1][2], texturasIZQ[1][3]};
+    public AlienLetal(Texture spriteSheet, float x, float y){
+        TextureRegion region = new TextureRegion(spriteSheet);
+        TextureRegion[][] texturas = region.split(128, 128);
 
-        TextureRegion regionDerecha = new TextureRegion(texturaDerecha);
-        TextureRegion[][] texturas = regionDerecha.split(128, 128);
+        TextureRegion[] arrCorrerIzquierda = {texturas[0][0],texturas[0][1],texturas[0][2], texturas[0][3], texturas[0][4], texturas[1][0],
+        texturas[1][1], texturas[1][2], texturas[1][3], texturas[1][4]};
 
-        this.texturaDerecha = texturaDerecha;
-        this.texturaIzquierda = texturaIzquierda;
-        estado = EstadoAlien.IZQUIERDA;
-    }
-    public void moverHorizontal (){
-        switch (estado){
-            case DERECHA:
-                sprite.setX(sprite.getX() + DX);
-                break;
-            case IZQUIERDA:
-                sprite.setX(sprite.getX() - DX);
-                break;
-            default:
-                break;
-        }
+        TextureRegion[] arrCorrerDerecha = {texturas[2][0],texturas[2][1],texturas[2][2], texturas[2][3], texturas[2][4], texturas[3][0],
+        texturas[3][1], texturas[3][2], texturas[3][3], texturas[3][4]};
+
+        animacionCorre_D = new Animation<>(0.08f, arrCorrerDerecha);
+        animacionCorre_D.setPlayMode(Animation.PlayMode.LOOP);
+
+        animacionCorre_I = new Animation<>(0.08f, arrCorrerIzquierda);
+        animacionCorre_I.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+        timerAnimation = 0;
+
+        sprite = new Sprite(texturas[1][3]);
+        sprite.setPosition(x, y);
+
+        // Initial states
+        estado = EstadoAlien.DERECHA;
+        estadoSalto = EstadoSalto.EN_PISO;
     }
 
     public EstadoAlien getEstado() { return estado; }
@@ -68,13 +72,45 @@ public class AlienLetal extends Objeto {
         switch (estado){
             case IZQUIERDA:
                 estado = EstadoAlien.DERECHA;
-                sprite.setTexture(texturaDerecha);
                 break;
             case DERECHA:
                 estado = EstadoAlien.IZQUIERDA;
-                sprite.setTexture(texturaIzquierda);
                 break;
         }
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        TextureRegion frame;
+        float delta = Gdx.graphics.getDeltaTime();
+        switch (estado) {
+            case DERECHA:
+                timerAnimation += delta;
+                frame = animacionCorre_D.getKeyFrame(timerAnimation);
+                batch.draw(frame, sprite.getX(), sprite.getY());
+                break;
+            case IZQUIERDA:
+                timerAnimation += delta;
+                frame = animacionCorre_I.getKeyFrame(timerAnimation);
+                batch.draw(frame, sprite.getX(), sprite.getY());
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void moverHorizontal() {
+        switch (estado) {
+            case DERECHA:
+                sprite.setX(sprite.getX() + DX);
+                break;
+            case IZQUIERDA:
+                sprite.setX(sprite.getX() - DX);
+                break;
+            default:
+                Gdx.app.log("Estado no contemplado mover ", estado.toString());
+        }
+
     }
 
     public void setEstado(EstadoAlien estado){

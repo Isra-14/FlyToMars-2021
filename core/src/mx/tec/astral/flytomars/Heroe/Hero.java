@@ -167,8 +167,6 @@ public class Hero extends Objeto {
 
     public void setEstado(EstadoHeroe nuevoEstado) {
         estado = nuevoEstado;
-//        if(nuevoEstado == EstadoHeroe.MUERE)
-//            sprite.setTexture(texturaMuere);
     }
 
     public EstadoHeroe getEstado() {
@@ -188,7 +186,7 @@ public class Hero extends Objeto {
                 sprite.setX(sprite.getX() - DX);
                 break;
             default:
-                Gdx.app.log("Estado no contemplado mover ", estado.toString());
+                Gdx.app.log("Estado no contemplado mover [HERO]", estado.toString());
         }
 
     }
