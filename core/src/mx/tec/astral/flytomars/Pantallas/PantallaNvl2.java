@@ -87,7 +87,6 @@ public class PantallaNvl2 extends Pantalla {
     private float timerCambioAgil;
     private final float TIEMPO_CREAR_AGIL = 8;
     private final float TIEMPO_CAMBIO_AGIL = 1f;
-    private int counterAgil = 0;
 
     //Alien Letal
 //    private AlienLetal aLetal;
