@@ -811,10 +811,10 @@ public class PantallaNvl3 extends Pantalla {
                 hero.actualizarVuelo();
         }
 
-        if(hero.getSprite().getY() < TAM_CELDA)
+        if(hero.getSprite().getY() < TAM_CELDA-1)
             hero.caer();
 
-        if ( hero.getSprite().getX() > 0 - hero.getSprite().getWidth() && hero.getSprite().getX() < ANCHO  && hero.getSprite().getY() > 2*TAM_CELDA-1)
+        if ( hero.getSprite().getX() > 0 - hero.getSprite().getWidth() && hero.getSprite().getX() < ANCHO  && hero.getSprite().getY() > TAM_CELDA-1)
             hero.verificarPlataforma();
 
         if ( hero.getTieneEscudo() ) {
