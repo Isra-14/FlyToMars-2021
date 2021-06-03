@@ -119,18 +119,21 @@ public class PantallaMenu extends Pantalla {
         Button btnInicio = crearBoton("Menu/btn_jugar.png", "Menu/btn_jugar_press.png");
         Button btnHighScores = crearBoton("Menu/btn_high-scores.png", "Menu/btn_high-scores_press.png");
         Button btnInstrucciones = crearBoton("Menu/btn_instrucciones.png", "Menu/btn_instrucciones_press.png");
+        Button btnPreferencias = crearBoton("Menu/btn_preferencias.png", "Menu/btn_preferencias_press.png");
         Button btnAcercaDe = crearBoton("Menu/btn_acerca-de.png", "Menu/btn_acerca-de_press.png");
 
 
         btnInicio.setPosition(ANCHO/2, 4*ALTO/8+ALTO/5, Align.center);
         btnHighScores.setPosition(ANCHO/2, 3*ALTO/8+ALTO/5, Align.center);
         btnInstrucciones.setPosition(ANCHO/2, 2*ALTO/8+ALTO/5, Align.center);
-        btnAcercaDe.setPosition(ANCHO/2, 1*ALTO/8+ALTO/5, Align.center);
+        btnPreferencias.setPosition(ANCHO/2, 1*ALTO/8+ALTO/5, Align.center);
+        btnAcercaDe.setPosition(ANCHO/2, 1*ALTO/9+ALTO/5, Align.center);
 
         // Agrega los botones a escena
         escenaMenu.addActor(btnInicio);
         escenaMenu.addActor(btnHighScores);
         escenaMenu.addActor(btnInstrucciones);
+        escenaMenu.addActor(btnPreferencias);
         escenaMenu.addActor(btnAcercaDe);
 
         btnInicio.addListener(new ClickListener(){

@@ -73,6 +73,8 @@ public class PantallaNvl3 extends Pantalla {
     private Hero hero;
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
     public static final int TAM_CELDA = 32;
+    private float timerEscudo;
+    private final float INVULNERABLE = 100f;
 
     //  Enemigos
 
@@ -399,8 +401,8 @@ public class PantallaNvl3 extends Pantalla {
         if ( estadoJuego == EstadoJuego.PERDIO && escenaGameOver != null )
             escenaGameOver.draw();
 
-        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
-            juego.setScreen( new PantallaJuego(juego) );
+//        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+//            juego.setScreen( new PantallaJuego(juego) );
 
         if ( !juego.isCompleted && puntos >= PUNTOS_SIGUIENTE_NIVEL )
             juego.isCompleted = true;
@@ -796,6 +798,15 @@ public class PantallaNvl3 extends Pantalla {
         if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
             hero.verificarPlataforma();
 
+        if ( hero.getTieneEscudo() ) {
+            timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
+            if ( timerEscudo > INVULNERABLE ) {
+                timerEscudo = 0;
+                hero.setTieneEscudo(false);
+            }
+            Gdx.app.log("Escudo [HERO]", Float.toString(timerEscudo));
+        }
+
         hero.colision(arrAliensAgiles);
         hero.colision(arrPowerUps);
         hero.colision(arrLetales);
@@ -831,6 +842,9 @@ public class PantallaNvl3 extends Pantalla {
 
         for (int i = arrTanques.size-1; i>=0; i--)
             arrTanques.removeIndex(i);
+
+        for (int i = arrBalas.size-1; i>=0; i--)
+            arrBalas.removeIndex(i);
 
         timerCrearAlienAgil = 10;
         timerCrearAlienTanque = 0;

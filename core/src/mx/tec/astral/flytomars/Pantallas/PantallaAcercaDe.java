@@ -43,7 +43,7 @@ public class PantallaAcercaDe extends Pantalla {
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnBack.setPosition(2*ANCHO/3, 300, Align.center);
+        btnBack.setPosition(150, ALTO - 50, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnBack);

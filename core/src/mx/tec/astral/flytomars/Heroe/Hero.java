@@ -57,7 +57,7 @@ public class Hero extends Objeto {
     private final float v0y = 225;      // Y component of velocity
     private final float g = 150f;      // Pixels/s^2 -> Gravity
 
-    private float timerEscudo;
+
 
     int _capa;
 
@@ -69,9 +69,9 @@ public class Hero extends Objeto {
         yBase = newYbase;
     }
 
-    public Float getVelocity() {
-        return DY;
-    }
+//    public Float getVelocity() {
+//        return DY;
+//    }
 
     private EstadoHeroe estado;     //  States of the player (IZQUIERDA, DERECHA, MUERE)
     //    private EstadoHeroe estadoPrev;
@@ -356,22 +356,20 @@ public class Hero extends Objeto {
                         break;
                 }
             }
-            if (getTieneEscudo() == true) {
-                timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
-                if (timerEscudo > 1000) {
-                    timerEscudo = 0;
-                    setTieneEscudo(false);
-                }
-            }
+
+//            if (getTieneEscudo() == true) {
+//                timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
+//                if (timerEscudo > 1000) {
+//                    timerEscudo = 0;
+//                    setTieneEscudo(false);
+//                }
+//            }
 
         }
     }
 
 }
 
-    private boolean getInvesible(){
-        return estado == EstadoHeroe.INVENSIBLE;
-    }
 
     public int getVidas(){
         return vidas;
