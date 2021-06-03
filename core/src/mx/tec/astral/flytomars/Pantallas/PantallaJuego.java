@@ -22,6 +22,8 @@ Alejandro Quintana
 public class PantallaJuego extends Pantalla {
     private Juego juego;
     Texture texturaFondo;
+    Texture texturaBloqueo2;
+    Texture texturaBloqueo3;
     private Stage escenaMenuNiveles;
 
     private int abiertas = 0;
@@ -29,6 +31,10 @@ public class PantallaJuego extends Pantalla {
     //Texturas para la historia
     private Texture texturaHistoria2;
     private Texture texturaHistoria3;
+
+    //Historia
+    PantallaHistoria historia;
+    Texture texturaHistoria;
 
     public PantallaJuego(Juego juego) {
         this.juego = juego;
@@ -47,13 +53,11 @@ public class PantallaJuego extends Pantalla {
 
         Gdx.input.setCatchKey( Input.Keys.BACK, true );
     }
-    //Historia
-    PantallaHistoria historia;
-    Texture texturaHistoria;
+
     private void crearHistoria()
     {
-        texturaHistoria = new Texture("fondos/historyBG.png");
         historia = new PantallaHistoria(juego);
+        texturaHistoria = new Texture("fondos/historyBG.png");
         texturaHistoria2 = new Texture("fondos/historyBG2.jpg");
         texturaHistoria3 = new Texture("fondos/BG3.jpg");
     }
@@ -61,6 +65,8 @@ public class PantallaJuego extends Pantalla {
 
     private void crearMenu() {
         texturaFondo = new Texture("Menu/FondoMenu.png");
+        texturaBloqueo2 = new Texture("MenuNiveles/moon_disabled.png");
+        texturaBloqueo3 = new Texture("MenuNiveles/mars_disabled.png");
 
         // MENU, necesitamos una escena
         //Escena
@@ -73,7 +79,7 @@ public class PantallaJuego extends Pantalla {
         Button btnNvl3 = crearBoton("MenuNiveles/mars.png", "MenuNiveles/mars_pressed.png");
 
         //Se les da un espacio en la pantalla
-        btnBack.setPosition(ANCHO/2 - 100 , 85);
+        btnBack.setPosition(150 , ALTO - 50, Align.center);
         btnNvl1.setPosition(ANCHO/6, ALTO/2, Align.center);
         btnNvl2.setPosition(3*ANCHO/6, ALTO/2, Align.center);
         btnNvl3.setPosition(5*ANCHO/6, ALTO/2, Align.center);
@@ -113,7 +119,7 @@ public class PantallaJuego extends Pantalla {
                     } else
                         juego.setScreen(new PantallaNvl2(juego));
                 } else {
-                    juego.error.setVolume(0.2f);
+                    juego.error.setVolume(1f);
                     juego.error.play();
                 }
             }
@@ -132,7 +138,7 @@ public class PantallaJuego extends Pantalla {
                     }else
                         juego.setScreen(new PantallaNvl3(juego));
                 } else {
-                    juego.error.setVolume(0.2f);
+                    juego.error.setVolume(1f);
                     juego.error.play();
                 }
             }
@@ -149,8 +155,7 @@ public class PantallaJuego extends Pantalla {
         Gdx.input.setInputProcessor(escenaMenuNiveles);
 
 
-        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
-            juego.setScreen( new PantallaJuego(juego) );
+
     }
 
     private Button crearBoton(String archivo, String clickeado) {
@@ -173,6 +178,18 @@ public class PantallaJuego extends Pantalla {
         batch.end();
 
         escenaMenuNiveles.draw();
+
+        if ( !juego.isPassedLvl1 ){
+            batch.begin();
+            batch.draw(texturaBloqueo2, (3*ANCHO/6) - (texturaBloqueo2.getWidth()/2f) , (ALTO/2) - (texturaBloqueo2.getHeight()/2f) );
+            batch.end();
+        }
+
+        if ( !juego.isPassedLvl2 ) {
+            batch.begin();
+            batch.draw(texturaBloqueo3, (5 * ANCHO / 6) - (texturaBloqueo3.getWidth() / 2f), (ALTO / 2) - (texturaBloqueo3.getHeight() / 2f));
+            batch.end();
+        }
 
 
         if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )

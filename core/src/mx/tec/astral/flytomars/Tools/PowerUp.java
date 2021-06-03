@@ -39,7 +39,6 @@ public class PowerUp extends Objeto{
                 break;
             case 1:
                 sprite.setTexture(texturaEscudo);
-
                 break;
             case 2:
                 sprite.setTexture(texturaMoneda);

@@ -42,7 +42,7 @@ public class PantallaInstrucciones extends Pantalla {
 
     private void crearMenu() {
         texto = new Texto();
-        texturaFondo = new Texture("fondos/fondoInstrucciones.jpg");
+        texturaFondo = new Texture("fondos/fondoInstrucciones.png");
         btnLeft = new Texture("buttons/izquierda.png");
         btnRigth = new Texture("buttons/derecha.png");
         btnJump = new Texture("buttons/btn_A.png");
@@ -56,7 +56,7 @@ public class PantallaInstrucciones extends Pantalla {
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnBack.setPosition(ANCHO/2, 200, Align.center);
+        btnBack.setPosition(150, ALTO-50, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnBack);
@@ -99,7 +99,7 @@ public class PantallaInstrucciones extends Pantalla {
         texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .95f*ALTO);
         texto.mostrarMensaje(batch, "Camina de izquierda a derecha", ANCHO/2, .75f*ALTO);
         texto.mostrarMensaje(batch, "A - > Brincar , B -> Disparar", ANCHO/2, .66f*ALTO);
-        texto.mostrarMensaje(batch, "Recoge para desbloquear mundos", ANCHO/2, .57f*ALTO);
+        texto.mostrarMensaje(batch, "Recoge para aumentar tu score!", ANCHO/2, .57f*ALTO);
         texto.mostrarMensaje(batch, "Recoge para obtener vida extra", ANCHO/2, .49f*ALTO);
         batch.end();
 

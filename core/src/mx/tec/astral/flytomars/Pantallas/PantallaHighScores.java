@@ -48,7 +48,7 @@ public class PantallaHighScores extends Pantalla {
         // Actores->Boton
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnBack.setPosition(ANCHO/2, 70, Align.center);
+        btnBack.setPosition(150, ALTO - 50, Align.center);
 
         // Agrega los botones a escena
         escenaMenuNiveles.addActor(btnBack);

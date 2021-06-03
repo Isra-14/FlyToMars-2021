@@ -13,6 +13,5 @@ public enum EstadoHeroe {
     SALTO,
     MUERE,
     IDLE_D,
-    IDLE_I,
-    INVENSIBLE
+    IDLE_I
 }

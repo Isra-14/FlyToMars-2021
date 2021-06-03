@@ -73,6 +73,8 @@ public class PantallaNvl1 extends Pantalla {
     private Hero hero;
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
     public static final int TAM_CELDA = 32;
+    private float timerEscudo;
+    private final float INVULNERABLE = 1000f;
 
     //  Enemigos
 
@@ -398,9 +400,9 @@ public class PantallaNvl1 extends Pantalla {
 
         if ( estadoJuego == EstadoJuego.PERDIO && escenaGameOver != null )
             escenaGameOver.draw();
-
-        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
-            juego.setScreen( new PantallaJuego(juego) );
+//
+//        if ( Gdx.input.isKeyPressed(Input.Keys.BACK) )
+//            juego.setScreen( new PantallaJuego(juego) );
 
         if ( !juego.isPassedLvl1 && puntos >= PUNTOS_SIGUIENTE_NIVEL )
             juego.isPassedLvl1 = true;
@@ -453,7 +455,13 @@ public class PantallaNvl1 extends Pantalla {
             int posX = (int) Math.floor(Math.random()*((ANCHO-(80)-14)+15));
             int posY = (int) Math.floor(Math.random()*((ALTO-(40))-2*TAM_CELDA+1)+2*TAM_CELDA);
 
-            int tipo = (int) Math.floor(Math.random()*3);
+            int tipo;
+
+            // Evitamos que genere vidas cuando tengamos la vida completa
+            do {
+                tipo = (int) Math.floor(Math.random()*3);
+            } while (tipo == 0 && hero.getVidas() >= 3);
+
             powerUp = new PowerUp(posX, posY, tipo);
 
             arrPowerUps.add(powerUp);
@@ -794,7 +802,16 @@ public class PantallaNvl1 extends Pantalla {
             hero.caer();
 
         if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
-        hero.verificarPlataforma();
+            hero.verificarPlataforma();
+
+        if ( hero.getTieneEscudo() ) {
+            timerEscudo += Gdx.graphics.getDeltaTime() / Gdx.graphics.getDeltaTime();
+            if ( timerEscudo > INVULNERABLE ) {
+                timerEscudo = 0;
+                hero.setTieneEscudo(false);
+            }
+            Gdx.app.log("Escudo [HERO]", Float.toString(timerEscudo));
+        }
 
         hero.colision(arrAliensAgiles);
         hero.colision(arrPowerUps);
@@ -831,6 +848,9 @@ public class PantallaNvl1 extends Pantalla {
 
         for (int i = arrTanques.size-1; i>=0; i--)
             arrTanques.removeIndex(i);
+
+        for (int i = arrBalas.size-1; i>=0; i--)
+            arrBalas.removeIndex(i);
 
         timerCrearAlienAgil = 10;
         timerCrearAlienTanque = 0;
