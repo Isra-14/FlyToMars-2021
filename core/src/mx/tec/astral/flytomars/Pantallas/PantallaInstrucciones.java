@@ -10,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
+import mx.tec.astral.flytomars.Enemigos.AlienAgil;
+import mx.tec.astral.flytomars.Enemigos.AlienLetal;
+import mx.tec.astral.flytomars.Enemigos.AlienTanque;
 import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Tools.Texto;
 
@@ -27,6 +30,16 @@ public class PantallaInstrucciones extends Pantalla {
     Texture btnShoot;
     Texture coin;
     Texture heart;
+
+    //Enemies
+    private Texture spriteSheetAgil;
+    private AlienAgil aAlien;
+
+    private Texture spriteSheetTanque;
+    private AlienAgil tAlien;
+
+    private Texture spriteSheetLetal;
+    private AlienAgil lAlien;
 
     private Stage escenaMenuNiveles;
     Texto texto;
@@ -49,6 +62,9 @@ public class PantallaInstrucciones extends Pantalla {
         btnShoot = new Texture("buttons/btn_B.png");
         coin = new Texture("items/coin.png");
         heart = new Texture("items/heart.png");
+        spriteSheetAgil = new Texture("enemigos/Agil.png");
+        spriteSheetLetal = new Texture("enemigos/Letal.png");
+        spriteSheetTanque = new Texture("enemigos/Tanque.png");
         // MENU, necesitamos una escena
         //Escena
         escenaMenuNiveles = new Stage(vista);
@@ -73,6 +89,8 @@ public class PantallaInstrucciones extends Pantalla {
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenuNiveles);
 
+        //Enemies
+
     }
 
     private Button crearBoton(String archivo, String clickeado) {
@@ -90,17 +108,27 @@ public class PantallaInstrucciones extends Pantalla {
 
         batch.begin();
         batch.draw(texturaFondo, 0, 0);
-        batch.draw(btnLeft, ANCHO/7, .69f*ALTO);
-        batch.draw(btnRigth, ANCHO/7+ 50, .69f*ALTO + 3);
-        batch.draw(btnJump, ANCHO/7, .60f*ALTO,34,43);
-        batch.draw(btnShoot, ANCHO/7 + 50, .60f*ALTO, 34, 43);
-        batch.draw(coin, ANCHO/7 + 20, .51f*ALTO,34,43);
-        batch.draw(heart, ANCHO/7 + 20, .42f*ALTO, 34, 43);
-        texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .95f*ALTO);
-        texto.mostrarMensaje(batch, "Camina de izquierda a derecha", ANCHO/2, .75f*ALTO);
-        texto.mostrarMensaje(batch, "A - > Brincar , B -> Disparar", ANCHO/2, .66f*ALTO);
-        texto.mostrarMensaje(batch, "Recoge para aumentar tu score!", ANCHO/2, .57f*ALTO);
-        texto.mostrarMensaje(batch, "Recoge para obtener vida extra", ANCHO/2, .49f*ALTO);
+        batch.draw(btnLeft, ANCHO/7, .80f*ALTO);
+        batch.draw(btnRigth, ANCHO/7+ 50, .80f*ALTO + 3);
+        batch.draw(btnJump, ANCHO/7, .71f*ALTO,34,43);
+        batch.draw(btnShoot, ANCHO/7 + 50, .71f*ALTO, 34, 43);
+        batch.draw(coin, ANCHO/7 + 20, .62f*ALTO,34,43);
+        batch.draw(heart, ANCHO/7 + 20, .53f*ALTO, 34, 43);
+        AlienAgil aAgil= new AlienAgil(spriteSheetAgil, ANCHO/40 ,.36f*ALTO);
+        aAgil.render(batch);
+        //aAgil.moverHorizontal();
+        AlienTanque tanque= new AlienTanque(spriteSheetTanque, ANCHO/7-50 ,.18f*ALTO);
+        tanque.render(batch);
+        AlienLetal letal= new AlienLetal(spriteSheetLetal, ANCHO/40 ,.07f*ALTO);
+        letal.render(batch);
+        texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .96f*ALTO);
+        texto.mostrarMensaje(batch, "Camina de izquierda a derecha", ANCHO/2, .85f*ALTO);
+        texto.mostrarMensaje(batch, "A - > Brincar , B -> Disparar", ANCHO/2, .76f*ALTO);
+        texto.mostrarMensaje(batch, "Recoge para aumentar tu score!", ANCHO/2, .67f*ALTO);
+        texto.mostrarMensaje(batch, "Recoge para obtener vida extra", ANCHO/2, .59f*ALTO);
+        texto.mostrarMensaje(batch, "Matalo con 1 disparo si eres muy rapido", ANCHO/2, .41f*ALTO);
+        texto.mostrarMensaje(batch, "Te tomara mas tiempo eliminarlo", ANCHO/2, .28f*ALTO);
+        texto.mostrarMensaje(batch, "Si te toca una sola vez ya estas muerto", ANCHO/2, .15f*ALTO);
         batch.end();
 
         escenaMenuNiveles.draw();
