@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import mx.tec.astral.flytomars.Enemigos.AlienAgil;
 import mx.tec.astral.flytomars.Enemigos.AlienLetal;
 import mx.tec.astral.flytomars.Enemigos.AlienTanque;
+import mx.tec.astral.flytomars.Enemigos.EstadoAlien;
 import mx.tec.astral.flytomars.Juego;
 import mx.tec.astral.flytomars.Tools.Texto;
 
@@ -33,13 +34,13 @@ public class PantallaInstrucciones extends Pantalla {
 
     //Enemies
     private Texture spriteSheetAgil;
-    private AlienAgil aAlien;
+    private AlienAgil aAgil;
 
     private Texture spriteSheetTanque;
-    private AlienAgil tAlien;
+    private AlienTanque tAlien;
 
     private Texture spriteSheetLetal;
-    private AlienAgil lAlien;
+    private AlienLetal letal;
 
     private Stage escenaMenuNiveles;
     Texto texto;
@@ -90,6 +91,9 @@ public class PantallaInstrucciones extends Pantalla {
         Gdx.input.setInputProcessor(escenaMenuNiveles);
 
         //Enemies
+        aAgil= new AlienAgil(spriteSheetAgil, ANCHO/40 ,.36f*ALTO);
+        tAlien= new AlienTanque(spriteSheetTanque, ANCHO/7-50 ,.18f*ALTO);
+        letal= new AlienLetal(spriteSheetLetal, ANCHO/40 ,.07f*ALTO);
 
     }
 
@@ -114,12 +118,10 @@ public class PantallaInstrucciones extends Pantalla {
         batch.draw(btnShoot, ANCHO/7 + 50, .71f*ALTO, 34, 43);
         batch.draw(coin, ANCHO/7 + 20, .62f*ALTO,34,43);
         batch.draw(heart, ANCHO/7 + 20, .53f*ALTO, 34, 43);
-        AlienAgil aAgil= new AlienAgil(spriteSheetAgil, ANCHO/40 ,.36f*ALTO);
-        aAgil.render(batch);
+        aAgil.setEstado(EstadoAlien.DERECHA);
         //aAgil.moverHorizontal();
-        AlienTanque tanque= new AlienTanque(spriteSheetTanque, ANCHO/7-50 ,.18f*ALTO);
-        tanque.render(batch);
-        AlienLetal letal= new AlienLetal(spriteSheetLetal, ANCHO/40 ,.07f*ALTO);
+        aAgil.render(batch);
+        tAlien.render(batch);
         letal.render(batch);
         texto.mostrarMensaje(batch, "Instrucciones del juego", ANCHO/2, .96f*ALTO);
         texto.mostrarMensaje(batch, "Camina de izquierda a derecha", ANCHO/2, .85f*ALTO);
