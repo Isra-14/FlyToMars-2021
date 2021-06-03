@@ -31,6 +31,7 @@ public class PantallaInstrucciones extends Pantalla {
     Texture btnShoot;
     Texture coin;
     Texture heart;
+    Texture shield;
 
     //Enemies
     private Texture spriteSheetAgil;
@@ -63,6 +64,7 @@ public class PantallaInstrucciones extends Pantalla {
         btnShoot = new Texture("buttons/btn_B.png");
         coin = new Texture("items/coin.png");
         heart = new Texture("items/heart.png");
+        shield = new Texture("items/shield.png");
         spriteSheetAgil = new Texture("enemigos/Agil.png");
         spriteSheetLetal = new Texture("enemigos/Letal.png");
         spriteSheetTanque = new Texture("enemigos/Tanque.png");
@@ -118,6 +120,7 @@ public class PantallaInstrucciones extends Pantalla {
         batch.draw(btnShoot, ANCHO/7 + 50, .71f*ALTO, 34, 43);
         batch.draw(coin, ANCHO/7 + 20, .62f*ALTO,34,43);
         batch.draw(heart, ANCHO/7 + 20, .53f*ALTO, 34, 43);
+        batch.draw(shield, ANCHO/7 + 20, .44f*ALTO, 34, 43);
         aAgil.setEstado(EstadoAlien.DERECHA);
         //aAgil.moverHorizontal();
         aAgil.render(batch);
@@ -128,6 +131,7 @@ public class PantallaInstrucciones extends Pantalla {
         texto.mostrarMensaje(batch, "A - > Brincar , B -> Disparar", ANCHO/2, .76f*ALTO);
         texto.mostrarMensaje(batch, "Recoge para aumentar tu score!", ANCHO/2, .67f*ALTO);
         texto.mostrarMensaje(batch, "Recoge para obtener vida extra", ANCHO/2, .59f*ALTO);
+        texto.mostrarMensaje(batch, "Recoge para obtener inmunidad!", ANCHO/2, .50f*ALTO);
         texto.mostrarMensaje(batch, "Matalo con 1 disparo si eres muy rapido", ANCHO/2, .41f*ALTO);
         texto.mostrarMensaje(batch, "Te tomara mas tiempo eliminarlo", ANCHO/2, .28f*ALTO);
         texto.mostrarMensaje(batch, "Si te toca una sola vez ya estas muerto", ANCHO/2, .15f*ALTO);
