@@ -74,7 +74,8 @@ public class PantallaNvl1 extends Pantalla {
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
     public static final int TAM_CELDA = 32;
     private float timerEscudo;
-    private final float INVULNERABLE = 20000f;
+    private final float INVULNERABLE = 1500f;
+    private Texture escudo;
 
     //  Enemigos
 
@@ -170,6 +171,7 @@ public class PantallaNvl1 extends Pantalla {
         crearHero();
         crearVidas();
         crearPowerUp();
+        crearEscudo();
 
 //        crearBotonBack();
         crearBotonA();
@@ -191,7 +193,11 @@ public class PantallaNvl1 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-/**======================================================
+    private void crearEscudo() {
+        escudo = new Texture("items/shield.png");
+    }
+
+    /**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
 
@@ -391,9 +397,14 @@ public class PantallaNvl1 extends Pantalla {
 
         texto.mostrarMensaje(batch, "Score:" + puntos, 150, ALTO - 25);
 
-        //probabilidad(batch);
-
         batch.end();
+
+        if (hero.getTieneEscudo() ){
+            batch.begin();
+            batch.draw(escudo, ANCHO-(3*60+65),ALTO-60, 50, 50);
+            batch.end();
+        }
+
 
         if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null )
             escenaPausa.draw();
@@ -801,7 +812,7 @@ public class PantallaNvl1 extends Pantalla {
         if(hero.getSprite().getY() < 2*TAM_CELDA)
             hero.caer();
 
-        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO  && hero.getSprite().getY() > 2*TAM_CELDA-1)
+        if ( hero.getSprite().getX() > 0 - hero.getSprite().getWidth()-1 && hero.getSprite().getX() < ANCHO )
             hero.verificarPlataforma();
 
         if ( hero.getTieneEscudo() ) {
@@ -810,6 +821,7 @@ public class PantallaNvl1 extends Pantalla {
                 timerEscudo = 0;
                 hero.setTieneEscudo(false);
             }
+            Gdx.app.log("Escudo [HERO]", Float.toString(timerEscudo));
         }
 
         hero.colision(arrAliensAgiles);

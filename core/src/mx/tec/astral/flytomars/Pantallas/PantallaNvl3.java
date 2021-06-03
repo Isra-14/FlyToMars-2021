@@ -74,7 +74,7 @@ public class PantallaNvl3 extends Pantalla {
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
     public static final int TAM_CELDA = 32;
     private float timerEscudo;
-    private final float INVULNERABLE = 5000f;
+    private final float INVULNERABLE = 500f;
 
     //  Enemigos
 
@@ -795,7 +795,7 @@ public class PantallaNvl3 extends Pantalla {
         if(hero.getSprite().getY() < TAM_CELDA)
             hero.caer();
 
-        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO && hero.getSprite().getY() > 2*TAM_CELDA-1 )
+        if ( hero.getSprite().getX() > 0 - hero.getSprite().getWidth() && hero.getSprite().getX() < ANCHO  && hero.getSprite().getY() > 2*TAM_CELDA-1)
             hero.verificarPlataforma();
 
         if ( hero.getTieneEscudo() ) {
