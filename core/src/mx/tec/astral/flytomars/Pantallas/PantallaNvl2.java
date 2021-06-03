@@ -94,9 +94,9 @@ public class PantallaNvl2 extends Pantalla {
     private Array<AlienLetal> arrLetales;
     private Texture spriteSheetLetal;
     private float TAMANIO_REGION_LETAL = 128f;
-    private float timerCrearAlienLetal=10;
+    private float timerCrearAlienLetal = 10;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 60;
+    private final float TIEMPO_CREAR_LETAL = 40;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
     private int counterHitLetal = 0;
 
@@ -105,7 +105,7 @@ public class PantallaNvl2 extends Pantalla {
     private Texture spriteSheetTanque;
     private float TAMANIO_REGION_TANQUE = 128f;
     private float timerCrearAlienTanque = 0;
-    private float TIEMPO_CREAR_TANQUE = 20;
+    private float TIEMPO_CREAR_TANQUE = 15;
     private float timerCambioTanque;
     private final float TIEMPO_CAMBIO_TANQUE = 6f;
     private int counterHitTanque = 0;
@@ -199,7 +199,7 @@ public class PantallaNvl2 extends Pantalla {
      //====================================================*/
 
     private void crearEscudo() {
-        escudo = new Texture("items/shield.png");
+        escudo = new Texture("items/shieldActivated.png");
     }
 
     private void crearFondo() {
@@ -221,8 +221,10 @@ public class PantallaNvl2 extends Pantalla {
 
     private void cargarMusica() {
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
-        bgMusic.play();
-        bgMusic.setVolume(0.12f);
+        if ( !juego.isSoundMuted ) {
+            bgMusic.play();
+            bgMusic.setVolume(0.12f);
+        }
         bgMusic.setLooping(true);
     }
 

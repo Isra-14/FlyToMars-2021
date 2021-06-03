@@ -45,7 +45,7 @@ public class PantallaPreferencias extends Pantalla {
     private void crearMenu() {
         texto = new Texto();
 
-        escenaPreferencias = new Stage();
+        escenaPreferencias = new Stage(vista);
         texturaFondo = new Texture("fondos/fondoInstrucciones.png");
 
         // Actores->Boton
@@ -55,10 +55,10 @@ public class PantallaPreferencias extends Pantalla {
         Button btnPonerMusicaBotones = crearBoton("buttons/Volume_2_Idle.png", "buttons/Volume_2_Pushed.png");
         Button btnBack = crearBoton("Menu/btn_back.png", "Menu/btn_back_press.png");
 
-        btnQuitarMusica.setPosition( 1.5f*ANCHO/3, 0.6f * ALTO, Align.center);
-        btnPonerMusica.setPosition(2f*ANCHO/3, 0.6f * ALTO, Align.center);
-        btnQuitarMusicaBotones.setPosition(1.5f*ANCHO/3, 0.2f * ALTO, Align.center);
-        btnPonerMusicaBotones.setPosition(2f*ANCHO/3, 0.2f * ALTO, Align.center);
+        btnQuitarMusica.setPosition( ANCHO * 0.4f, 0.6f * ALTO, Align.center);
+        btnPonerMusica.setPosition(0.6f*ANCHO, 0.6f * ALTO, Align.center);
+        btnQuitarMusicaBotones.setPosition(0.4f*ANCHO, 0.2f * ALTO, Align.center);
+        btnPonerMusicaBotones.setPosition(0.6f*ANCHO, 0.2f * ALTO, Align.center);
         btnBack.setPosition(150, ALTO-50, Align.center);
 
         // Agrega los botones a escena
@@ -74,6 +74,7 @@ public class PantallaPreferencias extends Pantalla {
                 if ( juego.mp3.getVolume() > 0f ){
                     juego.soundBotones.play();
                     juego.mp3.setVolume(0f);
+                    juego.isSoundMuted = true;
                 }
             }
         });
@@ -83,7 +84,9 @@ public class PantallaPreferencias extends Pantalla {
             public void clicked(InputEvent event, float x, float y) {
                 if ( juego.mp3.getVolume() <= 0f ){
                     juego.soundBotones.play();
+                    juego.mp3.play();
                     juego.mp3.setVolume(0.12f);
+                    juego.isSoundMuted = false;
                 }
             }
         });

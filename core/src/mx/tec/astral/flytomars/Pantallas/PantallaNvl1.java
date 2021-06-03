@@ -96,7 +96,7 @@ public class PantallaNvl1 extends Pantalla {
     private float TAMANIO_REGION_LETAL = 128f;
     private float timerCrearAlienLetal= 0;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 30;
+    private final float TIEMPO_CREAR_LETAL = 50;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
     private int counterHitLetal = 0;
 
@@ -199,7 +199,7 @@ public class PantallaNvl1 extends Pantalla {
 //====================================================*/
 
     private void crearEscudo() {
-        escudo = new Texture("items/shield.png");
+        escudo = new Texture("items/shieldActivated.png");
     }
 
     private void crearFondo() {
@@ -220,8 +220,10 @@ public class PantallaNvl1 extends Pantalla {
 
     private void cargarMusica() {
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
-        bgMusic.play();
-        bgMusic.setVolume(0.12f);
+        if ( !juego.isSoundMuted ) {
+            bgMusic.play();
+            bgMusic.setVolume(0.12f);
+        }
         bgMusic.setLooping(true);
     }
 

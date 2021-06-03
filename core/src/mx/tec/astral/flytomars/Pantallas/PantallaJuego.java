@@ -43,9 +43,9 @@ public class PantallaJuego extends Pantalla {
     @Override
     public void show() {
         //checamos si la musica fue parada al regresar a esta pantalla
-        if (!juego.getMusica()){
+        if (!juego.getMusica() && !juego.isSoundMuted){
             juego.mp3.play();
-            juego.mp3.setVolume(.15f);
+            juego.mp3.setVolume(.12f);
         }
         crearMenu();
         crearHistoria();

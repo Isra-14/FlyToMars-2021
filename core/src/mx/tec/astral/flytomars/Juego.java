@@ -33,6 +33,8 @@ public class Juego extends Game
 	public boolean isPassedLvl2 = false;
 	public boolean isCompleted = false;
 
+	public boolean isSoundMuted = false;
+
 	//cargamos sonido
 	public Music soundBotones;
 	public Sound soundDisparo;
@@ -52,11 +54,13 @@ public class Juego extends Game
 		//carga los efectos de sonido
 		cargarSonidos();
 
-			//Se agrega la musica
-			mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/menuProposal.mp3"));
+		//Se agrega la musica
+		mp3 = Gdx.audio.newMusic(Gdx.files.internal("Efectos/menuProposal.mp3"));
+		if ( !isSoundMuted) {
 			mp3.setVolume(.12f);
 			mp3.play();
-			mp3.setLooping(true);
+		}
+		mp3.setLooping(true);
 
 
 		//Se llama al metodo para camibiar de pantalla

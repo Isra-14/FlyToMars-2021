@@ -86,7 +86,7 @@ public class PantallaNvl3 extends Pantalla {
     private float TAMANIO_REGION_AGIL = 128f;
     private float timerCrearAlienAgil = 10;
     private float timerCambioAgil;
-    private final float TIEMPO_CREAR_AGIL = 10;
+    private final float TIEMPO_CREAR_AGIL = 15;
     private final float TIEMPO_CAMBIO_AGIL = 1f;
 
     //Alien Letal
@@ -94,9 +94,9 @@ public class PantallaNvl3 extends Pantalla {
     private Array<AlienLetal> arrLetales;
     Texture spriteSheetLetal;
     private float TAMANIO_REGION_LETAL = 128f;
-    private float timerCrearAlienLetal=10;
+    private float timerCrearAlienLetal = 10;
     private float timerCambioLetal;
-    private final float TIEMPO_CREAR_LETAL = 30;
+    private final float TIEMPO_CREAR_LETAL = 20;
     private final float TIEMPO_CAMBIO_LETAL = 6f;
     private int counterHitLetal = 0;
 
@@ -105,7 +105,7 @@ public class PantallaNvl3 extends Pantalla {
     private Texture spriteSheetTanque;
     private float TAMANIO_REGION_TANQUE = 128f;
     private float timerCrearAlienTanque = 0;
-    private float TIEMPO_CREAR_TANQUE = 20;
+    private float TIEMPO_CREAR_TANQUE = 10;
     private float timerCambioTanque;
     private final float TIEMPO_CAMBIO_TANQUE = 6f;
     private int counterHitTanque = 0;
@@ -131,7 +131,7 @@ public class PantallaNvl3 extends Pantalla {
     //  Objetos de PowerUps
     private Texture texturaVida;
     private float timerPower = 0f;
-    private final float TIEMPO_CREAR_ITEM = 10.0f;
+    private final float TIEMPO_CREAR_ITEM = 25f;
 
 
     private Array<PowerUp> arrPowerUps;
@@ -199,7 +199,7 @@ public class PantallaNvl3 extends Pantalla {
      //====================================================*/
 
     private void crearEscudo() {
-        escudo = new Texture("items/shield.png");
+        escudo = new Texture("items/shieldActivated.png");
     }
 
     private void crearFondo() {
@@ -220,8 +220,10 @@ public class PantallaNvl3 extends Pantalla {
 
     private void cargarMusica() {
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("Efectos/SPACE!!!.mp3"));
-        bgMusic.play();
-        bgMusic.setVolume(0.12f);
+        if ( !juego.isSoundMuted ) {
+            bgMusic.play();
+            bgMusic.setVolume(0.12f);
+        }
         bgMusic.setLooping(true);
     }
 
