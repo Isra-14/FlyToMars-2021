@@ -127,7 +127,7 @@ public class PantallaMenu extends Pantalla {
         btnHighScores.setPosition(ANCHO/2, 3*ALTO/8+ALTO/5, Align.center);
         btnInstrucciones.setPosition(ANCHO/2, 2*ALTO/8+ALTO/5, Align.center);
         btnPreferencias.setPosition(ANCHO/2, 1*ALTO/8+ALTO/5, Align.center);
-        btnAcercaDe.setPosition(ANCHO/2, 1*ALTO/9+ALTO/5, Align.center);
+        btnAcercaDe.setPosition(ANCHO/2, 1*ALTO/16+ALTO/7, Align.center);
 
         // Agrega los botones a escena
         escenaMenu.addActor(btnInicio);
@@ -160,6 +160,14 @@ public class PantallaMenu extends Pantalla {
             }
         });
 
+        btnPreferencias.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.soundBotones.play();
+                juego.setScreen(new PantallaPreferencias(juego));
+            }
+        });
+
         btnAcercaDe.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -167,6 +175,7 @@ public class PantallaMenu extends Pantalla {
                 juego.setScreen(new PantallaAcercaDe(juego));
             }
         });
+
 
         // La ESCENA se encarga de ATENDER LOS EVENTOS DE ENTRADA
         Gdx.input.setInputProcessor(escenaMenu);

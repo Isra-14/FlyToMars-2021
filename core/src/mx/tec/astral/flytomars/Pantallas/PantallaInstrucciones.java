@@ -30,6 +30,7 @@ public class PantallaInstrucciones extends Pantalla {
 
     private Stage escenaMenuNiveles;
     Texto texto;
+
     public PantallaInstrucciones(Juego juego) {
         this.juego = juego;
     }

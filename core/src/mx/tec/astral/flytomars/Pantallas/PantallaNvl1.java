@@ -74,7 +74,7 @@ public class PantallaNvl1 extends Pantalla {
     private EstadoHeroe prevState = EstadoHeroe.DERECHA;
     public static final int TAM_CELDA = 32;
     private float timerEscudo;
-    private final float INVULNERABLE = 1000f;
+    private final float INVULNERABLE = 20000f;
 
     //  Enemigos
 
@@ -801,7 +801,7 @@ public class PantallaNvl1 extends Pantalla {
         if(hero.getSprite().getY() < 2*TAM_CELDA)
             hero.caer();
 
-        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO )
+        if ( hero.getSprite().getX() > 0 && hero.getSprite().getX() < ANCHO  && hero.getSprite().getY() > 2*TAM_CELDA-1)
             hero.verificarPlataforma();
 
         if ( hero.getTieneEscudo() ) {
@@ -810,7 +810,6 @@ public class PantallaNvl1 extends Pantalla {
                 timerEscudo = 0;
                 hero.setTieneEscudo(false);
             }
-            Gdx.app.log("Escudo [HERO]", Float.toString(timerEscudo));
         }
 
         hero.colision(arrAliensAgiles);

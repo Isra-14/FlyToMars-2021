@@ -34,7 +34,7 @@ public class Juego extends Game
 	public boolean isCompleted = false;
 
 	//cargamos sonido
-	public Sound soundBotones;
+	public Music soundBotones;
 	public Sound soundDisparo;
 	public Sound soundSalto;
 	public  Sound perder;
@@ -68,7 +68,7 @@ public class Juego extends Game
 	private void cargarSonidos()
 	{
 		//Sonido botones y disparo
-		soundBotones = Gdx.audio.newSound(Gdx.files.internal("Efectos/Selection_sound.wav"));
+		soundBotones = Gdx.audio.newMusic(Gdx.files.internal("Efectos/Selection_sound.wav"));
 		soundDisparo = Gdx.audio.newSound(Gdx.files.internal("Efectos/bubble_shot.wav"));
 		soundSalto = Gdx.audio.newSound(Gdx.files.internal("Efectos/Jump.wav"));
 		perder = Gdx.audio.newSound(Gdx.files.internal("Efectos/Lost_sound.wav"));
