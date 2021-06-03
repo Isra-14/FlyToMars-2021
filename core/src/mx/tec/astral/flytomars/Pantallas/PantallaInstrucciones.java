@@ -93,9 +93,9 @@ public class PantallaInstrucciones extends Pantalla {
         Gdx.input.setInputProcessor(escenaMenuNiveles);
 
         //Enemies
-        aAgil= new AlienAgil(spriteSheetAgil, ANCHO/40 ,.36f*ALTO);
-        tAlien= new AlienTanque(spriteSheetTanque, ANCHO/7-50 ,.18f*ALTO);
-        letal= new AlienLetal(spriteSheetLetal, ANCHO/40 ,.07f*ALTO);
+        aAgil= new AlienAgil(spriteSheetAgil, ANCHO/40 ,.26f*ALTO);
+        tAlien= new AlienTanque(spriteSheetTanque, ANCHO/7-50 ,.10f*ALTO);
+        letal= new AlienLetal(spriteSheetLetal, ANCHO/40 ,.01f*ALTO);
 
     }
 
@@ -132,9 +132,9 @@ public class PantallaInstrucciones extends Pantalla {
         texto.mostrarMensaje(batch, "Recoge para aumentar tu score!", ANCHO/2, .67f*ALTO);
         texto.mostrarMensaje(batch, "Recoge para obtener vida extra", ANCHO/2, .59f*ALTO);
         texto.mostrarMensaje(batch, "Recoge para obtener inmunidad!", ANCHO/2, .50f*ALTO);
-        texto.mostrarMensaje(batch, "Matalo con 1 disparo si eres muy rapido", ANCHO/2, .41f*ALTO);
-        texto.mostrarMensaje(batch, "Te tomara mas tiempo eliminarlo", ANCHO/2, .28f*ALTO);
-        texto.mostrarMensaje(batch, "Si te toca una sola vez ya estas muerto", ANCHO/2, .15f*ALTO);
+        texto.mostrarMensaje(batch, "Matalo con 1 disparo si eres muy rapido", ANCHO/2, .33f*ALTO);
+        texto.mostrarMensaje(batch, "Te tomara mas tiempo eliminarlo", ANCHO/2, .19f*ALTO);
+        texto.mostrarMensaje(batch, "Si te toca una sola vez ya estas muerto", ANCHO/2, .08f*ALTO);
         batch.end();
 
         escenaMenuNiveles.draw();
