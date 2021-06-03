@@ -193,13 +193,14 @@ public class PantallaNvl1 extends Pantalla {
         estadoJuego = EstadoJuego.EN_JUEGO;
     }
 
-    private void crearEscudo() {
-        escudo = new Texture("items/shield.png");
-    }
 
     /**======================================================
 //              CRERACION DE OBJETOS                   ||
 //====================================================*/
+
+    private void crearEscudo() {
+        escudo = new Texture("items/shield.png");
+    }
 
     private void crearFondo() {
         AssetManager manager = new AssetManager();

@@ -75,6 +75,7 @@ public class PantallaNvl2 extends Pantalla {
     public static final int TAM_CELDA = 32;
     private float timerEscudo;
     private final float INVULNERABLE = 1000f;
+    private Texture escudo;
 
     //  Enemigos
 
@@ -170,6 +171,8 @@ public class PantallaNvl2 extends Pantalla {
         crearHero();
         crearVidas();
         crearPowerUp();
+        crearEscudo();
+
 
 //        crearBotonBack();
         crearBotonA();
@@ -194,6 +197,10 @@ public class PantallaNvl2 extends Pantalla {
     /**======================================================
      //              CRERACION DE OBJETOS                   ||
      //====================================================*/
+
+    private void crearEscudo() {
+        escudo = new Texture("items/shield.png");
+    }
 
     private void crearFondo() {
         AssetManager manager = new AssetManager();
@@ -395,6 +402,12 @@ public class PantallaNvl2 extends Pantalla {
 
         batch.end();
 
+        if (hero.getTieneEscudo() ){
+            batch.begin();
+            batch.draw(escudo, ANCHO-(3*60+65),ALTO-60, 50, 50);
+            batch.end();
+        }
+
         if ( estadoJuego == EstadoJuego.PAUSA && escenaPausa != null)
             escenaPausa.draw();
 
@@ -410,7 +423,7 @@ public class PantallaNvl2 extends Pantalla {
         if (estadoJuego == EstadoJuego.PAUSA) {
             batch.begin();
             textoPausa.mostrarMensaje(batch, "Score actual: " + puntos, ANCHO/2 - 50, ALTO - 250);
-            if ( !juego.isPassedLvl1 )
+            if ( !juego.isPassedLvl2 )
                 textoPasado.mostrarMensaje(batch, "Siguiente nivel a: " + (PUNTOS_SIGUIENTE_NIVEL - puntos) + " puntos", ANCHO/2 - 40, ALTO - 350);
             else
                 textoPasado.mostrarMensaje(batch, "Nivel 3 desbloqueado!", ANCHO/2 - 50, ALTO - 350);
@@ -457,7 +470,13 @@ public class PantallaNvl2 extends Pantalla {
             int posX = (int) Math.floor(Math.random()*((ANCHO-(80)-14)+15));
             int posY = (int) Math.floor(Math.random()*((ALTO-(40))-2*TAM_CELDA+1)+2*TAM_CELDA);
 
-            int tipo = (int) Math.floor(Math.random()*3);
+            int tipo;
+
+            // Evitamos que genere vidas cuando tengamos la vida completa
+            do {
+                tipo = (int) Math.floor(Math.random()*3);
+            } while (tipo == 0 && hero.getVidas() >= 3);
+
             powerUp = new PowerUp(posX, posY, tipo);
 
             arrPowerUps.add(powerUp);
